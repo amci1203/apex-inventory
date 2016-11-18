@@ -1,0 +1,24 @@
+{
+  "name": "apex-inventory",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "mongod --fork --logpath 'mongo.log' && node index.js",
+    "stop": "pkill mongod",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/amci1203/apex-inventory.git"
+  },
+  "author": "Allen McIntosh II",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/amci1203/apex-inventory#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "mongoose": "^4.6.8",
+    "pug": "^2.0.0-beta6"
+  }
+}
