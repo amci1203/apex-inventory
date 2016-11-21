@@ -1,5 +1,35 @@
-// out: ../../styles.css, compress: true, strictMath: true
-
 * {
     box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
 }
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 20%;
+}
+
+main {
+    position: relative;
+    float: right;
+    width: 80%;
+}
+
+.clickable() {
+    &:hover { cursor: pointer }
+}
+
+@main-blue: #196EEF;
+
+@import './modules/_header';
+@import './modules/_nav';
+@import './modules/_table';
+@import './modules/_form';
+@import './modules/_modal';

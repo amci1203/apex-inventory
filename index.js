@@ -5,15 +5,18 @@ const mongoose = require('mongoose'),
 
 const department = "housekeeping",
       port = 3000,
-      items = require('./items')(express.Router()),
+      items = require('./routes/items')(express.Router()),
       app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
-app.use('/items', items);
+
+app.set('views', './views');
+app.set('view engine', 'pug');
 
 app.get('/', (req, res) => { res.redirect('/items') })
+app.use('/items', items);
 
 mongoose.connect('mongodb://localhost:27017/' + department, (err) => {
     if (err) console.error(err.toString())

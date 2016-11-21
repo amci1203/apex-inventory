@@ -1,0 +1,15 @@
+.form-group {
+    font-size: 1.35rem;
+    padding: 7px 0;
+    min-width: 200px;
+    border-bottom: 1px solid #DDD;
+    label { float: left }
+    input { 
+        float: right;
+        font-size: inherit;
+    }
+    &::after {
+        content: ' : ';
+        clear: both;
+    }
+}

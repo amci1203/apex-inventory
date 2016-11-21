@@ -1,0 +1,26 @@
+table {
+    margin-left: 25px;
+    width: 80%;
+    border-collapse: collapse;
+    
+    tr:nth-child(even) {
+        background-color: #CCC;
+    }
+        
+    td {
+        text-align: right;
+        &:first-child { text-align: left }
+    }
+    td:not(.heading) {
+        border-bottom: 1px solid #111;
+    }
+    td button {
+        .clickable;
+        background-color: @main-blue;
+        border: none;
+        padding: 5px 10px;
+        
+        color: #FFF;
+        text-transform: uppercase;
+    }
+}
