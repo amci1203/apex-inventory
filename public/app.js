@@ -50,9 +50,16 @@
 
 	var _Modal2 = _interopRequireDefault(_Modal);
 
+	var _Form = __webpack_require__(3);
+
+	var _Form2 = _interopRequireDefault(_Form);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var modal = new _Modal2.default('new');
+	var newForm = new _Form2.default('new-item', 'post', '/items');
+
+	//const modal_1 = new Modal('new-multi');
 
 /***/ },
 /* 1 */
@@ -75,10 +82,11 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Modal = function () {
-	    function Modal(modalName) {
+	    function Modal(modalName, hasForm) {
 	        _classCallCheck(this, Modal);
 
 	        this.modal = (0, _jquery2.default)('#' + modalName);
+	        this.hasForm = hasForm;
 	        this.openTrigger = (0, _jquery2.default)('.' + modalName + '--open');
 	        this.closeTrigger = (0, _jquery2.default)('.' + modalName + '--close');
 	        this.events();
@@ -120,7 +128,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.3
+	 * jQuery JavaScript Library v2.2.4
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -130,7 +138,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-04-05T19:26Z
+	 * Date: 2016-05-20T17:23Z
 	 */
 
 	(function( global, factory ) {
@@ -186,7 +194,7 @@
 
 
 	var
-		version = "2.2.3",
+		version = "2.2.4",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5127,13 +5135,14 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
+		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.preventDefault();
 			}
 		},
@@ -5142,7 +5151,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.stopPropagation();
 			}
 		},
@@ -5151,7 +5160,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6081,19 +6090,6 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
-
-		// Support: IE11 only
-		// In IE 11 fullscreen elements inside of an iframe have
-		// 100x too small dimensions (gh-1764).
-		if ( document.msFullscreenElement && window.top !== window ) {
-
-			// Support: IE11 only
-			// Running getBoundingClientRect on a disconnected node
-			// in IE throws an error.
-			if ( elem.getClientRects().length ) {
-				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
-			}
-		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7985,6 +7981,7 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
+		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7992,27 +7989,10 @@
 				{
 					type: type,
 					isSimulated: true
-
-					// Previously, `originalEvent: {}` was set here, so stopPropagation call
-					// would not be triggered on donor event, since in our own
-					// jQuery.event.stopPropagation function we had a check for existence of
-					// originalEvent.stopPropagation method, so, consequently it would be a noop.
-					//
-					// But now, this "simulate" function is used only for events
-					// for which stopPropagation() is noop, so there is no need for that anymore.
-					//
-					// For the 1.x branch though, guard for "click" and "submit"
-					// events is still used, but was moved to jQuery.event.stopPropagation function
-					// because `originalEvent` should point to the original event for the constancy
-					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
-
-			if ( e.isDefaultPrevented() ) {
-				event.preventDefault();
-			}
 		}
 
 	} );
@@ -9962,6 +9942,110 @@
 	return jQuery;
 	}));
 
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Form = function () {
+	    function Form(form, method, url) {
+	        _classCallCheck(this, Form);
+
+	        this.form = (0, _jquery2.default)('#' + form);
+	        this.submitButton = (0, _jquery2.default)('#' + form + ' > button.submit');
+	        this.method = method;
+	        this.data = (0, _jquery2.default)('#' + form + ' input:not([type="submit"])');
+	        this.url = url;
+	        this.events();
+	    }
+
+	    _createClass(Form, [{
+	        key: 'events',
+	        value: function events() {
+	            this.submitButton.click(this.getFormMethod.bind(this));
+	        }
+	    }, {
+	        key: 'postSubmitHandler',
+	        value: function postSubmitHandler() {
+	            alert('EVENT FIRED');
+	            this.formReqBody(function (body) {
+	                console.log(body);
+	                //            $.post(this.url, body, (data) => {
+	                //                alert(data);
+	                //            }, 'json')
+	            });
+	            return false;
+	        }
+	    }, {
+	        key: 'getSubmitHandler',
+	        value: function getSubmitHandler() {
+	            var body = this.data.serialize();
+	            //        $.get(this.url, body, (data) => {
+	            //            alert(data);
+	            //        }, 'json')
+	        }
+	    }, {
+	        key: 'getFormMethod',
+	        value: function getFormMethod() {
+	            var _this = this;
+
+	            var method = this.method;
+	            var methods = {
+	                'post': function post() {
+	                    return _this.postSubmitHandler();
+	                },
+	                'get': function get() {
+	                    return _this.getSubmitHandler();
+	                }
+	            };
+
+	            if (typeof methods[method] !== 'function') {
+	                throw new Error('Invalid method.');
+	            }
+
+	            return methods[method]();
+	        }
+	    }, {
+	        key: 'formReqBody',
+	        value: function formReqBody(callback) {
+	            var _this2 = this;
+
+	            var body = {};
+	            this.data.each(function () {
+	                var key = (0, _jquery2.default)(_this2).attr('name'),
+	                    val = (0, _jquery2.default)(_this2).val();
+	                body[key] = val;
+	            });
+	            callback(body);
+	        }
+	    }, {
+	        key: 'clearForm',
+	        value: function clearForm() {
+	            this.data.val('');
+	            return false;
+	        }
+	    }]);
+
+	    return Form;
+	}();
+
+	exports.default = Form;
 
 /***/ }
 /******/ ]);

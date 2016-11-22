@@ -1,8 +1,9 @@
 import $ from 'jquery';
 
 export default class Modal {
-    constructor (modalName) {
+    constructor (modalName , hasForm) {
         this.modal = $('#' + modalName);
+        this.hasForm = hasForm;
         this.openTrigger = $('.' + modalName + '--open');
         this.closeTrigger = $('.' + modalName + '--close');
         this.events();

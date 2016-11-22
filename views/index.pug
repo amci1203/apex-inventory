@@ -45,6 +45,28 @@ body
                 .form-group
                     label(for='lowAt') Low At
                     input(name='lowAt' type='number' min=0)
+                button.submit ADD
+
+    #new-multi.modal
+        span.modal__close-button.new--close X
+        section.modal__body
+            h1.modal__header New Item
+            form#new-item-multi
+                .form-group
+                    label(for='category') Category
+                    input(name='category' list='categories')
+                    datalist(id='categories')
+                    //   each category in categories
+                            option= category
+                .form-group
+                    label(for='name') Name
+                    input(name='name')
+                .form-group
+                    label(for='inStock') In Stock
+                    input(name='inStock' type='number' min=0)
+                .form-group
+                    label(for='lowAt') Low At
+                    input(name='lowAt' type='number' min=0)
                     
                     
                     
