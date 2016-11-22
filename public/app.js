@@ -128,7 +128,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.4
+	 * jQuery JavaScript Library v2.2.3
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -138,7 +138,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-05-20T17:23Z
+	 * Date: 2016-04-05T19:26Z
 	 */
 
 	(function( global, factory ) {
@@ -194,7 +194,7 @@
 
 
 	var
-		version = "2.2.4",
+		version = "2.2.3",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5135,14 +5135,13 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
-		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.preventDefault();
 			}
 		},
@@ -5151,7 +5150,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopPropagation();
 			}
 		},
@@ -5160,7 +5159,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6090,6 +6089,19 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+
+		// Support: IE11 only
+		// In IE 11 fullscreen elements inside of an iframe have
+		// 100x too small dimensions (gh-1764).
+		if ( document.msFullscreenElement && window.top !== window ) {
+
+			// Support: IE11 only
+			// Running getBoundingClientRect on a disconnected node
+			// in IE throws an error.
+			if ( elem.getClientRects().length ) {
+				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
+			}
+		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7981,7 +7993,6 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
-		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7989,10 +8000,27 @@
 				{
 					type: type,
 					isSimulated: true
+
+					// Previously, `originalEvent: {}` was set here, so stopPropagation call
+					// would not be triggered on donor event, since in our own
+					// jQuery.event.stopPropagation function we had a check for existence of
+					// originalEvent.stopPropagation method, so, consequently it would be a noop.
+					//
+					// But now, this "simulate" function is used only for events
+					// for which stopPropagation() is noop, so there is no need for that anymore.
+					//
+					// For the 1.x branch though, guard for "click" and "submit"
+					// events is still used, but was moved to jQuery.event.stopPropagation function
+					// because `originalEvent` should point to the original event for the constancy
+					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
+
+			if ( e.isDefaultPrevented() ) {
+				event.preventDefault();
+			}
 		}
 
 	} );
@@ -9983,35 +10011,35 @@
 	    }, {
 	        key: 'postSubmitHandler',
 	        value: function postSubmitHandler() {
-	            alert('EVENT FIRED');
-	            this.formReqBody(function (body) {
-	                console.log(body);
-	                //            $.post(this.url, body, (data) => {
-	                //                alert(data);
-	                //            }, 'json')
-	            });
+	            var _this = this;
+
+	            var data = this.data.serialize();
+	            console.log(data);
+	            _jquery2.default.post(this.url, { item: data }, function () {
+	                _this.form.submit();
+	            }, 'json');
 	            return false;
 	        }
 	    }, {
 	        key: 'getSubmitHandler',
 	        value: function getSubmitHandler() {
 	            var body = this.data.serialize();
-	            //        $.get(this.url, body, (data) => {
-	            //            alert(data);
-	            //        }, 'json')
+	            _jquery2.default.get(this.url, function (data) {
+	                alert(data);
+	            }, 'json');
 	        }
 	    }, {
 	        key: 'getFormMethod',
 	        value: function getFormMethod() {
-	            var _this = this;
+	            var _this2 = this;
 
 	            var method = this.method;
 	            var methods = {
 	                'post': function post() {
-	                    return _this.postSubmitHandler();
+	                    return _this2.postSubmitHandler();
 	                },
 	                'get': function get() {
-	                    return _this.getSubmitHandler();
+	                    return _this2.getSubmitHandler();
 	                }
 	            };
 
@@ -10024,12 +10052,12 @@
 	    }, {
 	        key: 'formReqBody',
 	        value: function formReqBody(callback) {
-	            var _this2 = this;
+	            var _this3 = this;
 
 	            var body = {};
 	            this.data.each(function () {
-	                var key = (0, _jquery2.default)(_this2).attr('name'),
-	                    val = (0, _jquery2.default)(_this2).val();
+	                var key = (0, _jquery2.default)(_this3).attr('name'),
+	                    val = (0, _jquery2.default)(_this3).val();
 	                body[key] = val;
 	            });
 	            callback(body);

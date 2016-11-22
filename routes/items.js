@@ -1,5 +1,7 @@
-const Item = require('../dbmodels/item');
-const currentDepartment = "Housekeeping";
+const Item = require('../dbmodels/item'),
+      currentDepartment = "Housekeeping",
+      queryString = require('querystring');
+
 
 const handlers = {
     handlers: this,
@@ -23,8 +25,10 @@ const handlers = {
             })
     },
 
-    create: (itemObject, callback) => {
-        let newItem = new Item(itemObject);
+    create: (string, callback) => {
+        let item = queryString.parse(string)
+        let newItem = new Item(item);
+        console.log(item);
         newItem.save((err, insertedId) => {
             handlers.onError(err);
             callback(insertedId)

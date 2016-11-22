@@ -15,21 +15,19 @@ export default class Form {
     }
 
     postSubmitHandler () {
-        alert('EVENT FIRED');
-        this.formReqBody((body) => {
-            console.log(body);
-//            $.post(this.url, body, (data) => {
-//                alert(data);
-//            }, 'json')
-        })
+        let data = this.data.serialize();
+        console.log(data);
+        $.post(this.url, { item: data }, () => {
+            this.form.submit()
+        }, 'json')
         return false;
     }
 
     getSubmitHandler () {
         let body = this.data.serialize();
-//        $.get(this.url, body, (data) => {
-//            alert(data);
-//        }, 'json')
+        $.get(this.url, (data) => {
+            alert(data);
+        }, 'json')
     }
 
     getFormMethod () {

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "mongod --fork --logpath 'mongo.log' && node index.js",
-    "stop": "pkill mongod",
+    "stop": "pkill mongod && exit 1",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

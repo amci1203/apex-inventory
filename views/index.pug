@@ -9,16 +9,18 @@ body
             h1 #{department} Inventory
             p #{date} #[span Manager : Crystal McIntosh]
         table: tbody
-            each item in items
-                - var currentCategory = item.category
+            each item, index in items
+                - let currentCategory = item.category
+                - if (index === 0)
+                    - let prevCatehory = currentCategory
                 
                 - if (currentCategory !== prevCategory)
                     tr:td(colspan='2')= item.category
-                    
-                td= item.name
-                td= item.inStock
+                tr
+                    td= item.name
+                    td= item.inStock
                 
-                - var prevCategory = item.category
+                - prevCategory = item.category
             
             else
                 tr
@@ -29,7 +31,7 @@ body
         span.modal__close-button.new--close X
         section.modal__body
             h1.modal__header New Item
-            form#new-item
+            form#new-item(action='#')
                 .form-group
                     label(for='category') Category
                     input(name='category' list='categories')
