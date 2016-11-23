@@ -1,91 +1,43 @@
-const Item = require('../dbmodels/item'),
-      currentDepartment = "Housekeeping",
-      queryString = require('querystring');
-
-
-const handlers = {
-    handlers: this,
-
-    getAll: (callback) => {
-        Item.find()
-            .select('category name inStock lowAt')
-            .sort('category name')
-            .exec((err, docs) => {
-                handlers.onError(err);
-                callback(docs)
-            })
-    },
-
-    get: (itemName, callback)  => {
-        Item.findOne({name: itemName})
-            .select('inStock lowAt log')
-            .exec((err, doc) => {
-                handlers.onError(err);
-                callback(doc)
-            })
-    },
-
-    create: (string, callback) => {
-        let item = queryString.parse(string)
-        let newItem = new Item(item);
-        console.log(item);
-        newItem.save((err, insertedId) => {
-            handlers.onError(err);
-            callback(insertedId)
-        })
-    },
-
-    push: (itemName, logObject) => {
-        Item.findOneAndUpdate(
-            {name: itemName},
-            { $push: {
-                log: logObject
-            }},
-            { upsert: true },
-            (err, doc) => {
-                handlers.onError(err);
-                return doc
-            }
-        )
-    },
-
-    remove: (itemName) => {
-        Item.where({name: itemName})
-            .remove((err) => { this.onError(err) })
-    },
-
-    onError: (err) => {
-        if (err) {
-            console.error(err.toString());
-        }
-    }
-}
+const Item = require('mongoose-simpledb').db.Item,
+      currentDepartment = "Housekeeping";
 
 module.exports = (router) => {
-    let _ = handlers;
     
-    router.get('/', (req, res) => { 
-        _.getAll((docs) => {
-            res.render('index', {
-                department: currentDepartment,
-                date: new Date().toDateString(),
-                items: docs
+    router.get('/', (req, res) => {
+        Item.getAll((docs) => {
+            Item.getCategories((categories) => {
+                res.render('index', {
+                    department: currentDepartment,
+                    date: new Date().toDateString(),
+                    items: docs,
+                    numItems: docs.length,
+                    categories: categories
+                })
             })
         });
              
     })
     
-    router.get('/:item', (req, res) => { _.get(req.params.item) })
-    
-    router.post('/', (req, res) => {
-        _.create(req.body.item, (id) => {
-            res.send(id);
+    router.post('/new', (req, res) => {
+        Item.create(req.body.item, (doc) => {
+            console.log(doc);
+//            Item.push(doc.name, {})
         }) 
     })
     
-    router.post('/:item', (req, res) => { _.push(req.body.item, req.body.log) })
+    router.get('/:itemId', (req, res) => {
+        Item.get(req.params.itemId, (doc) => {
+            res.render('item', {
+                department: currentDepartment,
+                date: new Date().toDateString(),
+                item: doc
+            })
+        })
+    })
+
+    router.post('/:itemId/push', (req, res) => { Item.push(req.params.itemId, req.body.log) })
     
-    router.delete('/:item', (req, res) => { _.remove(req.params.item) })
+    router.delete('/itemId', (req, res) => { Item.remove(req.params.itemId) })
 
     return router;
 }

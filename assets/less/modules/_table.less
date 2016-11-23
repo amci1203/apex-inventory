@@ -3,17 +3,38 @@ table {
     width: 80%;
     border-collapse: collapse;
     
-    tr:nth-child(even) {
+    .row {
+        .clickable;
+        &:hover { background-color: #DDD }
+    }
+
+    .row:nth-child(even) {
         background-color: #CCC;
+        &:hover { background-color: darken(#CCC, 15%); }
+    }
+
+    .low > td {
+        background-color: lighten(#A00, 40%);
+        color: #A00;
+        &:hover { background-color: lighten(#A00, 25%); }
     }
         
     td {
         text-align: right;
         &:first-child { text-align: left }
     }
-    td:not(.heading) {
-        border-bottom: 1px solid #111;
+
+    td.heading {
+        padding-top: 25px;
+        background-color: #FFF;
+        border-bottom: 1px solid #333;
+        font-size: 2.8rem;
     }
+
+    td:not(.heading) {
+        padding: 10px 15px;
+    }
+
     td button {
         .clickable;
         background-color: @main-blue;

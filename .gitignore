@@ -5,7 +5,4 @@
 /node_modules/
 /mongo.log
 /npm-debug.log/
-/npm-debug.log
-/mongo.log.2016-11-22T04-16-40
-/mongo.log.2016-11-22T04-05-38
-/mongo.log.2016-11-22T04-04-30
+/mongo.log

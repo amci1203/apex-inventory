@@ -16,15 +16,10 @@ export default class Form {
 
     postSubmitHandler () {
         let data = this.data.serialize();
-        console.log(data);
-        $.post(this.url, { item: data }, () => {
-            this.form.submit()
-        }, 'json')
-        return false;
+        $.post(this.url, { item: data }, () => {}, 'json')
     }
 
     getSubmitHandler () {
-        let body = this.data.serialize();
         $.get(this.url, (data) => {
             alert(data);
         }, 'json')
@@ -42,16 +37,6 @@ export default class Form {
         }
 
         return methods[method]();
-    }
-
-    formReqBody (callback) {
-        let body = {};
-        this.data.each(() => {
-            let key = $(this).attr('name'),
-                val = $(this).val()
-            body[key] = val;
-        })
-        callback(body)
     }
 
     clearForm () {

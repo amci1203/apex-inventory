@@ -1,9 +1,10 @@
-const mongoose = require('mongoose'),
+const db = require('mongoose-simpledb'),
       bodyParser = require('body-parser'),
       express = require('express'),
       pug = require('pug');
 
 const department = "housekeeping",
+      dbconn = 'mongodb://localhost:27017/' + department,
       port = 3000,
       items = require('./routes/items')(express.Router()),
       app = express();
@@ -18,10 +19,14 @@ app.set('view engine', 'pug');
 app.get('/', (req, res) => { res.redirect('/items') })
 app.use('/items', items);
 
-mongoose.connect('mongodb://localhost:27017/' + department, (err) => {
-    if (err) console.error(err.toString())
-    else console.info("Successfully connected to %s department.", department)
-})
+db.init({
+        connectionString: dbconn,
+        autoIncrementNumberIds: true
+    }, (err, db) => {
+        if (err) console.error(err.toString())
+        else console.info("Successfully connected to %s department.", department)
+    }
+)
 
 app.listen(port, (err) => {
     if (err) console.error(err.toString())

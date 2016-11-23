@@ -5,7 +5,34 @@ nav {
     
     ul {
         position: absolute;
+        width: 100%;
         top: 50%;
         transform: translateY(-50%);
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+
+        li a {
+            .noDecoration;
+            display: block;
+            width: 100%;
+            padding: 15px 25px;
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: #555;
+
+            &:hover {
+                background-color: #BBB;
+            }
+
+        }
     }
+
+    button {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 20px 15px;
+    }
+
 }

@@ -25,6 +25,13 @@ main {
 .clickable() {
     &:hover { cursor: pointer }
 }
+.noDecoration() {
+    text-decoration: none;
+    color: inherit;
+    &:hover { text-decoration: none; }
+    &:visited { text-decoration: none; }
+    &:active { text-decoration: none; }
+}
 
 @main-blue: #196EEF;
 

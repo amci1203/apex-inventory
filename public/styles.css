@@ -35,16 +35,58 @@ nav {
 }
 nav ul {
   position: absolute;
+  width: 100%;
   top: 50%;
   transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+nav ul li a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  width: 100%;
+  padding: 15px 25px;
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #555;
+}
+nav ul li a:hover {
+  text-decoration: none;
+}
+nav ul li a:visited {
+  text-decoration: none;
+}
+nav ul li a:active {
+  text-decoration: none;
+}
+nav ul li a:hover {
+  background-color: #BBB;
 }
 table {
   margin-left: 25px;
   width: 80%;
   border-collapse: collapse;
 }
-table tr:nth-child(even) {
+table .row:hover {
+  cursor: pointer;
+}
+table .row:hover {
+  background-color: #DDD;
+}
+table .row:nth-child(even) {
   background-color: #CCC;
+}
+table .row:nth-child(even):hover {
+  background-color: #a6a6a6;
+}
+table .low > td {
+  background-color: #ff7777;
+  color: #A00;
+}
+table .low > td:hover {
+  background-color: #ff2a2a;
 }
 table td {
   text-align: right;
@@ -52,8 +94,14 @@ table td {
 table td:first-child {
   text-align: left;
 }
+table td.heading {
+  padding-top: 25px;
+  background-color: #FFF;
+  border-bottom: 1px solid #333;
+  font-size: 2.8rem;
+}
 table td:not(.heading) {
-  border-bottom: 1px solid #111;
+  padding: 10px 15px;
 }
 table td button {
   background-color: #196EEF;

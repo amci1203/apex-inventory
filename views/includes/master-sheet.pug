@@ -1,0 +1,19 @@
+table#all: tbody
+    each item, index in items
+        - let currentCategory = item.category
+        - if (index === 0)
+            - let prevCatehory = currentCategory
+
+        - if (currentCategory !== prevCategory)
+            tr: td.heading(colspan='2')= item.category
+            a(name= item.category)
+        tr.row
+            td(data-name= item._id)= item.name
+            td= item.inStock
+
+        - prevCategory = item.category
+
+    else
+        tr
+            td There aren't any items yet.
+            td: button.new--open Add one now

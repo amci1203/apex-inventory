@@ -20,6 +20,7 @@
     "express": "^4.14.0",
     "jquery": "^2.2.3",
     "mongoose": "^4.6.8",
+    "mongoose-simpledb": "^5.1.0",
     "pug": "^2.0.0-beta6"
   },
   "devDependencies": {
