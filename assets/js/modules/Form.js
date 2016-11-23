@@ -14,12 +14,14 @@ export default class Form {
         this.submitButton.click(this.getFormMethod.bind(this))
     }
 
-    postSubmitHandler () {
+    postSubmitHandler (event) {
         let data = this.data.serialize();
         $.post(this.url, { item: data }, () => {}, 'json')
+        location.reload()
+        return false;
     }
 
-    getSubmitHandler () {
+    getSubmitHandler (event) {
         $.get(this.url, (data) => {
             alert(data);
         }, 'json')

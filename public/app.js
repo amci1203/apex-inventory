@@ -9987,13 +9987,15 @@
 	        }
 	    }, {
 	        key: 'postSubmitHandler',
-	        value: function postSubmitHandler() {
+	        value: function postSubmitHandler(event) {
 	            var data = this.data.serialize();
 	            _jquery2.default.post(this.url, { item: data }, function () {}, 'json');
+	            location.reload();
+	            return false;
 	        }
 	    }, {
 	        key: 'getSubmitHandler',
-	        value: function getSubmitHandler() {
+	        value: function getSubmitHandler(event) {
 	            _jquery2.default.get(this.url, function (data) {
 	                alert(data);
 	            }, 'json');
@@ -10057,7 +10059,8 @@
 	        _classCallCheck(this, MainTable);
 
 	        this.table = (0, _jquery2.default)('#all');
-	        this.selectableElement = (0, _jquery2.default)('#all .row > td:first-child');
+	        this.item = (0, _jquery2.default)('#all .row > td:first-child');
+	        this.deleteButton = (0, _jquery2.default)('#all .row > td:last-child');
 	        this.itemTable = (0, _jquery2.default)('#item');
 	        this.events();
 	    }
@@ -10065,14 +10068,14 @@
 	    _createClass(MainTable, [{
 	        key: 'events',
 	        value: function events() {
-	            this.selectableElement.click(this.get.bind(this));
+	            this.item.click(this.get.bind(this));
 	        }
 	    }, {
 	        key: 'get',
 	        value: function get(event) {
-	            var url = '/items/get';
-	            var item = { item: event.currentTarget.textContent };
-	            _jquery2.default.post(url, item, function (data) {});
+	            console.log(event);
+	            var url = '/items/' + event.currentTarget.getAttribute('data-id');
+	            _jquery2.default.get(url, function (data) {});
 	        }
 	    }]);
 

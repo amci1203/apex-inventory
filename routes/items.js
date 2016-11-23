@@ -1,8 +1,11 @@
-const Item = require('mongoose-simpledb').db.Item,
+const db = require('mongoose-simpledb').db,
+      queryString = require('querystring');
       currentDepartment = "Housekeeping";
 
 module.exports = (router) => {
     
+    let Item = handlers;
+
     router.get('/', (req, res) => {
         Item.getAll((docs) => {
             Item.getCategories((categories) => {
@@ -21,7 +24,6 @@ module.exports = (router) => {
     router.post('/new', (req, res) => {
         Item.create(req.body.item, (doc) => {
             console.log(doc);
-//            Item.push(doc.name, {})
         }) 
     })
     
@@ -40,4 +42,75 @@ module.exports = (router) => {
     router.delete('/itemId', (req, res) => { Item.remove(req.params.itemId) })
 
     return router;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+const handlers = {
+
+    getAll: (callback) => {
+        db.Item.find({})
+            .select('_id category name inStock lowAt')
+            .sort('category name')
+            .exec((err, docs) => {
+                handlers.onError(err);
+                callback(docs)
+            })
+    },
+
+    getCategories: (callback) => {
+        db.Item.distinct('category', (err, categories) => {
+            handlers.onError(err);
+            if (callback !== undefined) callback(categories);
+        })
+    },
+
+    get: (itemId, callback)  => {
+        db.Item.findOne({ _id: itemId})
+            .select('_id name inStock log')
+            .exec((err, doc) => {
+                handlers.onError(err);
+                if (callback !== undefined) callback(doc)
+            })
+    },
+
+    create: (string, callback) => {
+        let item = queryString.parse(string);
+        let newItem = new db.Item(item);
+        newItem.save((err, insertedId) => {
+            handlers.onError(err);
+            if (callback !== undefined) callback(item)
+        })
+    },
+
+    push: (itemId, logObject, callback) => {
+        db.Item.findOneAndUpdate(
+            {name: itemName},
+            {
+                $inc: {inStock: logObject.added - logObject.removed},
+                $push: {
+                    log: logObject
+                }
+            },
+            { upsert: true },
+            (err, id) => {
+                handlers.onError(err);
+                if (callback !== undefined) callback(id)
+            }
+        )
+    },
+
+    remove: (itemId) => {
+        db.Item.where({name: itemName})
+            .remove((err) => { this.onError(err) })
+    },
+
+    onError: (err) => {
+        if (err) {
+            console.error(err.toString());
+        }
+    }
 }
