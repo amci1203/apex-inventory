@@ -18,9 +18,9 @@ export default class Form {
         let data = this.data.serialize();
         $.post(this.url, { item: data }, () => {
             console.log('POST request done');
-            location.reload();
-            return false;
          }, 'json')
+        location.reload();
+        return false;
         
     }
 
@@ -33,9 +33,9 @@ export default class Form {
     getFormMethod () {
         let method = this.method;
         let methods = {
-            'post': () => { return this.postSubmitHandler },
-            'get': () =>  { return this.getSubmitHandler },
-            'delete': () =>  { return this.deleteSubmitHandler }
+            'post': () => { return this.postSubmitHandler() },
+            'get': () =>  { return this.getSubmitHandler() },
+            'delete': () =>  { return this.deleteSubmitHandler() }
         };
 
         if (typeof methods[method] !== 'function') {

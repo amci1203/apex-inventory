@@ -11,8 +11,7 @@ table#all: tbody
             td.id= item._id
             td.name= item.name
             td.stock= item.inStock
-            // td.delete: button X #[span #{item._id}]
-            button.delete X #[span #{item._id}]
+            td.delete: div: button X #[span #{item._id}]
 
         - prevCategory = item.category
 

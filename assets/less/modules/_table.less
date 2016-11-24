@@ -10,28 +10,31 @@ table {
         }
 
         &--low {
-            background-color: lighten(#A00, 40%);
+            background-color: lighten(#A00, 50%) !important;
             color: #A00;
-            &:hover { background-color: lighten(#A00, 25%); }
+            &:hover { background-color: lighten(#A00, 40%) !important; }
         }
 
-        .clickable;
+        color: inherit;
         &:hover { background-color: #DDD }
         
         td { padding: 10px 15px; }
         
-        .id { dispaly: none; }
-        .name { text-align: left; }
+        .id { display: none; }
+        .name { .clickable; text-align: left; }
         .stock { text-align: right; }
         .delete {
             position: relative;
             button {
-                position: absolute;
-                right: -50px;
+                .clickable;
+                border-radius: 100px;
+                height: 100%;
                 border: none;
-                background-color: #0000;
                 font-weight: 900;
-                transform: scaleX(1.2);
+                transform: scale(1.35) scaleX(1.25);
+                background-color: rgba(0,0,0,0);
+                color: inherit;
+                span { display: none }
             }
         }
     }

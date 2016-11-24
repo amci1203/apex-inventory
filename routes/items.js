@@ -39,7 +39,13 @@ module.exports = (router) => {
 
     router.post('/:itemId/push', (req, res) => { Item.push(req.params.itemId, req.body.log) })
     
-    router.delete('/itemId', (req, res) => { Item.remove(req.params.itemId) })
+    router.delete('/:itemId', (req, res) => {
+        Item.remove(req.params.itemId, (id) => {
+            if (id !== null && id !== undefined) {
+                res.end();
+            }
+        })
+    })
 
     return router;
 }
@@ -103,9 +109,12 @@ const handlers = {
         )
     },
 
-    remove: (itemId) => {
-        db.Item.where({name: itemName})
-            .remove((err) => { this.onError(err) })
+    remove: (itemId, callback) => {
+        db.Item.where({_id: itemId})
+            .remove((err, removedId) => {
+            handlers.onError(err);
+            if (callback !== undefined) callback(removedId)
+        })
     },
 
     onError: (err) => {

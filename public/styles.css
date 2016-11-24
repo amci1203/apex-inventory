@@ -89,6 +89,9 @@ table {
   width: 80%;
   border-collapse: collapse;
 }
+table .row {
+  color: inherit;
+}
 table .row--striped {
   background-color: #CCC;
 }
@@ -96,14 +99,11 @@ table .row--striped:hover {
   background-color: #a6a6a6;
 }
 table .row--low {
-  background-color: #ff7777;
+  background-color: #ffaaaa !important;
   color: #A00;
 }
 table .row--low:hover {
-  background-color: #ff2a2a;
-}
-table .row:hover {
-  cursor: pointer;
+  background-color: #ff7777 !important;
 }
 table .row:hover {
   background-color: #DDD;
@@ -112,10 +112,13 @@ table .row td {
   padding: 10px 15px;
 }
 table .row .id {
-  dispaly: none;
+  display: none;
 }
 table .row .name {
   text-align: left;
+}
+table .row .name:hover {
+  cursor: pointer;
 }
 table .row .stock {
   text-align: right;
@@ -124,12 +127,19 @@ table .row .delete {
   position: relative;
 }
 table .row .delete button {
-  position: absolute;
-  right: -50px;
+  border-radius: 100px;
+  height: 100%;
   border: none;
-  background-color: #0000;
   font-weight: 900;
-  transform: scaleX(1.2);
+  transform: scale(1.35) scaleX(1.25);
+  background-color: rgba(0, 0, 0, 0);
+  color: inherit;
+}
+table .row .delete button:hover {
+  cursor: pointer;
+}
+table .row .delete button span {
+  display: none;
 }
 table td {
   text-align: right;
