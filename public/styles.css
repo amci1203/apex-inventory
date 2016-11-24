@@ -28,6 +28,9 @@ header {
 header p span {
   float: right;
 }
+#item-pane {
+  padding: 25px 15px;
+}
 nav {
   height: 100%;
   background-color: #DDD;
@@ -141,10 +144,12 @@ table .row .delete button:hover {
 table .row .delete button span {
   display: none;
 }
-table td {
+table td,
+table th {
   text-align: right;
 }
-table td:first-child {
+table td:first-child,
+table th:first-child {
   text-align: left;
 }
 table td.heading {

@@ -1,0 +1,13 @@
+table#item
+    thead
+        th
+        th Added
+        th Removed
+    tbody
+        each log in item.log
+            - let timestamp = '' + log.date + ''
+            - let datestring = timestamp.substr(0, 16)
+            tr
+                td= datestring
+                td= log.added
+                td= log.balance

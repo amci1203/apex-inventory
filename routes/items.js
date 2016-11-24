@@ -85,6 +85,7 @@ const handlers = {
 
     create: (string, callback) => {
         let item = queryString.parse(string);
+        item.log = [{added: item.inStock, balance: item.inStock}];
         let newItem = new db.Item(item);
         newItem.save((err, insertedId) => {
             handlers.onError(err);
@@ -94,9 +95,9 @@ const handlers = {
 
     push: (itemId, logObject, callback) => {
         db.Item.findOneAndUpdate(
-            {name: itemName},
+            {_id: itemId},
             {
-                $inc: {inStock: logObject.added - logObject.removed},
+                inStock: logObject.balance,
                 $push: {
                     log: logObject
                 }

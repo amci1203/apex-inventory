@@ -4,6 +4,9 @@ body
     include includes/item-nav
     main
         include includes/header
+        div#item-pane
+            h3.heading= item.name
+            p.stock In STOCK: #{item.inStock}
         include includes/item-sheet
 
     script(src='/app.js')
