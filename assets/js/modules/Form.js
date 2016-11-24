@@ -16,9 +16,12 @@ export default class Form {
 
     postSubmitHandler (event) {
         let data = this.data.serialize();
-        $.post(this.url, { item: data }, () => {}, 'json')
-        location.reload()
-        return false;
+        $.post(this.url, { item: data }, () => {
+            console.log('POST request done');
+            location.reload();
+            return false;
+         }, 'json')
+        
     }
 
     getSubmitHandler (event) {
@@ -30,8 +33,9 @@ export default class Form {
     getFormMethod () {
         let method = this.method;
         let methods = {
-            'post': () => { return this.postSubmitHandler() },
-            'get': () =>  { return this.getSubmitHandler() }
+            'post': () => { return this.postSubmitHandler },
+            'get': () =>  { return this.getSubmitHandler },
+            'delete': () =>  { return this.deleteSubmitHandler }
         };
 
         if (typeof methods[method] !== 'function') {
@@ -41,8 +45,4 @@ export default class Form {
         return methods[method]();
     }
 
-    clearForm () {
-        this.data.val('');
-        return false;
-    }
 }

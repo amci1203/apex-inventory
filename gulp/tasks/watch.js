@@ -22,7 +22,7 @@ gulp.task('distView', () => {
     });
 })
 
-gulp.task('watch', () => {
+gulp.task('watch', ['less', 'scripts'], () => {
     browserSync.init({
         notify: false,
         proxy: 'localhost:3000'
@@ -33,7 +33,7 @@ gulp.task('watch', () => {
     watch('./assets/js/**/*.js', () => {
         gulp.start('scriptsRefresh');
     });
-    watch('./views/*.pug', () => {
+    watch('./views/**/*.pug', () => {
         browserSync.reload();
     });
 });

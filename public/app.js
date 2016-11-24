@@ -133,7 +133,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.4
+	 * jQuery JavaScript Library v2.2.3
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -143,7 +143,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-05-20T17:23Z
+	 * Date: 2016-04-05T19:26Z
 	 */
 
 	(function( global, factory ) {
@@ -199,7 +199,7 @@
 
 
 	var
-		version = "2.2.4",
+		version = "2.2.3",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5140,14 +5140,13 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
-		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.preventDefault();
 			}
 		},
@@ -5156,7 +5155,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopPropagation();
 			}
 		},
@@ -5165,7 +5164,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6095,6 +6094,19 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+
+		// Support: IE11 only
+		// In IE 11 fullscreen elements inside of an iframe have
+		// 100x too small dimensions (gh-1764).
+		if ( document.msFullscreenElement && window.top !== window ) {
+
+			// Support: IE11 only
+			// Running getBoundingClientRect on a disconnected node
+			// in IE throws an error.
+			if ( elem.getClientRects().length ) {
+				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
+			}
+		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7986,7 +7998,6 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
-		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7994,10 +8005,27 @@
 				{
 					type: type,
 					isSimulated: true
+
+					// Previously, `originalEvent: {}` was set here, so stopPropagation call
+					// would not be triggered on donor event, since in our own
+					// jQuery.event.stopPropagation function we had a check for existence of
+					// originalEvent.stopPropagation method, so, consequently it would be a noop.
+					//
+					// But now, this "simulate" function is used only for events
+					// for which stopPropagation() is noop, so there is no need for that anymore.
+					//
+					// For the 1.x branch though, guard for "click" and "submit"
+					// events is still used, but was moved to jQuery.event.stopPropagation function
+					// because `originalEvent` should point to the original event for the constancy
+					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
+
+			if ( e.isDefaultPrevented() ) {
+				event.preventDefault();
+			}
 		}
 
 	} );
@@ -9989,9 +10017,11 @@
 	        key: 'postSubmitHandler',
 	        value: function postSubmitHandler(event) {
 	            var data = this.data.serialize();
-	            _jquery2.default.post(this.url, { item: data }, function () {}, 'json');
-	            location.reload();
-	            return false;
+	            _jquery2.default.post(this.url, { item: data }, function () {
+	                console.log('POST request done');
+	                location.reload();
+	                return false;
+	            }, 'json');
 	        }
 	    }, {
 	        key: 'getSubmitHandler',
@@ -10008,10 +10038,13 @@
 	            var method = this.method;
 	            var methods = {
 	                'post': function post() {
-	                    return _this.postSubmitHandler();
+	                    return _this.postSubmitHandler;
 	                },
 	                'get': function get() {
-	                    return _this.getSubmitHandler();
+	                    return _this.getSubmitHandler;
+	                },
+	                'delete': function _delete() {
+	                    return _this.deleteSubmitHandler;
 	                }
 	            };
 
@@ -10020,12 +10053,6 @@
 	            }
 
 	            return methods[method]();
-	        }
-	    }, {
-	        key: 'clearForm',
-	        value: function clearForm() {
-	            this.data.val('');
-	            return false;
 	        }
 	    }]);
 
@@ -10059,8 +10086,8 @@
 	        _classCallCheck(this, MainTable);
 
 	        this.table = (0, _jquery2.default)('#all');
-	        this.item = (0, _jquery2.default)('#all .row > td:first-child');
-	        this.deleteButton = (0, _jquery2.default)('#all .row > td:last-child');
+	        this.row = (0, _jquery2.default)('#all .row');
+	        this.deleteButton = (0, _jquery2.default)('#all .row > .delete button');
 	        this.itemTable = (0, _jquery2.default)('#item');
 	        this.events();
 	    }
@@ -10068,14 +10095,20 @@
 	    _createClass(MainTable, [{
 	        key: 'events',
 	        value: function events() {
-	            this.item.click(this.get.bind(this));
+	            this.row.click(this.get.bind(this));
+	            this.deleteButton.click(this.delete.bind(this));
 	        }
 	    }, {
 	        key: 'get',
 	        value: function get(event) {
-	            console.log(event);
-	            var url = '/items/' + event.currentTarget.getAttribute('data-id');
-	            _jquery2.default.get(url, function (data) {});
+	            var url = '/items/' + event.currentTarget.firstElementChild.innerText;
+	            location.assign(url);
+	        }
+	    }, {
+	        key: 'delete',
+	        value: function _delete(event) {
+	            console.log(event.currentTarget.previousElementSibling.previousElementSibling);
+	            var url = '/items';
 	        }
 	    }]);
 

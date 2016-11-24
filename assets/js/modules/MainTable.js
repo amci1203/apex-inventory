@@ -3,21 +3,24 @@ import $ from 'jquery';
 export default class MainTable {
     constructor () {
         this.table = $('#all');
-        this.item = $('#all .row > td:first-child');
-        this.deleteButton = $('#all .row > td:last-child');
+        this.row = $('#all .row');
+        this.deleteButton = $('#all .row > .delete button');
         this.itemTable = $('#item');
         this.events();
     }
 
     events () {
-        this.item.click(this.get.bind(this))
+        this.row.click(this.get.bind(this))
+        this.deleteButton.click(this.delete.bind(this))
     }
 
     get (event) {
-        console.log(event);
-        let url = '/items/' + event.currentTarget.getAttribute('data-id');
-        $.get(url, (data) => {
-
-        })
+        let url = '/items/' + event.currentTarget.firstElementChild.innerText;
+        location.assign(url);
+    }
+    
+    delete (event) {
+        console.log(event.currentTarget.previousElementSibling.previousElementSibling);
+        let url = '/items';
     }
 }

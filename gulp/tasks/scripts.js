@@ -20,5 +20,9 @@ gulp.task('scripts', (callback) => {
                 ]
             }
         }))
+        .on('error', (err) => {
+            console.log('ERROR:\n' + err.toString())
+            this.emit('end');
+        })
         .pipe(gulp.dest('./public'))
 })

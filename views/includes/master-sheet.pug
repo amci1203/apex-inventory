@@ -2,15 +2,17 @@ table#all: tbody
     each item, index in items
         - let currentCategory = item.category
         - if (index === 0)
-            - let prevCategory = currentCategory
+            - let prevCategory = null
 
         - if (currentCategory !== prevCategory)
-            tr: td.heading(colspan='2') #[a(name=item.category)] #{item.category}
             a(name= item.category)
-        tr.row(class= item.inStock < item.lowAt ? 'low' : '')
+            tr: td.heading(colspan='4')= item.category
+        tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": index % 2 === 0 })
             td.id= item._id
-            td.name(data-name= item._id)= item.name
+            td.name= item.name
             td.stock= item.inStock
+            // td.delete: button X #[span #{item._id}]
+            button.delete X #[span #{item._id}]
 
         - prevCategory = item.category
 

@@ -82,7 +82,7 @@ const handlers = {
         let newItem = new db.Item(item);
         newItem.save((err, insertedId) => {
             handlers.onError(err);
-            if (callback !== undefined) callback(item)
+            if (callback !== undefined) callback(newItem)
         })
     },
 

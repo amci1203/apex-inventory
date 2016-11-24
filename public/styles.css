@@ -35,6 +35,7 @@ nav {
 }
 nav ul {
   position: absolute;
+  z-index: 10;
   width: 100%;
   top: 50%;
   transform: translateY(-50%);
@@ -66,10 +67,12 @@ nav ul li a:hover {
 }
 nav button {
   position: absolute;
+  z-index: 20;
   bottom: 0;
   width: 100%;
   padding: 20px 15px;
   border: none;
+  background-color: #BBB;
   color: #555;
   font-size: 2.15rem;
   vertical-align: middle;
@@ -86,24 +89,47 @@ table {
   width: 80%;
   border-collapse: collapse;
 }
+table .row--striped {
+  background-color: #CCC;
+}
+table .row--striped:hover {
+  background-color: #a6a6a6;
+}
+table .row--low {
+  background-color: #ff7777;
+  color: #A00;
+}
+table .row--low:hover {
+  background-color: #ff2a2a;
+}
 table .row:hover {
   cursor: pointer;
 }
 table .row:hover {
   background-color: #DDD;
 }
-table .row:nth-child(even) {
-  background-color: #CCC;
+table .row td {
+  padding: 10px 15px;
 }
-table .row:nth-child(even):hover {
-  background-color: #a6a6a6;
+table .row .id {
+  dispaly: none;
 }
-table .low > td {
-  background-color: #ff7777;
-  color: #A00;
+table .row .name {
+  text-align: left;
 }
-table .low > td:hover {
-  background-color: #ff2a2a;
+table .row .stock {
+  text-align: right;
+}
+table .row .delete {
+  position: relative;
+}
+table .row .delete button {
+  position: absolute;
+  right: -50px;
+  border: none;
+  background-color: #0000;
+  font-weight: 900;
+  transform: scaleX(1.2);
 }
 table td {
   text-align: right;
@@ -117,17 +143,14 @@ table td.heading {
   border-bottom: 1px solid #333;
   font-size: 2.8rem;
 }
-table td:not(.heading) {
-  padding: 10px 15px;
-}
-table td button {
+table td button.new--open {
   background-color: #196EEF;
   border: none;
   padding: 5px 10px;
   color: #FFF;
   text-transform: uppercase;
 }
-table td button:hover {
+table td button.new--open:hover {
   cursor: pointer;
 }
 form .form-group {
