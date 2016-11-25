@@ -6,7 +6,8 @@ export default class MainTable {
         this.row = $('#all .row');
         this.getButton = $('#all .row .name');
         this.deleteButton = $('#all .row button.delete');
-        this.editButton = $('#all .row button.edit');
+        this.editButton = $('#all .row button.edit-name');
+        this.warnButton = $('#all .row button.edit-warning');
         this.itemTable = $('#item');
         this.events();
     }
@@ -14,6 +15,7 @@ export default class MainTable {
     events () {
         this.getButton.click(this.get.bind(this))
         this.editButton.click(this.edit.bind(this))
+        this.warnButton.click(this.edit.bind(this))
         this.deleteButton.click(this.delete.bind(this))
     }
 
@@ -23,15 +25,30 @@ export default class MainTable {
     }
     
     edit (event) {
-        let newItemName = '';
-        while (newItemName === '') {
-            newItemName = prompt('Please enter a new name for this item').trim();
+        let newValue = '';
+        while (newValue === '') {
+            if (event.currentTarget.innerText[0] === "!") {
+                newValue = Number(prompt('Please enter a new value to warn for low stock.'));
+            }
+            else if (event.currentTarget.innerText[0] === undefined) {
+                let value = prompt('Please enter a new name for this item');
+                if (value !== null) newValue = value.trim();
+                else newValue = null;
+            }
         }
+        if (newValue === null) return false;
+        console.log(newValue);
         let url = '/items/' + event.currentTarget.firstElementChild.innerText;
         $.ajax({
             url: url,
             method: 'PUT',
-            data: {newName: newItemName},
+            data: (() => {
+                if (typeof(newValue) === 'number') {
+                    return {update: {lowAt: newValue}}
+                } else {
+                    return {update: {name: newValue}}
+                }
+            })(),
             success: () => { location.reload() }
         })
     }

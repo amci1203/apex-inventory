@@ -17,7 +17,8 @@ table#all: tbody
             td.name= item.name
             td.stock= item.inStock
             td.buttons 
-                button.edit #[span #{item._id}]
+                button.edit-name #[span #{item._id}]
+                button.edit-warning ! #[span #{item._id}]
                 button.delete X #[span #{item._id}]
         - prevCategory = item.category
     else

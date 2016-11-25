@@ -64,7 +64,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var newForm = new _Form2.default('new-item', 'post', '/items/new');
+	var newForm = new _Form2.default('new-item', 'post', '/items');
 
 	var modal = new _Modal2.default('new');
 
@@ -138,7 +138,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.3
+	 * jQuery JavaScript Library v2.2.4
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -148,7 +148,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-04-05T19:26Z
+	 * Date: 2016-05-20T17:23Z
 	 */
 
 	(function( global, factory ) {
@@ -204,7 +204,7 @@
 
 
 	var
-		version = "2.2.3",
+		version = "2.2.4",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5145,13 +5145,14 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
+		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.preventDefault();
 			}
 		},
@@ -5160,7 +5161,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.stopPropagation();
 			}
 		},
@@ -5169,7 +5170,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6099,19 +6100,6 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
-
-		// Support: IE11 only
-		// In IE 11 fullscreen elements inside of an iframe have
-		// 100x too small dimensions (gh-1764).
-		if ( document.msFullscreenElement && window.top !== window ) {
-
-			// Support: IE11 only
-			// Running getBoundingClientRect on a disconnected node
-			// in IE throws an error.
-			if ( elem.getClientRects().length ) {
-				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
-			}
-		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -8003,6 +7991,7 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
+		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -8010,27 +7999,10 @@
 				{
 					type: type,
 					isSimulated: true
-
-					// Previously, `originalEvent: {}` was set here, so stopPropagation call
-					// would not be triggered on donor event, since in our own
-					// jQuery.event.stopPropagation function we had a check for existence of
-					// originalEvent.stopPropagation method, so, consequently it would be a noop.
-					//
-					// But now, this "simulate" function is used only for events
-					// for which stopPropagation() is noop, so there is no need for that anymore.
-					//
-					// For the 1.x branch though, guard for "click" and "submit"
-					// events is still used, but was moved to jQuery.event.stopPropagation function
-					// because `originalEvent` should point to the original event for the constancy
-					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
-
-			if ( e.isDefaultPrevented() ) {
-				event.preventDefault();
-			}
 		}
 
 	} );
@@ -10094,7 +10066,8 @@
 	        this.row = (0, _jquery2.default)('#all .row');
 	        this.getButton = (0, _jquery2.default)('#all .row .name');
 	        this.deleteButton = (0, _jquery2.default)('#all .row button.delete');
-	        this.editButton = (0, _jquery2.default)('#all .row button.edit');
+	        this.editButton = (0, _jquery2.default)('#all .row button.edit-name');
+	        this.warnButton = (0, _jquery2.default)('#all .row button.edit-warning');
 	        this.itemTable = (0, _jquery2.default)('#item');
 	        this.events();
 	    }
@@ -10104,6 +10077,7 @@
 	        value: function events() {
 	            this.getButton.click(this.get.bind(this));
 	            this.editButton.click(this.edit.bind(this));
+	            this.warnButton.click(this.edit.bind(this));
 	            this.deleteButton.click(this.delete.bind(this));
 	        }
 	    }, {
@@ -10115,15 +10089,28 @@
 	    }, {
 	        key: 'edit',
 	        value: function edit(event) {
-	            var newItemName = '';
-	            while (newItemName === '') {
-	                newItemName = prompt('Please enter a new name for this item').trim();
+	            var newValue = '';
+	            while (newValue === '') {
+	                if (event.currentTarget.innerText[0] === "!") {
+	                    newValue = Number(prompt('Please enter a new value to warn for low stock.'));
+	                } else if (event.currentTarget.innerText[0] === undefined) {
+	                    var value = prompt('Please enter a new name for this item');
+	                    if (value !== null) newValue = value.trim();else newValue = null;
+	                }
 	            }
+	            if (newValue === null) return false;
+	            console.log(newValue);
 	            var url = '/items/' + event.currentTarget.firstElementChild.innerText;
 	            _jquery2.default.ajax({
 	                url: url,
 	                method: 'PUT',
-	                data: { newName: newItemName },
+	                data: function () {
+	                    if (typeof newValue === 'number') {
+	                        return { update: { lowAt: newValue } };
+	                    } else {
+	                        return { update: { name: newValue } };
+	                    }
+	                }(),
 	                success: function success() {
 	                    location.reload();
 	                }
@@ -10172,18 +10159,19 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var MainTable = function () {
-	    function MainTable() {
-	        _classCallCheck(this, MainTable);
+	var ItemTable = function () {
+	    function ItemTable() {
+	        _classCallCheck(this, ItemTable);
 
 	        this.table = (0, _jquery2.default)('#item');
 	        this.row = (0, _jquery2.default)('#item .row');
+	        this.itemName = (0, _jquery2.default)('#item-pane .heading').text();
 	        this.nextButton = (0, _jquery2.default)('#item-nav-buttons button.next');
 	        this.prevButton = (0, _jquery2.default)('#item-nav-buttons button.previous');
 	        this.events();
 	    }
 
-	    _createClass(MainTable, [{
+	    _createClass(ItemTable, [{
 	        key: 'events',
 	        value: function events() {
 	            this.nextButton.click(this.getAdjacentItem.bind(this));
@@ -10192,17 +10180,15 @@
 	    }, {
 	        key: 'getAdjacentItem',
 	        value: function getAdjacentItem(event) {
-	            var direction = event.currentTarget.innerText === 'Next' ? 1 : -1; // adds or subtract on to get next/previous item
-	            var currentItemId = location.pathname.split('/').reverse()[0];
-	            var newItemId = direction + +currentItemId;
-	            location.assign('/items/' + newItemId);
+	            var direction = event.currentTarget.innerText === 'Next' ? '/next' : '/prev';
+	            location.assign('/items/' + this.itemName + direction);
 	        }
 	    }]);
 
-	    return MainTable;
+	    return ItemTable;
 	}();
 
-	exports.default = MainTable;
+	exports.default = ItemTable;
 
 /***/ }
 /******/ ]);

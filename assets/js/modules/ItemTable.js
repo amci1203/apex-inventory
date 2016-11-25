@@ -1,9 +1,10 @@
 import $ from 'jquery';
 
-export default class MainTable {
+export default class ItemTable {
     constructor () {
         this.table = $('#item');
         this.row = $('#item .row');
+        this.itemName = $('#item-pane .heading').text();
         this.nextButton = $('#item-nav-buttons button.next');
         this.prevButton = $('#item-nav-buttons button.previous');
         this.events();
@@ -15,9 +16,7 @@ export default class MainTable {
     }
     
     getAdjacentItem (event) {
-        let direction = event.currentTarget.innerText === 'Next' ? 1 : -1; // adds or subtract on to get next/previous item
-        let currentItemId = location.pathname.split('/').reverse()[0];
-        let newItemId = direction + +currentItemId;
-        location.assign('/items/' + newItemId);
+        let direction = event.currentTarget.innerText === 'Next' ? '/next' : '/prev';
+        location.assign('/items/' + this.itemName +  direction);
     }
 }

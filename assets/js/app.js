@@ -3,7 +3,7 @@ import Form from './modules/Form';
 import MainTable from './modules/MainTable';
 import ItemTable from './modules/ItemTable';
 
-const newForm = new Form('new-item', 'post', '/items/new');
+const newForm = new Form('new-item', 'post', '/items');
 
 const modal = new Modal('new');
 

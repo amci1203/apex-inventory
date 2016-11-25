@@ -18,27 +18,44 @@ module.exports = (router) => {
                 })
             })
         });
-             
     })
     
-    router.post('/new', (req, res) => {
+    router.post('/', (req, res) => {
         Item.create(req.body.item, (doc) => {
-            console.log(doc);
+            res.end();
         }) 
     })
     
     router.get('/:itemId', (req, res) => {
         Item.get(req.params.itemId, (doc) => {
-            res.render('item', {
-                department: currentDepartment,
-                date: new Date().toDateString(),
-                item: doc
+            let thisItem = doc;
+            Item.getCurrentCategory(thisItem.category, (docs) => {
+                res.render('item', {
+                    department: currentDepartment,
+                    date: new Date().toDateString(),
+                    categoryItems: docs,
+                    item: doc
+                })
+            })
+        })
+    })
+
+    router.get('/:itemName/:direction', (req, res) => {
+        Item.getAdjacent(req.params.itemName, req.params.direction, (doc) => {
+            let thisItem = doc;
+            Item.getCurrentCategory(thisItem.category, (docs) => {
+                res.render('item', {
+                    department: currentDepartment,
+                    date: new Date().toDateString(),
+                    categoryItems: docs,
+                    item: doc
+                })
             })
         })
     })
     
     router.put('/:itemId', (req, res) => {
-        Item.editItem(req.params.itemId, req.body.newName, (affected) => {
+        Item.editItem(req.params.itemId, req.body.update, (affected) => {
             if (affected !== null && affected !== undefined) {
                 res.end();
             }
@@ -93,9 +110,44 @@ const handlers = {
 
     get: (itemId, callback)  => {
         db.Item.findOne({ _id: itemId})
-            .select('_id name inStock log')
+            .select('_id category name inStock log')
+            .sort('date')
             .exec((err, doc) => {
                 handlers.onError(err);
+                if (callback !== undefined) callback(doc)
+            })
+    },
+
+    getCurrentCategory: (category, callback) => {
+        db.Item.find({category: category})
+            .select('_id name')
+            .sort('name')
+            .exec((err, docs) => {
+                handlers.onError(err);
+                if (callback !== undefined) callback(docs)
+            })
+    },
+
+    getAdjacent: (itemName, direction, callback) => {
+        let query = {}, sort = {};
+        let escItemName = itemName.replace('%20', ' ');
+        if (direction === 'next') {
+            query = {name: {$gt: escItemName}};
+            sort = {name: 1}
+        }
+        else if (direction === 'prev') {
+            query = {name: {$lt: escItemName}};
+            sort = {name: -1}
+        }
+        else {
+            rest.status(401).send('Unknown paramater for direction.');
+        }
+        db.Item.findOne(query)
+            .select('_id category name inStock log')
+            .sort(sort)
+            .exec((err, doc) => {
+                handlers.onError(err);
+                console.log(doc);
                 if (callback !== undefined) callback(doc)
             })
     },
@@ -127,11 +179,9 @@ const handlers = {
         )
     },
     
-    editItem: (itemId, newName, callback) => {
-        db.Item.update(
-            {_id: itemId},
-            {name: newName},
-            {upsert: false},
+    editItem: (itemId, data, callback) => {
+        console.log(data);
+        db.Item.update({_id: itemId}, data, {upsert: false},
             (err, numAffected) => {
                 handlers.onError(err)
                 if (callback !== undefined) callback(numAffected)

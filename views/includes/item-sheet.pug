@@ -4,10 +4,10 @@ table#item
         th Added
         th Removed
     tbody
-        each log in item.log
+        each log, index in item.log
             - let timestamp = '' + log.date + ''
             - let datestring = timestamp.substr(0, 16)
-            tr
+            tr.row(class= index % 2 === 0 ? 'striped' : '')
                 td= datestring
                 td= log.added
-                td= log.balance
+                td= log.removed

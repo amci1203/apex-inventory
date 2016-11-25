@@ -217,7 +217,7 @@ table .row .buttons button:hover {
 table .row .buttons button span {
   display: none;
 }
-table .row .buttons .edit {
+table .row .buttons .edit-name {
   padding: 0 10px;
   background: url('/icons/edit.png');
   background-size: cover;
@@ -245,6 +245,13 @@ table td button.new--open {
 }
 table td button.new--open:hover {
   cursor: pointer;
+}
+#item thead th {
+  text-align: right;
+  font-size: 1.65rem;
+  font-weight: 200;
+  padding: 2px 0;
+  border-bottom: 1px solid #777;
 }
 form .form-group {
   font-size: 1.35rem;

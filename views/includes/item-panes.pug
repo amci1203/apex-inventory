@@ -1,0 +1,10 @@
+div#item-pane
+    h3.heading= item.name
+    p.stock IN STOCK: <strong>#{item.inStock}</strong>
+    button.back(onclick='location.assign("/items")')
+
+//div#item-nav-buttons
+    p Previous
+    button.previous Previous
+    button.next Next
+    p Next
