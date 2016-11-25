@@ -58,6 +58,10 @@
 
 	var _MainTable2 = _interopRequireDefault(_MainTable);
 
+	var _ItemTable = __webpack_require__(5);
+
+	var _ItemTable2 = _interopRequireDefault(_ItemTable);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var newForm = new _Form2.default('new-item', 'post', '/items/new');
@@ -65,6 +69,7 @@
 	var modal = new _Modal2.default('new');
 
 	var masterSheet = new _MainTable2.default();
+	var itemSheet = new _ItemTable2.default();
 
 /***/ },
 /* 1 */
@@ -133,7 +138,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.4
+	 * jQuery JavaScript Library v2.2.3
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -143,7 +148,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-05-20T17:23Z
+	 * Date: 2016-04-05T19:26Z
 	 */
 
 	(function( global, factory ) {
@@ -199,7 +204,7 @@
 
 
 	var
-		version = "2.2.4",
+		version = "2.2.3",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5140,14 +5145,13 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
-		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.preventDefault();
 			}
 		},
@@ -5156,7 +5160,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopPropagation();
 			}
 		},
@@ -5165,7 +5169,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6095,6 +6099,19 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+
+		// Support: IE11 only
+		// In IE 11 fullscreen elements inside of an iframe have
+		// 100x too small dimensions (gh-1764).
+		if ( document.msFullscreenElement && window.top !== window ) {
+
+			// Support: IE11 only
+			// Running getBoundingClientRect on a disconnected node
+			// in IE throws an error.
+			if ( elem.getClientRects().length ) {
+				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
+			}
+		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7986,7 +8003,6 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
-		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7994,10 +8010,27 @@
 				{
 					type: type,
 					isSimulated: true
+
+					// Previously, `originalEvent: {}` was set here, so stopPropagation call
+					// would not be triggered on donor event, since in our own
+					// jQuery.event.stopPropagation function we had a check for existence of
+					// originalEvent.stopPropagation method, so, consequently it would be a noop.
+					//
+					// But now, this "simulate" function is used only for events
+					// for which stopPropagation() is noop, so there is no need for that anymore.
+					//
+					// For the 1.x branch though, guard for "click" and "submit"
+					// events is still used, but was moved to jQuery.event.stopPropagation function
+					// because `originalEvent` should point to the original event for the constancy
+					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
+
+			if ( e.isDefaultPrevented() ) {
+				event.preventDefault();
+			}
 		}
 
 	} );
@@ -10060,7 +10093,8 @@
 	        this.table = (0, _jquery2.default)('#all');
 	        this.row = (0, _jquery2.default)('#all .row');
 	        this.getButton = (0, _jquery2.default)('#all .row .name');
-	        this.deleteButton = (0, _jquery2.default)('#all .row .delete button');
+	        this.deleteButton = (0, _jquery2.default)('#all .row button.delete');
+	        this.editButton = (0, _jquery2.default)('#all .row button.edit');
 	        this.itemTable = (0, _jquery2.default)('#item');
 	        this.events();
 	    }
@@ -10069,6 +10103,7 @@
 	        key: 'events',
 	        value: function events() {
 	            this.getButton.click(this.get.bind(this));
+	            this.editButton.click(this.edit.bind(this));
 	            this.deleteButton.click(this.delete.bind(this));
 	        }
 	    }, {
@@ -10076,6 +10111,23 @@
 	        value: function get(event) {
 	            var url = '/items/' + event.currentTarget.previousElementSibling.innerText;
 	            location.assign(url);
+	        }
+	    }, {
+	        key: 'edit',
+	        value: function edit(event) {
+	            var newItemName = '';
+	            while (newItemName === '') {
+	                newItemName = prompt('Please enter a new name for this item').trim();
+	            }
+	            var url = '/items/' + event.currentTarget.firstElementChild.innerText;
+	            _jquery2.default.ajax({
+	                url: url,
+	                method: 'PUT',
+	                data: { newName: newItemName },
+	                success: function success() {
+	                    location.reload();
+	                }
+	            });
 	        }
 	    }, {
 	        key: 'delete',
@@ -10092,6 +10144,58 @@
 	                    }
 	                });
 	            }
+	        }
+	    }]);
+
+	    return MainTable;
+	}();
+
+	exports.default = MainTable;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var MainTable = function () {
+	    function MainTable() {
+	        _classCallCheck(this, MainTable);
+
+	        this.table = (0, _jquery2.default)('#item');
+	        this.row = (0, _jquery2.default)('#item .row');
+	        this.nextButton = (0, _jquery2.default)('#item-nav-buttons button.next');
+	        this.prevButton = (0, _jquery2.default)('#item-nav-buttons button.previous');
+	        this.events();
+	    }
+
+	    _createClass(MainTable, [{
+	        key: 'events',
+	        value: function events() {
+	            this.nextButton.click(this.getAdjacentItem.bind(this));
+	            this.prevButton.click(this.getAdjacentItem.bind(this));
+	        }
+	    }, {
+	        key: 'getAdjacentItem',
+	        value: function getAdjacentItem(event) {
+	            var direction = event.currentTarget.innerText === 'Next' ? 1 : -1; // adds or subtract on to get next/previous item
+	            var currentItemId = location.pathname.split('/').reverse()[0];
+	            var newItemId = direction + +currentItemId;
+	            location.assign('/items/' + newItemId);
 	        }
 	    }]);
 

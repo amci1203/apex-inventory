@@ -29,7 +29,75 @@ header p span {
   float: right;
 }
 #item-pane {
+  float: left;
+  position: relative;
+  width: 50%;
+  top: -55px;
+  border-top-right-radius: 100px;
+  border-bottom-right-radius: 100px;
+  background-color: #BBB;
+  color: #444;
   padding: 25px 15px;
+}
+#item-pane .heading {
+  margin: 0;
+  color: inherit;
+  text-transform: capitalize;
+  font-size: 1.65rem;
+}
+#item-pane .stock {
+  display: block;
+}
+#item-pane .back {
+  float: right;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80px;
+  height: 80px;
+  right: 35px;
+  background: url('/icons/back.png');
+  border: none;
+  background-size: cover;
+}
+#item-pane .back:hover {
+  cursor: pointer;
+}
+#item-nav-buttons {
+  float: right;
+  position: relative;
+  width: 40%;
+  top: -5px;
+  border-top-left-radius: 100px;
+  border-bottom-left-radius: 100px;
+  background-color: #BBB;
+  color: #444;
+  padding: 10px 15px;
+}
+#item-nav-buttons button {
+  text-indent: 999px;
+  border: none;
+  margin: 0 10px;
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+}
+#item-nav-buttons button:hover {
+  cursor: pointer;
+}
+#item-nav-buttons p {
+  display: inline-block;
+  position: relative;
+  top: -50%;
+  transform: translateY(50%);
+}
+#item-nav-buttons .next {
+  background: url('/icons/next.png');
+  background-size: cover;
+}
+#item-nav-buttons .previous {
+  background: url('/icons/previous.png');
+  background-size: cover;
 }
 nav {
   height: 100%;
@@ -91,6 +159,7 @@ table {
   margin-left: 25px;
   width: 80%;
   border-collapse: collapse;
+  clear: both;
 }
 table .row {
   color: inherit;
@@ -126,23 +195,32 @@ table .row .name:hover {
 table .row .stock {
   text-align: right;
 }
-table .row .delete {
+table .row .buttons {
   position: relative;
 }
-table .row .delete button {
+table .row .buttons button {
   border-radius: 100px;
   height: 100%;
+  margin: 0 15px;
   border: none;
   font-weight: 900;
   transform: scale(1.35) scaleX(1.25);
   background-color: rgba(0, 0, 0, 0);
   color: inherit;
 }
-table .row .delete button:hover {
+table .row .buttons button:hover {
   cursor: pointer;
 }
-table .row .delete button span {
+table .row .buttons button:hover {
+  color: #444;
+}
+table .row .buttons button span {
   display: none;
+}
+table .row .buttons .edit {
+  padding: 0 10px;
+  background: url('/icons/edit.png');
+  background-size: cover;
 }
 table td,
 table th {

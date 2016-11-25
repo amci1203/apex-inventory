@@ -8,8 +8,8 @@ exports.schema = {
         {
             _id: Number,
             date: { type: Date, default: new Date().toDateString() },
-            added: Number,
-            removed: Number,
-        },
+            added: { type:Number, default: 0 },
+            removed: { type:Number, default: 0 }
+        }
     ]
 };

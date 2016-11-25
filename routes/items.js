@@ -36,14 +36,31 @@ module.exports = (router) => {
             })
         })
     })
+    
+    router.put('/:itemId', (req, res) => {
+        Item.editItem(req.params.itemId, req.body.newName, (affected) => {
+            if (affected !== null && affected !== undefined) {
+                res.end();
+            }
+            else res.status(401)
+        })
+    })
 
-    router.post('/:itemId/push', (req, res) => { Item.push(req.params.itemId, req.body.log) })
+    router.post('/:itemId/push', (req, res) => {
+        Item.push(req.params.itemId, req.body.log, (affected) => {
+            if (affected !== null && affected !== undefined) {
+                res.end();
+            }
+            else res.status(401)
+        })
+    })
     
     router.delete('/:itemId', (req, res) => {
         Item.remove(req.params.itemId, (id) => {
             if (id !== null && id !== undefined) {
                 res.end();
             }
+            else res.status(401)
         })
     })
 
@@ -105,6 +122,33 @@ const handlers = {
             { upsert: true },
             (err, id) => {
                 handlers.onError(err);
+                if (callback !== undefined) callback(id)
+            }
+        )
+    },
+    
+    editItem: (itemId, newName, callback) => {
+        db.Item.update(
+            {_id: itemId},
+            {name: newName},
+            {upsert: false},
+            (err, numAffected) => {
+                handlers.onError(err)
+                if (callback !== undefined) callback(numAffected)
+            }
+        )
+    },
+    
+    editItemLog: (itemId, logId, newLog, callback)  => {
+        db.Item(
+            {
+                "_id": itemId,
+                "log._id": logId
+            },
+            {$set : { "log.$": newLog }},
+            {upsert: false},
+            (err, numAffected) => {
+                handlers.onError(err)
                 if (callback !== undefined) callback(id)
             }
         )

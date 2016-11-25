@@ -1,21 +1,30 @@
+- let currentCategory = ''
+- let currentLowestId = 0
+- let categoriesLen = categories.length
+
 table#all: tbody
     each item, index in items
-        - let currentCategory = item.category
+        - currentCategory = item.category
+        - currentLowestId = 0
         - if (index === 0)
             - let prevCategory = null
-
         - if (currentCategory !== prevCategory)
-            a(name= item.category)
             tr: td.heading(colspan='4')= item.category
+        - if (item._id < currentLowestId)
+            - currentLowestId = item._id
         tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": index % 2 === 0 })
             td.id= item._id
             td.name= item.name
             td.stock= item.inStock
-            td.delete: div: button X #[span #{item._id}]
-
+            td.buttons 
+                button.edit #[span #{item._id}]
+                button.delete X #[span #{item._id}]
         - prevCategory = item.category
-
     else
         tr
             td There aren't any items yet.
             td: button.new--open Add one now
+    
+    script.
+        sessionStorage.setItem('start-index', window.currentLowestId);
+        sessionStorage.setItem('end-index', window.currentLowestId + window.categoriesLen);
