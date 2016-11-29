@@ -1,0 +1,8 @@
+nav
+    ul
+        each category in categories
+            li: a(href='#' + category)= category
+    .btn-group
+        button.logs--open #[span >] LOG MANY
+        button.new-multi--open #[span +] ADD MANY
+        button.new--open #[span +] ADD

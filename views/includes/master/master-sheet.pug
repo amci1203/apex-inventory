@@ -15,8 +15,8 @@ table#all: tbody
         tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": index % 2 === 0 })
             td.id= item._id
             td.name= item.name
-            td.stock= item.inStock
-            td.buttons 
+            td.stock #[strong #{item.inStock}]
+            td.buttons
                 button.edit-name #[span #{item._id}]
                 button.edit-warning ! #[span #{item._id}]
                 button.delete X #[span #{item._id}]
@@ -25,7 +25,7 @@ table#all: tbody
         tr
             td There aren't any items yet.
             td: button.new--open Add one now
-    
+
     script.
         sessionStorage.setItem('start-index', window.currentLowestId);
         sessionStorage.setItem('end-index', window.currentLowestId + window.categoriesLen);

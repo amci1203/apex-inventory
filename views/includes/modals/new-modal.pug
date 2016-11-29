@@ -1,21 +1,21 @@
 #new.modal
     span.modal__close-button.new--close X
-    section.modal__body
+    section.modal__body.modal__body--opaque
         h1.modal__header New Item
         form#new-item(action='#')
-            .form-group
+            .form-group.form-group--inline
                 label(for='category') Category
                 input(name='category' list='categories')
                 datalist(id='categories')
                     each category in categories
                         option= category
-            .form-group
+            .form-group.form-group--inline
                 label(for='name') Name
-                input(name='name')
-            .form-group
+                input(name='name' required)
+            .form-group.form-group--inline
                 label(for='inStock') In Stock
-                input(name='inStock' type='number' min=0)
-            .form-group
+                input(name='inStock' type='number' min=0 required)
+            .form-group.form-group--inline
                 label(for='lowAt') Low At
                 input(name='lowAt' type='number' min=0)
             button.submit ADD

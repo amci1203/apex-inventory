@@ -2,19 +2,18 @@ nav {
     height: 100%;
     background-color: #DDD;
     border-right: 4px solid #BBB;
-    
+
     ul {
         position: absolute;
         z-index: 10;
         width: 100%;
-        top: 50%;
-        transform: translateY(-50%);
+        top: 15%;
         margin: 0;
         padding: 0;
         list-style-type: none;
 
         li a {
-            .noDecoration;
+            @mixin noDecoration;
             display: block;
             width: 100%;
             padding: 15px 25px;
@@ -28,23 +27,29 @@ nav {
 
         }
     }
-
-    button {
-        .clickable;
+    .btn-group {
         position: absolute;
-        z-index: 20;
         bottom: 0;
+    }
+    button {
+        @mixin clickable;
+        height: 80px;
         width: 100%;
-        padding: 20px 15px;
+        padding: 10px 15px;
         border: none;
-        background-color: #BBB;
+        background-color: #CCC;
         color: #555;
         font-size: 2.15rem;
-        vertical-align: middle;
+        text-align: left;
 
         span {
-            font-size: 3rem;
+            position: relative;
+            font-size: 2.5rem;
             font-weight: 900;
+        }
+
+        &:hover {
+            background-color: #BBB;
         }
     }
 

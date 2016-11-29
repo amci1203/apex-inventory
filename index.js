@@ -1,4 +1,4 @@
-const db = require('mongoose-simpledb'),
+const db = require('mongoose'),
       bodyParser = require('body-parser'),
       express = require('express'),
       pug = require('pug');
@@ -19,10 +19,7 @@ app.set('view engine', 'pug');
 app.get('/', (req, res) => { res.redirect('/items') })
 app.use('/items', items);
 
-db.init({
-        connectionString: dbconn,
-        autoIncrementNumberIds: true
-    }, (err, db) => {
+db.connect(dbconn, (err, db) => {
         if (err) console.error(err.toString())
         else console.info("Successfully connected to %s department.", department)
     }

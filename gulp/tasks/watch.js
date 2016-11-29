@@ -5,7 +5,7 @@ var browserSync = require('browser-sync').create(),
 gulp.task('default', () => {
     gulp.start('watch');
 })
-gulp.task('cssInject', ['less'], () => {
+gulp.task('cssInject', ['css'], () => {
     return gulp.src('./public/styles.css')
     .pipe(browserSync.stream());
 });
@@ -22,12 +22,12 @@ gulp.task('distView', () => {
     });
 })
 
-gulp.task('watch', ['less', 'scripts'], () => {
+gulp.task('watch', ['css', 'scripts'], () => {
     browserSync.init({
         notify: false,
         proxy: 'localhost:3000'
     });
-    watch('./assets/less/**/*.less', () => {
+    watch('./assets/css/**/*.css', () => {
         gulp.start('cssInject');
     });
     watch('./assets/js/**/*.js', () => {

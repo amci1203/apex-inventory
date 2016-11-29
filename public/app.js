@@ -54,19 +54,31 @@
 
 	var _Form2 = _interopRequireDefault(_Form);
 
-	var _MainTable = __webpack_require__(4);
+	var _MultiForm = __webpack_require__(4);
+
+	var _MultiForm2 = _interopRequireDefault(_MultiForm);
+
+	var _MainTable = __webpack_require__(5);
 
 	var _MainTable2 = _interopRequireDefault(_MainTable);
 
-	var _ItemTable = __webpack_require__(5);
+	var _ItemTable = __webpack_require__(6);
 
 	var _ItemTable2 = _interopRequireDefault(_ItemTable);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var newForm = new _Form2.default('new-item', 'post', '/items');
+	var newModal = new _Modal2.default('new');
+	var newForm = new _Form2.default('new-item', '/items/new', 'post', 'item');
 
-	var modal = new _Modal2.default('new');
+	var multiNewModal = new _Modal2.default('new-multi');
+	var newMultiForm = new _MultiForm2.default('new-multi', '/items/new/multi', 'items');
+
+	var logModal = new _Modal2.default('log');
+	var logForm = new _Form2.default('log-item', '/items/:itemId/push', 'post', 'log');
+
+	var multiLogModal = new _Modal2.default('logs');
+	var logMultiForm = new _MultiForm2.default('logs', '/items/logs/multi', 'itemLogs');
 
 	var masterSheet = new _MainTable2.default();
 	var itemSheet = new _ItemTable2.default();
@@ -138,7 +150,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.4
+	 * jQuery JavaScript Library v2.2.3
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -148,7 +160,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-05-20T17:23Z
+	 * Date: 2016-04-05T19:26Z
 	 */
 
 	(function( global, factory ) {
@@ -204,7 +216,7 @@
 
 
 	var
-		version = "2.2.4",
+		version = "2.2.3",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5145,14 +5157,13 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
-		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.preventDefault();
 			}
 		},
@@ -5161,7 +5172,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopPropagation();
 			}
 		},
@@ -5170,7 +5181,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6100,6 +6111,19 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+
+		// Support: IE11 only
+		// In IE 11 fullscreen elements inside of an iframe have
+		// 100x too small dimensions (gh-1764).
+		if ( document.msFullscreenElement && window.top !== window ) {
+
+			// Support: IE11 only
+			// Running getBoundingClientRect on a disconnected node
+			// in IE throws an error.
+			if ( elem.getClientRects().length ) {
+				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
+			}
+		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7991,7 +8015,6 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
-		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7999,10 +8022,27 @@
 				{
 					type: type,
 					isSimulated: true
+
+					// Previously, `originalEvent: {}` was set here, so stopPropagation call
+					// would not be triggered on donor event, since in our own
+					// jQuery.event.stopPropagation function we had a check for existence of
+					// originalEvent.stopPropagation method, so, consequently it would be a noop.
+					//
+					// But now, this "simulate" function is used only for events
+					// for which stopPropagation() is noop, so there is no need for that anymore.
+					//
+					// For the 1.x branch though, guard for "click" and "submit"
+					// events is still used, but was moved to jQuery.event.stopPropagation function
+					// because `originalEvent` should point to the original event for the constancy
+					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
+
+			if ( e.isDefaultPrevented() ) {
+				event.preventDefault();
+			}
 		}
 
 	} );
@@ -9974,7 +10014,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Form = function () {
-	    function Form(form, method, url) {
+	    function Form(form, url, method, key) {
 	        _classCallCheck(this, Form);
 
 	        this.form = (0, _jquery2.default)('#' + form);
@@ -9982,6 +10022,7 @@
 	        this.method = method;
 	        this.data = (0, _jquery2.default)('#' + form + ' input:not([type="submit"])');
 	        this.url = url;
+	        this.key = key;
 	        this.events();
 	    }
 
@@ -9993,8 +10034,15 @@
 	    }, {
 	        key: 'postSubmitHandler',
 	        value: function postSubmitHandler(event) {
-	            var data = this.data.serialize();
-	            _jquery2.default.post(this.url, { item: data }, function () {
+	            var data = {},
+	                url = '';
+	            data[this.key] = this.data.serialize();
+	            if (this.url.indexOf(':') !== -1) {
+	                url = this.url.replace(':itemId', event.currentTarget.firstElementChild.innerText);
+	            } else {
+	                url = this.url;
+	            }
+	            _jquery2.default.post(url, data, function () {
 	                console.log('POST request done');
 	            }, 'json');
 	            location.reload();
@@ -10015,13 +10063,13 @@
 	            var method = this.method;
 	            var methods = {
 	                'post': function post() {
-	                    return _this.postSubmitHandler();
+	                    return _this.postSubmitHandler(event);
 	                },
 	                'get': function get() {
-	                    return _this.getSubmitHandler();
+	                    return _this.getSubmitHandler(event);
 	                },
 	                'delete': function _delete() {
-	                    return _this.deleteSubmitHandler();
+	                    return _this.deleteSubmitHandler(event);
 	                }
 	            };
 
@@ -10040,6 +10088,67 @@
 
 /***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Form = function () {
+	    function Form(form, url, key) {
+	        _classCallCheck(this, Form);
+
+	        this.forms = (0, _jquery2.default)('#' + form + '.multi-form form, #' + form + '.multi-form input.single');
+	        this.submitButton = (0, _jquery2.default)('#' + form + '.multi-form button.submit-all');
+	        this.key = key;
+	        this.url = url;
+	        this.events();
+	    }
+
+	    _createClass(Form, [{
+	        key: 'events',
+	        value: function events() {
+	            this.submitButton.click(this.submitAll.bind(this));
+	        }
+	    }, {
+	        key: 'submitAll',
+	        value: function submitAll(event) {
+	            var data = {},
+	                allFormsData = [];
+	            this.forms.each(function () {
+	                if ((0, _jquery2.default)(this).hasClass('single')) {
+	                    data[(0, _jquery2.default)(this).attr('name')] = (0, _jquery2.default)(this).val();
+	                } else {
+	                    if ((0, _jquery2.default)(this).find('input')[0].value === '') {} else allFormsData.push((0, _jquery2.default)(this).find('input').serialize());
+	                }
+	            });
+	            data[this.key] = allFormsData;
+	            _jquery2.default.post(this.url, data, function () {
+	                location.reload();
+	                return false;
+	            });
+	        }
+	    }]);
+
+	    return Form;
+	}();
+
+	exports.default = Form;
+
+/***/ },
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10078,7 +10187,7 @@
 	            this.getButton.click(this.get.bind(this));
 	            this.editButton.click(this.edit.bind(this));
 	            this.warnButton.click(this.edit.bind(this));
-	            this.deleteButton.click(this.delete.bind(this));
+	            this.deleteButton.click(this.remove.bind(this));
 	        }
 	    }, {
 	        key: 'get',
@@ -10117,10 +10226,10 @@
 	            });
 	        }
 	    }, {
-	        key: 'delete',
-	        value: function _delete(event) {
+	        key: 'remove',
+	        value: function remove(event) {
 	            var item = this.getButton.closest().prevObject[0].innerText;
-	            var confirmed = confirm('Are you sure you want to delete ' + item + '?', confirmed);
+	            var confirmed = confirm('Are you sure you want to delete ' + item + '?');
 	            if (confirmed) {
 	                var url = '/items/' + event.currentTarget.firstElementChild.innerText;
 	                _jquery2.default.ajax({
@@ -10140,7 +10249,7 @@
 	exports.default = MainTable;
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

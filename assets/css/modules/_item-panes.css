@@ -16,7 +16,7 @@
     }
     .stock { display: block; }
     .back {
-        .clickable;
+        @mixin clickable;
         float: right;
         position: absolute;
         top: 50%;
@@ -40,16 +40,16 @@
     background-color: #BBB;
     color: #444;
     padding: 10px 15px;
-    
+
     button {
-        .clickable;
+        @mixin clickable;
         text-indent: 999px;
         border: none;
         margin: 0 10px;
         display: inline-block;
         height: 50px;
         width: 50px;
-        
+
     }
     p {
         display: inline-block;

@@ -1,10 +1,10 @@
 head
     link(type='text/css', rel='stylesheet', href='/styles.css')
 body
-    include includes/item-nav
+    include includes/item/item-nav
     main
         include includes/header
-        include includes/item-panes.pug
-        include includes/item-sheet
-
+        include includes/item/item-panes.pug
+        include includes/item/item-sheet
+    include includes/modals/log-modal
     script(src='/app.js')

@@ -3,6 +3,5 @@
 # Example .gitignore files: https://github.com/github/gitignore
 /bower_components/
 /node_modules/
-/mongo.log
+/logs/
 /npm-debug.log/
-/mongo.log

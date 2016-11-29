@@ -8,6 +8,7 @@ table#item
             - let timestamp = '' + log.date + ''
             - let datestring = timestamp.substr(0, 16)
             tr.row(class= index % 2 === 0 ? 'striped' : '')
+                td.hidden= log._id
                 td= datestring
-                td= log.added
-                td= log.removed
+                td(class={"bolded": log.added > log.removed})= log.added
+                td(class={"bolded": log.added < log.removed})= log.removed

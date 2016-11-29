@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "mongod --fork --logpath 'mongo.log' && node index.js",
-    "stop": "pkill mongod && exit 1",
+    "start": "mongod --fork --logpath 'logs/mongo.log' && node index.js",
+    "stop": "pkill mongod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +24,7 @@
     "pug": "^2.0.0-beta6"
   },
   "devDependencies": {
+    "autoprefixer": "^6.5.3",
     "babel": "^6.5.2",
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.8",
@@ -31,8 +32,16 @@
     "browser-sync": "^2.18.2",
     "gulp": "^3.9.1",
     "gulp-less": "^3.3.0",
+    "gulp-postcss": "^6.2.0",
     "gulp-watch": "^4.3.11",
     "gulp-watch-less": "^1.0.1",
+    "postcss-calc": "^5.3.1",
+    "postcss-color-function": "^2.0.1",
+    "postcss-hexrgba": "^0.2.1",
+    "postcss-import": "^8.2.0",
+    "postcss-mixins": "^5.4.0",
+    "postcss-nested": "^1.0.0",
+    "postcss-simple-vars": "^3.0.0",
     "webpack": "^1.13.3",
     "webpack-stream": "^3.2.0"
   }

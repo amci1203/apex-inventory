@@ -1,10 +1,8 @@
-const db = require('mongoose-simpledb').db,
-      queryString = require('querystring');
+const Item = require('../dbmodels/item'),
+      querystring = require('querystring'),
       currentDepartment = "Housekeeping";
 
 module.exports = (router) => {
-    
-    let Item = handlers;
 
     router.get('/', (req, res) => {
         Item.getAll((docs) => {
@@ -20,12 +18,50 @@ module.exports = (router) => {
         });
     })
     
-    router.post('/', (req, res) => {
-        Item.create(req.body.item, (doc) => {
+    router.post('/new', (req, res) => {
+        Item.create(querystring.parse(req.body.item), (doc) => {
             res.end();
         }) 
     })
     
+    router.post('/new/multi', (req, res) => {
+        let category = req.body.category,
+            items = req.body.items,
+            numItems = items.length,
+            savesCompleted = 0;
+        items.forEach((string, index) => {
+            let item = querystring.parse(string);
+            item.category = category;
+            Item.create(item, () => {
+                savesCompleted++
+                if (savesCompleted === numItems) {
+                    res.end();
+                }
+            })
+        })
+    })
+
+    router.post('/logs/multi', (req, res) => {
+        let itemLogs = req.body.itemLogs,
+            date = req.body.date,
+            numLogs = itemLogs.length,
+            savesCompleted = 0;
+        itemLogs.forEach((string, index) => {
+            let item = querystring.parse(string),
+                log = {
+                    date: date,
+                    added: item.added,
+                    removed: item.removed,
+                };
+            Item.push(false, item.name, log, () => {
+                savesCompleted++
+                if (savesCompleted === numLogs) {
+                    res.end();
+                }
+            })
+        })
+    })
+
     router.get('/:itemId', (req, res) => {
         Item.get(req.params.itemId, (doc) => {
             let thisItem = doc;
@@ -64,7 +100,7 @@ module.exports = (router) => {
     })
 
     router.post('/:itemId/push', (req, res) => {
-        Item.push(req.params.itemId, req.body.log, (affected) => {
+        Item.push(true, req.params.itemId, querystring.parse(req.body.log), (affected) => {
             if (affected !== null && affected !== undefined) {
                 res.end();
             }
@@ -82,139 +118,4 @@ module.exports = (router) => {
     })
 
     return router;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-const handlers = {
-
-    getAll: (callback) => {
-        db.Item.find({})
-            .select('_id category name inStock lowAt')
-            .sort('category name')
-            .exec((err, docs) => {
-                handlers.onError(err);
-                callback(docs)
-            })
-    },
-
-    getCategories: (callback) => {
-        db.Item.distinct('category', (err, categories) => {
-            handlers.onError(err);
-            if (callback !== undefined) callback(categories);
-        })
-    },
-
-    get: (itemId, callback)  => {
-        db.Item.findOne({ _id: itemId})
-            .select('_id category name inStock log')
-            .sort('date')
-            .exec((err, doc) => {
-                handlers.onError(err);
-                if (callback !== undefined) callback(doc)
-            })
-    },
-
-    getCurrentCategory: (category, callback) => {
-        db.Item.find({category: category})
-            .select('_id name')
-            .sort('name')
-            .exec((err, docs) => {
-                handlers.onError(err);
-                if (callback !== undefined) callback(docs)
-            })
-    },
-
-    getAdjacent: (itemName, direction, callback) => {
-        let query = {}, sort = {};
-        let escItemName = itemName.replace('%20', ' ');
-        if (direction === 'next') {
-            query = {name: {$gt: escItemName}};
-            sort = {name: 1}
-        }
-        else if (direction === 'prev') {
-            query = {name: {$lt: escItemName}};
-            sort = {name: -1}
-        }
-        else {
-            rest.status(401).send('Unknown paramater for direction.');
-        }
-        db.Item.findOne(query)
-            .select('_id category name inStock log')
-            .sort(sort)
-            .exec((err, doc) => {
-                handlers.onError(err);
-                console.log(doc);
-                if (callback !== undefined) callback(doc)
-            })
-    },
-
-    create: (string, callback) => {
-        let item = queryString.parse(string);
-        item.log = [{added: item.inStock, balance: item.inStock}];
-        let newItem = new db.Item(item);
-        newItem.save((err, insertedId) => {
-            handlers.onError(err);
-            if (callback !== undefined) callback(newItem)
-        })
-    },
-
-    push: (itemId, logObject, callback) => {
-        db.Item.findOneAndUpdate(
-            {_id: itemId},
-            {
-                inStock: logObject.balance,
-                $push: {
-                    log: logObject
-                }
-            },
-            { upsert: true },
-            (err, id) => {
-                handlers.onError(err);
-                if (callback !== undefined) callback(id)
-            }
-        )
-    },
-    
-    editItem: (itemId, data, callback) => {
-        console.log(data);
-        db.Item.update({_id: itemId}, data, {upsert: false},
-            (err, numAffected) => {
-                handlers.onError(err)
-                if (callback !== undefined) callback(numAffected)
-            }
-        )
-    },
-    
-    editItemLog: (itemId, logId, newLog, callback)  => {
-        db.Item(
-            {
-                "_id": itemId,
-                "log._id": logId
-            },
-            {$set : { "log.$": newLog }},
-            {upsert: false},
-            (err, numAffected) => {
-                handlers.onError(err)
-                if (callback !== undefined) callback(id)
-            }
-        )
-    },
-
-    remove: (itemId, callback) => {
-        db.Item.where({_id: itemId})
-            .remove((err, removedId) => {
-            handlers.onError(err);
-            if (callback !== undefined) callback(removedId)
-        })
-    },
-
-    onError: (err) => {
-        if (err) {
-            console.error(err.toString());
-        }
-    }
 }

@@ -1,0 +1,32 @@
+@define-mixin atSmall {
+    @media (min-width: 480px) {
+        @mixin-content;
+    }
+}
+@define-mixin atMedium {
+    @media (min-width: 768px) {
+        @mixin-content;
+    }
+}
+@define-mixin atLarge {
+    @media (min-width: 991px) {
+        @mixin-content;
+    }
+}
+@define-mixin clearfix {
+    &::after {
+        content: '';
+        clear: both;
+        display: table;
+    }
+}
+@define-mixin clickable {
+    &:hover { cursor: pointer }
+}
+@define-mixin noDecoration {
+    text-decoration: none;
+    color: inherit;
+    &:hover { text-decoration: none; }
+    &:visited { text-decoration: none; }
+    &:active { text-decoration: none; }
+}

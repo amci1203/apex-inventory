@@ -1,12 +1,13 @@
 import $ from 'jquery';
 
 export default class Form {
-    constructor (form, method, url) {
+    constructor (form, url, method, key) {
         this.form = $('#' + form);
         this.submitButton = $('#' + form + ' > button.submit');
         this.method = method;
         this.data = $('#' + form + ' input:not([type="submit"])');
         this.url = url;
+        this.key = key;
         this.events();
     }
 
@@ -15,13 +16,18 @@ export default class Form {
     }
 
     postSubmitHandler (event) {
-        let data = this.data.serialize();
-        $.post(this.url, { item: data }, () => {
+        let data = {},
+            url = '';
+        data[this.key] = this.data.serialize();
+        if (this.url.indexOf(':') !== -1) {
+            url = this.url.replace(':itemId', event.currentTarget.firstElementChild.innerText);
+        }
+        else { url = this.url; }
+        $.post(url, data, () => {
             console.log('POST request done');
          }, 'json')
         location.reload();
         return false;
-        
     }
 
     getSubmitHandler (event) {
@@ -33,9 +39,9 @@ export default class Form {
     getFormMethod () {
         let method = this.method;
         let methods = {
-            'post': () => { return this.postSubmitHandler() },
-            'get': () =>  { return this.getSubmitHandler() },
-            'delete': () =>  { return this.deleteSubmitHandler() }
+            'post': () => { return this.postSubmitHandler(event) },
+            'get': () =>  { return this.getSubmitHandler(event) },
+            'delete': () =>  { return this.deleteSubmitHandler(event) }
         };
 
         if (typeof methods[method] !== 'function') {

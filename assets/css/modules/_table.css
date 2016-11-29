@@ -3,31 +3,31 @@ table {
     width: 80%;
     border-collapse: collapse;
     clear: both;
-    
+
     .row {
         &--striped {
             background-color: #CCC;
-            &:hover { background-color: darken(#CCC, 15%); }
+            &:hover { background-color: color(#CCC b(15%)) };
         }
 
         &--low {
-            background-color: lighten(#A00, 50%) !important;
-            color: #A00;
-            &:hover { background-color: lighten(#A00, 40%) !important; }
+            background-color: color($lowRed l(50%) a(50%)) !important;
+            color: $lowRed;
+            &:hover { background-color: color($lowRed l(40%) a(50%)) !important; }
         }
 
         color: inherit;
         &:hover { background-color: #DDD }
-        
+
         td { padding: 10px 15px; }
-        
+
         .id { display: none; }
-        .name { .clickable; text-align: left; }
+        .name { @mixin clickable; text-align: left; }
         .stock { text-align: right; }
         .buttons {
             position: relative;
             button {
-                .clickable;
+                @mixin clickable;
                 border-radius: 100px;
                 height: 100%;
                 margin: 0 15px;
@@ -60,11 +60,11 @@ table {
     }
 
     td button.new--open {
-        .clickable;
-        background-color: @main-blue;
+        @mixin clickable;
+        background-color: $mainBlue;
         border: none;
         padding: 5px 10px;
-        
+
         color: #FFF;
         text-transform: uppercase;
     }
@@ -80,7 +80,8 @@ table {
     }
     tbody {
         tr {
-
+            .bolded { font-weight: 800 }
+            td:nth-child(2) { float: left }
         }
     }
 }

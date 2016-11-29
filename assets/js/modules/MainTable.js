@@ -11,20 +11,18 @@ export default class MainTable {
         this.itemTable = $('#item');
         this.events();
     }
-
     events () {
         this.getButton.click(this.get.bind(this))
         this.editButton.click(this.edit.bind(this))
         this.warnButton.click(this.edit.bind(this))
-        this.deleteButton.click(this.delete.bind(this))
+        this.deleteButton.click(this.remove.bind(this))
     }
 
-    get (event) {
+    get (event)    {
         let url = '/items/' + event.currentTarget.previousElementSibling.innerText;
         location.assign(url);
     }
-    
-    edit (event) {
+    edit (event)   {
         let newValue = '';
         while (newValue === '') {
             if (event.currentTarget.innerText[0] === "!") {
@@ -52,10 +50,9 @@ export default class MainTable {
             success: () => { location.reload() }
         })
     }
-    
-    delete (event) {
+    remove (event) {
         let item = this.getButton.closest().prevObject[0].innerText;
-        let confirmed = confirm('Are you sure you want to delete ' + item + '?', confirmed)
+        let confirmed = confirm('Are you sure you want to delete ' + item + '?');
         if (confirmed) {
             let url = '/items/' + event.currentTarget.firstElementChild.innerText;
             $.ajax({
