@@ -19,9 +19,10 @@ module.exports = (router) => {
     })
     
     router.post('/new', (req, res) => {
-        Item.create(querystring.parse(req.body.item), (doc) => {
-            res.end();
-        }) 
+        let item = querystring.parse(req.body.item);
+        if (item.inStock === '') item.inStock = 0;
+        if (item.lowAt === '') item.lowAt = 0;
+        Item.create(item, (doc) => { res.end() }) 
     })
     
     router.post('/new/multi', (req, res) => {
@@ -32,6 +33,8 @@ module.exports = (router) => {
         items.forEach((string, index) => {
             let item = querystring.parse(string);
             item.category = category;
+            if (item.added === '') item.added = 0;
+            if (item.removed === '') item.removed = 0;
             Item.create(item, () => {
                 savesCompleted++
                 if (savesCompleted === numItems) {
@@ -47,8 +50,10 @@ module.exports = (router) => {
             numLogs = itemLogs.length,
             savesCompleted = 0;
         itemLogs.forEach((string, index) => {
-            let item = querystring.parse(string),
-                log = {
+            let item = querystring.parse(string);
+            if (item.added === '') item.added = 0;
+            if (item.removed === '') item.removed = 0;
+            let log = {
                     date: date,
                     added: item.added,
                     removed: item.removed,
@@ -100,7 +105,10 @@ module.exports = (router) => {
     })
 
     router.post('/:itemId/push', (req, res) => {
-        Item.push(true, req.params.itemId, querystring.parse(req.body.log), (affected) => {
+        let item = querystring.parse(req.body.log);
+        if (item.added === '') item.added = 0;
+        if (item.removed === '') item.removed = 0;
+        Item.push(true, req.params.itemId, item, (affected) => {
             if (affected !== null && affected !== undefined) {
                 res.end();
             }
