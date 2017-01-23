@@ -3,12 +3,14 @@ table#item
         th
         th Added
         th Removed
+        th
     tbody
         each log, index in item.log
-            - let timestamp = '' + log.date + ''
-            - let datestring = timestamp.substr(0, 16)
+            - let timestamp = log.date.getTime() + 1000
+            - let datestring = `${new Date(timestamp).toDateString()}`.substr(0, 16)
             tr.row(class= index % 2 === 0 ? 'striped' : '')
                 td.hidden= log._id
                 td= datestring
                 td(class={"bolded": log.added > log.removed})= log.added
                 td(class={"bolded": log.added < log.removed})= log.removed
+                td= log.comments

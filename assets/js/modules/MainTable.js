@@ -2,13 +2,13 @@ import $ from 'jquery';
 
 export default class MainTable {
     constructor () {
-        this.table = $('#all');
-        this.row = $('#all .row');
-        this.getButton = $('#all .row .name');
+        this.table        = $('#all');
+        this.row          = $('#all .row');
+        this.getButton    = $('#all .row .name');
         this.deleteButton = $('#all .row button.delete');
-        this.editButton = $('#all .row button.edit-name');
-        this.warnButton = $('#all .row button.edit-warning');
-        this.itemTable = $('#item');
+        this.editButton   = $('#all .row button.edit-name');
+        this.warnButton   = $('#all .row button.edit-warning');
+        this.itemTable    = $('#item');
         this.events();
     }
     events () {

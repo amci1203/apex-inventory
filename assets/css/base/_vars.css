@@ -3,3 +3,9 @@ $lowRed: rgb(170, 0, 0);
 
 $gutter-width: 30px;
 $wrapper-padding: 18px;
+
+$sidebarW: 12rem;
+
+$toggleZ:  500;
+$sidebarZ: 300;
+$shadowZ:  200;

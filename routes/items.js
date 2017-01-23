@@ -64,8 +64,7 @@ module.exports = (router) => {
 
     router.get('/:itemId', (req, res) => {
         Item.get(req.params.itemId, (doc) => {
-            let thisItem = doc;
-            Item.getCurrentCategory(thisItem.category, (docs) => {
+            Item.getCurrentCategory(doc.category, (docs) => {
                 res.render('item', {
                     department: currentDepartment,
                     date: new Date().toDateString(),

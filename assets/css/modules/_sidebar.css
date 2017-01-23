@@ -1,0 +1,35 @@
+.sidebar-open {
+    &.scroll-lock {
+        overflow: hidden;
+        #page-shadow {
+            position: fixed;
+            z-index: $shadowZ;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(50, 50, 50, 0.75);
+        }
+    }
+    nav  {
+        left: 0;
+        z-index: $sidebarZ;
+    }
+    main { left: calc($sidebarW) }
+}
+nav, main {
+    transition: all 0.3s ease-out;
+}
+nav {
+    position: fixed;
+    left: calc($sidebarW * -1);
+}
+
+main {
+    position: relative;
+    left: 0;
+}
+
+#sidebar-toggle {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    z-index: $toggleZ;
+}

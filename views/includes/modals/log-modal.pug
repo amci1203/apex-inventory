@@ -12,4 +12,7 @@
             .form-group
                 label(for='removed') Removed :
                 input(name='removed' type='number' min=0 value=0)
-            button.submit #[span.hidden #{item._id}]LOG
+            .form-group
+                label(for='comments') Comments:
+                input(name='comments' type='text')
+            button.submit #[span.hidden #{item._id}]Submit

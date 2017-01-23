@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 
 let subSchema = new mongoose.Schema(
     {
-        added: {type: Number, default: 0},
-        removed: {type: Number, default: 0}
+        added:   {type: Number, default: 0},
+        removed: {type: Number, default: 0},
+        comments: String
     },
     {
         timestamps: {
@@ -83,7 +84,7 @@ schema.statics.getAdjacent = function (itemName, direction, callback) {
 }
 
 schema.statics.create = function (item, callback) {
-    item.log = [{added: item.inStock}];
+    item.log = [{added: item.inStock, comments: `Added ${item.name} to inventory`}];
     let newItem = new this(item);
     return newItem.save((err, insertedId) => {
         onError(err);
@@ -141,7 +142,7 @@ schema.statics.remove = function (itemId, callback) {
 
 module.exports = mongoose.model('Item', schema)
 
-onError = (err) => {
+const onError = (err) => {
     if (err) {
         console.error(err.toString());
     }

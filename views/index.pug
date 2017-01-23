@@ -1,9 +1,10 @@
 head
     link(type='text/css', rel='stylesheet', href='/styles.css')
 body
+    include includes/shared/page-shadow
     include includes/master/master-nav
     main
-        include includes/header
+        include includes/shared/header
         include includes/master/master-sheet
 
     include includes/modals/new-modal

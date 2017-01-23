@@ -46,7 +46,11 @@
 
 	'use strict';
 
-	var _Modal = __webpack_require__(1);
+	var _jquery = __webpack_require__(1);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _Modal = __webpack_require__(2);
 
 	var _Modal2 = _interopRequireDefault(_Modal);
 
@@ -83,70 +87,12 @@
 	var masterSheet = new _MainTable2.default();
 	var itemSheet = new _ItemTable2.default();
 
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	(0, _jquery2.default)('#sidebar-toggle').click(function () {
+	    (0, _jquery2.default)('html').toggleClass('sidebar-open scroll-lock');
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _jquery = __webpack_require__(2);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var Modal = function () {
-	    function Modal(modalName, hasForm) {
-	        _classCallCheck(this, Modal);
-
-	        this.modal = (0, _jquery2.default)('#' + modalName);
-	        this.hasForm = hasForm;
-	        this.openTrigger = (0, _jquery2.default)('.' + modalName + '--open');
-	        this.closeTrigger = (0, _jquery2.default)('.' + modalName + '--close');
-	        this.events();
-	    }
-
-	    _createClass(Modal, [{
-	        key: 'events',
-	        value: function events() {
-	            this.openTrigger.click(this.openModal.bind(this));
-	            this.closeTrigger.click(this.closeModal.bind(this));
-	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
-	        }
-	    }, {
-	        key: 'openModal',
-	        value: function openModal() {
-	            this.modal.addClass('modal--open');
-	            return false;
-	        }
-	    }, {
-	        key: 'closeModal',
-	        value: function closeModal() {
-	            this.modal.removeClass('modal--open');
-	            return false;
-	        }
-	    }, {
-	        key: 'handleKeyPress',
-	        value: function handleKeyPress(key) {
-	            if (key.keyCode === 27) this.modal.removeClass('modal--open');
-	        }
-	    }]);
-
-	    return Modal;
-	}();
-
-	exports.default = Modal;
-
 /***/ },
-/* 2 */
+/* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9994,6 +9940,68 @@
 
 
 /***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _jquery = __webpack_require__(1);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Modal = function () {
+	    function Modal(modalName, hasForm) {
+	        _classCallCheck(this, Modal);
+
+	        this.modal = (0, _jquery2.default)('#' + modalName);
+	        this.hasForm = hasForm;
+	        this.openTrigger = (0, _jquery2.default)('.' + modalName + '--open');
+	        this.closeTrigger = (0, _jquery2.default)('.' + modalName + '--close');
+	        this.events();
+	    }
+
+	    _createClass(Modal, [{
+	        key: 'events',
+	        value: function events() {
+	            this.openTrigger.click(this.openModal.bind(this));
+	            this.closeTrigger.click(this.closeModal.bind(this));
+	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
+	        }
+	    }, {
+	        key: 'openModal',
+	        value: function openModal() {
+	            this.modal.addClass('modal--open');
+	            return false;
+	        }
+	    }, {
+	        key: 'closeModal',
+	        value: function closeModal() {
+	            this.modal.removeClass('modal--open');
+	            return false;
+	        }
+	    }, {
+	        key: 'handleKeyPress',
+	        value: function handleKeyPress(key) {
+	            if (key.keyCode === 27) this.modal.removeClass('modal--open');
+	        }
+	    }]);
+
+	    return Modal;
+	}();
+
+	exports.default = Modal;
+
+/***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -10005,7 +10013,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _jquery = __webpack_require__(2);
+	var _jquery = __webpack_require__(1);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -10098,7 +10106,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _jquery = __webpack_require__(2);
+	var _jquery = __webpack_require__(1);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -10159,7 +10167,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _jquery = __webpack_require__(2);
+	var _jquery = __webpack_require__(1);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -10260,7 +10268,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _jquery = __webpack_require__(2);
+	var _jquery = __webpack_require__(1);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 

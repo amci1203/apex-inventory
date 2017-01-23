@@ -7,6 +7,7 @@
 @import './modules/_form';
 @import './modules/_modal';
 @import './modules/_row';
+@import './modules/_sidebar';
 @import './modules/_wrapper';
 
 * {
@@ -15,22 +16,18 @@
 }
 
 body {
-    margin: 0;
+    margin: 2rem auto;
+    background-color: #DDD;
     padding: 0;
+    width: 80%;
     overflow-x: hidden;
-}
-
-nav {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 20%;
 }
 
 main {
     position: relative;
-    float: right;
-    width: 80%;
+    background-color: #FFF;
+    padding-bottom: 3rem;
+    box-shadow: 8px 13px 10px 3px #444;
 }
 
 .hidden { display: none }
