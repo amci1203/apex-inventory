@@ -1,7 +1,8 @@
 nav
-    ul
-        each category in categories
-            li: a(href='#' + category)= category
+    .list-container
+        ul
+            each category in categories
+                li: a(href='#' + category)= category
     .btn-group
         button.logs--open #[span L]
         button.new--open #[span +]

@@ -1,13 +1,20 @@
 nav {
+    position: fixed;
+    top: 0;
     height: 100%;
     width: $sidebarW;
-    background-color: #BBB;
+    background-color: #CCC;
+    border-right: 4px solid #BBB;
+
+    .list-container {
+        position: relative;
+        padding-top: 65px;
+        width: 100%;
+        height: 75%;
+        overflow-y: scroll;
+    }
 
     ul {
-        position: absolute;
-        z-index: 10;
-        width: 100%;
-        top: 15%;
         margin: 0;
         padding: 0;
         list-style-type: none;

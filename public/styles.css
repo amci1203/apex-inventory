@@ -88,16 +88,22 @@ header .section-title {
     background-size: cover;
 }
 nav {
+    position: fixed;
+    top: 0;
     height: 100%;
     width: 12rem;
-    background-color: #BBB;
+    background-color: #CCC;
+    border-right: 4px solid #BBB;
 
 }
-nav ul {
-    position: absolute;
-    z-index: 10;
+nav .list-container {
+    position: relative;
+    padding-top: 65px;
     width: 100%;
-    top: 15%;
+    height: 75%;
+    overflow-y: scroll;
+}
+nav ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
