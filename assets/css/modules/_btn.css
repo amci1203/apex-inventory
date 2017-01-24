@@ -2,6 +2,11 @@ button {
     @mixin clickable
 }
 .btn {
+    background-color: $mainBlue;
+    color: #FFF;
+    border: none;
+    padding: 1rem 1.35rem;
+    font-size: 1.15rem;
     &--circle {
         margin: 0.25rem 0;
         height: $buttonSize;
@@ -23,8 +28,9 @@ button {
         }
     }
     &--block {
+        margin: 0;
         background-color: #FFF;
-        width: $sidebarW;
-        height: $sidebarW;
+        width: $optionsW;
+        height: $optionsW;
     }
 }

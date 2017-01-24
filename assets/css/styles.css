@@ -10,6 +10,7 @@
 @import './modules/_options';
 @import './modules/_row';
 @import './modules/_sidebar';
+@import './modules/_text';
 @import './modules/_tooltip';
 @import './modules/_wrapper';
 

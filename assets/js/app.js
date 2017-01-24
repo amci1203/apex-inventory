@@ -17,8 +17,12 @@ const newMultiForm  = new MultiForm('new-multi', '/items/new/multi', 'items');
 const logModal      = new Modal('log');
 const logForm       = new Form('log-item', '/items/:itemId/push', 'post', 'log');
 
+const deleteModal      = new Modal('delete');
+
 const multiLogModal = new Modal('logs');
 const logMultiForm  = new MultiForm('logs', '/items/logs/multi', 'itemLogs');
 
 const masterSheet   = new MainTable();
 const itemSheet     = new ItemTable();
+
+$('#delete').click(() => $(document).trigger('delete-item'));

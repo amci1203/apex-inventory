@@ -1,25 +1,25 @@
 #options {
+    @mixin vCenter;
     transition: all 0.3s ease-out;
     position: fixed;
-    width: $sidebarW;
-    right: calc($sidebarW * -1);
-    top: 120px;
+    width: calc($optionsW - 40px);
+    right: calc($optionsW * -1);
     
     button {
         box-shadow: 3px 5px 3px 2px #333;
         margin: 15px 0;
-        border-top-left-radius:    calc($sidebarW / 2);
-        border-bottom-left-radius: calc($sidebarW / 2);
+        border-top-left-radius:    calc($optionsW / 2);
+        border-bottom-left-radius: calc($optionsW / 2);
     }
     
     img {
-        width: calc($sidebarW / 2);
+        width: calc($optionsW / 2);
     }
     .desc {
         margin: 0;
         text-align: center;
         font-weight: 100;
-        font-size: 1.5rem;
+        font-size: 1.15rem;
     }
 }
 
@@ -34,5 +34,5 @@
 .options-open {
     main { left: calc($optionsW * -1) }
     #options { right: 0 }
-    .btn-group { width: calc($sidebarW * 2) !important }
+    .btn-group { width: calc($optionsW * 2) !important }
 }

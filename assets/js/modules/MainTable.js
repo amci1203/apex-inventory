@@ -5,9 +5,6 @@ export default class MainTable {
         this.table        = $('#all');
         this.rows         = $('#all .row');
         this.getButton    = $('#all .row .name');
-        this.deleteButton = $('#all .row button.delete');
-        this.editButton   = $('#all .row button.edit-name');
-        this.warnButton   = $('#all .row button.edit-warning');
         this.itemTable    = $('#item');
         
         this.activeRow = {}
@@ -16,12 +13,11 @@ export default class MainTable {
     events () {
         this.rows.dblclick(this.get.bind(this))
         this.rows.click(this.makeActiveRow.bind(this))
-        this.editButton.click(this.edit.bind(this))
-        this.warnButton.click(this.edit.bind(this))
-        this.deleteButton.click(this.remove.bind(this))
-        
-//        $(document).on('sidebar-closed', this.closeOptions.bind(this))
+
         $(document).keyup(this.handleEsc.bind(this))
+        $('#open').click(this.get.bind(this))
+        $('#edit').click(() => {})
+        $(document).on('delete-item', this.delete.bind(this))
     }
     makeActiveRow (event) {
         event.currentTarget.classList.add('active');
@@ -37,49 +33,26 @@ export default class MainTable {
         this.rows.removeClass('active');
         $('html').removeClass('options-open');
     }
-    get (event)    {
-        let url = '/items/' + this.activeRow.id;
+    get (event) {
+        const url = `/items/${this.activeRow.id}`;
         location.assign(url);
     }
-    edit (event)   {
-        let newValue = '';
-        while (newValue === '') {
-            if (event.currentTarget.innerText[0] === "!") {
-                newValue = Number(prompt('Please enter a new value to warn for low stock.'));
-            }
-            else if (event.currentTarget.innerText[0] === undefined) {
-                let value = prompt('Please enter a new name for this item');
-                if (value !== null) newValue = value.trim();
-                else newValue = null;
-            }
-        }
-        if (newValue === null) return false;
-        console.log(newValue);
-        let url = '/items/' + event.currentTarget.firstElementChild.innerText;
+    edit (event) {
+        const url = `/items/${this.activeRow.id}`;
         $.ajax({
             url: url,
             method: 'PUT',
-            data: (() => {
-                if (typeof(newValue) === 'number') {
-                    return {update: {lowAt: newValue}}
-                } else {
-                    return {update: {name: newValue}}
-                }
-            })(),
+            data: { update: data },
             success: () => { location.reload() }
         })
     }
-    remove (event) {
-        let item = this.getButton.closest().prevObject[0].innerText;
-        let confirmed = confirm('Are you sure you want to delete ' + item + '?');
-        if (confirmed) {
-            let url = '/items/' + event.currentTarget.firstElementChild.innerText;
-            $.ajax({
-                url: url,
-                method: 'DELETE',
-                success: () => { location.reload() }
-            })
-        }
+    delete (event) {
+        const url = `/items/${this.activeRow.id}`
+        $.ajax({
+            url: url,
+            method: 'DELETE',
+            success: () => { location.reload() }
+        })
     }
     handleEsc (key) {
         if ($('html').hasClass('options-open') && key.keyCode == 27) {

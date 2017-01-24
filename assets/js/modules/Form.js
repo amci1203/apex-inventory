@@ -3,7 +3,7 @@ import $ from 'jquery';
 export default class Form {
     constructor (form, url, method, key) {
         this.form = $('#' + form);
-        this.submitButton = $('#' + form + ' > button.submit');
+        this.submitButton = $('#' + form + ' button.submit');
         this.method = method;
         this.data = $('#' + form + ' input:not([type="submit"])');
         this.url = url;

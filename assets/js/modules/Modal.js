@@ -17,6 +17,9 @@ export default class Modal {
 
     openModal () {
         this.modal.addClass('modal--open');
+        if (this.hasForm) {
+            this.modal.find('input, select, textarea').focus();
+        }
         return false;
     }
     closeModal () {

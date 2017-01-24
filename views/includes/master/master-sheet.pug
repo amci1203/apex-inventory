@@ -22,6 +22,6 @@ table#all: tbody
         - prevCategory = item.category
         - row ++
     else
-        tr
-            td There aren't any items yet.
-            td: button.new--open Add one now
+        .text-center
+            p.text-lg There aren't any items yet.
+            button.btn.new--open Add one now

@@ -2,29 +2,38 @@
     @mixin clearfix;
     &--gutters {
         margin-right: calc($gutter-width * -1);
-        & > div { padding-right: $gutter-width }
+        & > div, & > article, & > section { margin-right: $gutter-width }
         &--large {
             margin-right: calc((1.5 * $gutter-width) * -1);
-            & > div { padding-right: calc(1.5 * $gutter-width) }
+            & > div, & > article, & > section { margin-right: calc(1.5 * $gutter-width) }
         }
         &--small {
-            margin-right: calc((0.7 * $gutter-width) * -1);
-            & > div { padding-right: calc(0.7* $gutter-width) }
+            margin-right: calc((0.55 * $gutter-width) * -1);
+            & > div, & > article, & > section { margin-right: calc(0.55* $gutter-width) }
         }
     }
     &--t-padding {
         padding-top: 5rem;
     }
-    &__b-margin-until-md {
+    &--b-margin {
+        margin-bottom: 1.5rem;
+    }
+    &--b-margin-until-md {
         margin-bottom: 1rem;
         @mixin atMedium {
             margin-bottom: 0;
+        }
+    }
+    &--margin-divs {
+        & > div, & > section, & > article {
+            margin-bottom: 1.65rem;
         }
     }
     /* XSMALL SCREENS */
     &__xs-1 {
         float: left;
         width: calc(1 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(1.25 * (100% / 12));
@@ -37,6 +46,7 @@
     &__xs-2 {
         float: left;
         width: calc(2 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(2.25 * (100% / 12));
@@ -49,6 +59,7 @@
     &__xs-3 {
         float: left;
         width: calc(3 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(3.25 * (100% / 12));
@@ -61,6 +72,7 @@
     &__xs-4 {
         float: left;
         width: calc(4 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(4.25 * (100% / 12));
@@ -70,9 +82,10 @@
             width: calc(3.75 * (100% / 12));
         }
     }
-    &__xs--5 {
+    &__xs-5 {
         float: left;
         width: calc(5 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(5.25 * (100% / 12));
@@ -85,6 +98,7 @@
     &__xs-6 {
         float: left;
         width: calc(6 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(6.25 * (100% / 12));
@@ -97,6 +111,7 @@
     &__xs-7 {
         float: left;
         width: calc(7 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(7.25 * (100% / 12));
@@ -109,6 +124,7 @@
     &__xs-8 {
         float: left;
         width: calc(8 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(8.25 * (100% / 12));
@@ -121,6 +137,7 @@
     &__xs-9 {
         float: left;
         width: calc(9 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(9.25 * (100% / 12));
@@ -133,6 +150,7 @@
     &__xs-10 {
         float: left;
         width: calc(10* (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(10.25 * (100% / 12));
@@ -145,6 +163,7 @@
     &__xs-11 {
         float: left;
         width: calc(11 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(11.25 * (100% / 12));
@@ -157,6 +176,7 @@
     &__xs-12 {
         float: left;
         width: calc(12 * (100% / 12));
+        padding: 0 15px;
         &--larger {
             float: left;
             width: calc(12.25 * (100% / 12));
@@ -167,10 +187,11 @@
         }
     }
     /* SMALL SCREENS */
-    @mixin atSmall{
+    @mixin atSmall {
         &__sm-1 {
             float: left;
             width: calc(1 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(1.25 * (100% / 12));
@@ -183,6 +204,7 @@
         &__sm-2 {
             float: left;
             width: calc(2 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(2.25 * (100% / 12));
@@ -195,6 +217,7 @@
         &__sm-3 {
             float: left;
             width: calc(3 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(3.25 * (100% / 12));
@@ -207,6 +230,7 @@
         &__sm-4 {
             float: left;
             width: calc(4 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(4.25 * (100% / 12));
@@ -219,6 +243,7 @@
         &__sm-5 {
             float: left;
             width: calc(5 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(5.25 * (100% / 12));
@@ -231,6 +256,7 @@
         &__sm-6 {
             float: left;
             width: calc(6 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(6.25 * (100% / 12));
@@ -243,6 +269,7 @@
         &__sm-7 {
             float: left;
             width: calc(7 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(7.25 * (100% / 12));
@@ -255,6 +282,7 @@
         &__sm-8 {
             float: left;
             width: calc(8 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(8.25 * (100% / 12));
@@ -267,6 +295,7 @@
         &__sm-9 {
             float: left;
             width: calc(9 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(9.25 * (100% / 12));
@@ -279,6 +308,7 @@
         &__sm-10 {
             float: left;
             width: calc(10* (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(10.25 * (100% / 12));
@@ -291,6 +321,7 @@
         &__sm-11 {
             float: left;
             width: calc(11 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(11.25 * (100% / 12));
@@ -303,6 +334,7 @@
         &__sm-12 {
             float: left;
             width: calc(12 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(12.25 * (100% / 12));
@@ -318,6 +350,7 @@
         &__md-1 {
             float: left;
             width: calc(1 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(1.25 * (100% / 12));
@@ -330,6 +363,7 @@
         &__md-2 {
             float: left;
             width: calc(2 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(2.25 * (100% / 12));
@@ -342,6 +376,7 @@
         &__md-3 {
             float: left;
             width: calc(3 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(3.25 * (100% / 12));
@@ -354,6 +389,7 @@
         &__md-4 {
             float: left;
             width: calc(4 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(4.25 * (100% / 12));
@@ -366,6 +402,7 @@
         &__md-5 {
             float: left;
             width: calc(5 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(5.25 * (100% / 12));
@@ -378,6 +415,7 @@
         &__md-6 {
             float: left;
             width: calc(6 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(6.25 * (100% / 12));
@@ -390,6 +428,7 @@
         &__md-7 {
             float: left;
             width: calc(7 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(7.25 * (100% / 12));
@@ -402,6 +441,7 @@
         &__md-8 {
             float: left;
             width: calc(8 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(8.25 * (100% / 12));
@@ -414,6 +454,7 @@
         &__md-9 {
             float: left;
             width: calc(9 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(9.25 * (100% / 12));
@@ -426,6 +467,7 @@
         &__md-10 {
             float: left;
             width: calc(10* (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(10.25 * (100% / 12));
@@ -438,6 +480,7 @@
         &__md-11 {
             float: left;
             width: calc(11 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(11.25 * (100% / 12));
@@ -450,6 +493,7 @@
         &__md-12 {
             float: left;
             width: calc(12 * (100% / 12));
+            padding: 0 15px;
             &--larger {
                 float: left;
                 width: calc(12.25 * (100% / 12));
@@ -611,6 +655,7 @@
     .flexbox &--equal-height-md {
         @mixin atMedium {
             display: flex;
+            flex-flow: row;
         }
         & > div {
             float: none;
@@ -620,15 +665,11 @@
     .flexbox &--equal-height-lg {
         @mixin atLarge {
             display: flex;
+            flex-flow: row;
         }
         & > div {
             float: none;
             display: flex;
         }
     }
-}
-
-.clearfix {
-    display: block;
-    clear: both;
 }

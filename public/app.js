@@ -83,18 +83,24 @@
 	var logModal = new _Modal2.default('log');
 	var logForm = new _Form2.default('log-item', '/items/:itemId/push', 'post', 'log');
 
+	var deleteModal = new _Modal2.default('delete');
+
 	var multiLogModal = new _Modal2.default('logs');
 	var logMultiForm = new _MultiForm2.default('logs', '/items/logs/multi', 'itemLogs');
 
 	var masterSheet = new _MainTable2.default();
 	var itemSheet = new _ItemTable2.default();
 
+	(0, _jquery2.default)('#delete').click(function () {
+	  return (0, _jquery2.default)(document).trigger('delete-item');
+	});
+
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.4
+	 * jQuery JavaScript Library v2.2.3
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -104,7 +110,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-05-20T17:23Z
+	 * Date: 2016-04-05T19:26Z
 	 */
 
 	(function( global, factory ) {
@@ -160,7 +166,7 @@
 
 
 	var
-		version = "2.2.4",
+		version = "2.2.3",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5101,14 +5107,13 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
-		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.preventDefault();
 			}
 		},
@@ -5117,7 +5122,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopPropagation();
 			}
 		},
@@ -5126,7 +5131,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6056,6 +6061,19 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+
+		// Support: IE11 only
+		// In IE 11 fullscreen elements inside of an iframe have
+		// 100x too small dimensions (gh-1764).
+		if ( document.msFullscreenElement && window.top !== window ) {
+
+			// Support: IE11 only
+			// Running getBoundingClientRect on a disconnected node
+			// in IE throws an error.
+			if ( elem.getClientRects().length ) {
+				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
+			}
+		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7947,7 +7965,6 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
-		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7955,10 +7972,27 @@
 				{
 					type: type,
 					isSimulated: true
+
+					// Previously, `originalEvent: {}` was set here, so stopPropagation call
+					// would not be triggered on donor event, since in our own
+					// jQuery.event.stopPropagation function we had a check for existence of
+					// originalEvent.stopPropagation method, so, consequently it would be a noop.
+					//
+					// But now, this "simulate" function is used only for events
+					// for which stopPropagation() is noop, so there is no need for that anymore.
+					//
+					// For the 1.x branch though, guard for "click" and "submit"
+					// events is still used, but was moved to jQuery.event.stopPropagation function
+					// because `originalEvent` should point to the original event for the constancy
+					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
+
+			if ( e.isDefaultPrevented() ) {
+				event.preventDefault();
+			}
 		}
 
 	} );
@@ -9951,6 +9985,9 @@
 	        key: 'openModal',
 	        value: function openModal() {
 	            this.modal.addClass('modal--open');
+	            if (this.hasForm) {
+	                this.modal.find('input, select, textarea').focus();
+	            }
 	            return false;
 	        }
 	    }, {
@@ -9996,7 +10033,7 @@
 	        _classCallCheck(this, Form);
 
 	        this.form = (0, _jquery2.default)('#' + form);
-	        this.submitButton = (0, _jquery2.default)('#' + form + ' > button.submit');
+	        this.submitButton = (0, _jquery2.default)('#' + form + ' button.submit');
 	        this.method = method;
 	        this.data = (0, _jquery2.default)('#' + form + ' input:not([type="submit"])');
 	        this.url = url;
@@ -10152,9 +10189,6 @@
 	        this.table = (0, _jquery2.default)('#all');
 	        this.rows = (0, _jquery2.default)('#all .row');
 	        this.getButton = (0, _jquery2.default)('#all .row .name');
-	        this.deleteButton = (0, _jquery2.default)('#all .row button.delete');
-	        this.editButton = (0, _jquery2.default)('#all .row button.edit-name');
-	        this.warnButton = (0, _jquery2.default)('#all .row button.edit-warning');
 	        this.itemTable = (0, _jquery2.default)('#item');
 
 	        this.activeRow = {};
@@ -10166,12 +10200,11 @@
 	        value: function events() {
 	            this.rows.dblclick(this.get.bind(this));
 	            this.rows.click(this.makeActiveRow.bind(this));
-	            this.editButton.click(this.edit.bind(this));
-	            this.warnButton.click(this.edit.bind(this));
-	            this.deleteButton.click(this.remove.bind(this));
 
-	            //        $(document).on('sidebar-closed', this.closeOptions.bind(this))
 	            (0, _jquery2.default)(document).keyup(this.handleEsc.bind(this));
+	            (0, _jquery2.default)('#open').click(this.get.bind(this));
+	            (0, _jquery2.default)('#edit').click(function () {});
+	            (0, _jquery2.default)(document).on('delete-item', this.delete.bind(this));
 	        }
 	    }, {
 	        key: 'makeActiveRow',
@@ -10200,48 +10233,27 @@
 	    }, {
 	        key: 'edit',
 	        value: function edit(event) {
-	            var newValue = '';
-	            while (newValue === '') {
-	                if (event.currentTarget.innerText[0] === "!") {
-	                    newValue = Number(prompt('Please enter a new value to warn for low stock.'));
-	                } else if (event.currentTarget.innerText[0] === undefined) {
-	                    var value = prompt('Please enter a new name for this item');
-	                    if (value !== null) newValue = value.trim();else newValue = null;
-	                }
-	            }
-	            if (newValue === null) return false;
-	            console.log(newValue);
-	            var url = '/items/' + event.currentTarget.firstElementChild.innerText;
+	            var url = '/items/' + this.activeRow.id;
 	            _jquery2.default.ajax({
 	                url: url,
 	                method: 'PUT',
-	                data: function () {
-	                    if (typeof newValue === 'number') {
-	                        return { update: { lowAt: newValue } };
-	                    } else {
-	                        return { update: { name: newValue } };
-	                    }
-	                }(),
+	                data: { update: data },
 	                success: function success() {
 	                    location.reload();
 	                }
 	            });
 	        }
 	    }, {
-	        key: 'remove',
-	        value: function remove(event) {
-	            var item = this.getButton.closest().prevObject[0].innerText;
-	            var confirmed = confirm('Are you sure you want to delete ' + item + '?');
-	            if (confirmed) {
-	                var url = '/items/' + event.currentTarget.firstElementChild.innerText;
-	                _jquery2.default.ajax({
-	                    url: url,
-	                    method: 'DELETE',
-	                    success: function success() {
-	                        location.reload();
-	                    }
-	                });
-	            }
+	        key: 'delete',
+	        value: function _delete(event) {
+	            var url = '/items/' + this.activeRow.id;
+	            _jquery2.default.ajax({
+	                url: url,
+	                method: 'DELETE',
+	                success: function success() {
+	                    location.reload();
+	                }
+	            });
 	        }
 	    }, {
 	        key: 'handleEsc',
