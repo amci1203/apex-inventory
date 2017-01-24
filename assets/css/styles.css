@@ -1,13 +1,16 @@
 @import './base/_vars';
 @import './base/_mixins';
+@import './modules/_btn';
 @import './modules/_header';
 @import './modules/_item-panes';
 @import './modules/_nav';
 @import './modules/_table';
 @import './modules/_form';
 @import './modules/_modal';
+@import './modules/_options';
 @import './modules/_row';
 @import './modules/_sidebar';
+@import './modules/_tooltip';
 @import './modules/_wrapper';
 
 * {

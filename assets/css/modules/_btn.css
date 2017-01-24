@@ -1,0 +1,30 @@
+button {
+    @mixin clickable
+}
+.btn {
+    &--circle {
+        margin: 0.25rem 0;
+        height: $buttonSize;
+        width: $buttonSize;
+        border-radius: calc($buttonSize / 2);
+        border: 4px solid $mainBlue;
+        background-color: #FFF;
+        color: $mainBlue;
+        text-align: center;
+
+        span:not(.tooltip-text) {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        &:hover {
+            background-color: $mainBlue;
+            color: #FFF;
+        }
+    }
+    &--block {
+        background-color: #FFF;
+        width: $sidebarW;
+        height: $sidebarW;
+    }
+}

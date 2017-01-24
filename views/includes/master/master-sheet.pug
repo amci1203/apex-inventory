@@ -9,14 +9,16 @@ table#all: tbody
             - row = 1
             tr: td.anchor(colspan='4'): a(name=currentCategory)
             tr: td.heading(colspan='4')= item.category
+            tr.thead
+                td.th Name
+                td.th Last Modified
+                td.th In Stock
         tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": row % 2 === 0 })
+            - let lastModified = item.lastModified ? String(item.lastModified).substr(0, 16) : ''
             td.id= item._id
             td.name= item.name
+            td.modified= lastModified
             td.stock= item.inStock
-            td.buttons
-                button.edit-name #[span #{item._id}]
-                button.edit-warning ! #[span #{item._id}]
-                button.delete X #[span #{item._id}]
         - prevCategory = item.category
         - row ++
     else

@@ -3,7 +3,12 @@ table {
     margin: 0 auto;
     border-collapse: collapse;
     clear: both;
-
+    .thead {
+        .th {
+            padding: 0.35rem 0.1rem;
+            border-bottom: 1px solid #333; 
+        }
+    }
     .row {
         @mixin clickable;
         &--striped {
@@ -28,27 +33,6 @@ table {
             text-align: right;
             font-weight: 600;
         }
-        .buttons {
-            position: relative;
-            button {
-                @mixin clickable;
-                border-radius: 100px;
-                height: 100%;
-                margin: 0 15px;
-                border: none;
-                font-weight: 900;
-                transform: scale(1.35) scaleX(1.25);
-                background-color: rgba(0,0,0,0);
-                color: inherit;
-                &:hover { color: #444 }
-                span { display: none }
-            }
-            .edit-name {
-                padding: 0 10px;
-                background: url('/icons/edit.png');
-                background-size: cover;
-            }
-        }
     }
 
     td, th {
@@ -61,16 +45,6 @@ table {
         background-color: #FFF;
         border-bottom: 1px solid #333;
         font-size: 2.8rem;
-    }
-
-    td button.new--open {
-        @mixin clickable;
-        background-color: $mainBlue;
-        border: none;
-        padding: 5px 10px;
-
-        color: #FFF;
-        text-transform: uppercase;
     }
 }
 

@@ -1,40 +1,16 @@
-$toggleLOffset: 25px;
 
-.sidebar-open {
-    &.scroll-lock {
-        overflow: hidden;
-        #page-shadow {
-            position: fixed;
-            z-index: $shadowZ;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(50, 50, 50, 0.75);
-        }
-    }
-    #main-nav {
-        left: 0;
-        z-index: $sidebarZ;
-    }
-    main { left: calc($sidebarW) }
-    #sidebar-toggle { left: calc($sidebarW + $toggleLOffset) }
-    .btn-group { left: calc($sidebarW + 35px) }
-}
 #main-nav, main, #sidebar-toggle, .btn-group {
     transition: all 0.3s ease-out;
 }
+
 #main-nav {
     position: fixed;
     left: calc(($sidebarW + 10px) * -1);
 }
-
 main {
     position: relative;
     left: 0;
 }
-
-.options-open {
-    main { left: calc($optionsW * -1) }
-}
-
 #sidebar-toggle {
     position: fixed;
     top: 25px;
@@ -54,4 +30,23 @@ main {
     span {
         font-weight: 600;
     }
+}
+
+.sidebar-open {
+    &.scroll-lock {
+        overflow: hidden;
+        #page-shadow {
+            position: fixed;
+            z-index: $shadowZ;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(50, 50, 50, 0.75);
+        }
+    }
+    #main-nav {
+        left: 0;
+        z-index: $sidebarZ;
+    }
+    main { left: calc($sidebarW) !important }
+    #sidebar-toggle { left: calc($sidebarW + $toggleLOffset) !important }
+    .btn-group { left: calc($sidebarW + 35px) !important }
 }

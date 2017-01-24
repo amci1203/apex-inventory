@@ -1,9 +1,19 @@
+- let logTooltip   = 'Log Multiple Items'
+- let newTooltip   = 'Add Single Item'
+- let multiTooltip = 'Add multiple items to a category'
+
 nav#main-nav
     .list-container
         ul
             each category in categories
                 li: a(href='#' + category)= category
     .btn-group
-        button.logs--open #[span L]
-        button.new--open #[span +]
-        button.new-multi--open #[span *]
+        button.btn--circle.logs--open.tooltip
+            span.tooltip-text= logTooltip
+            span L
+        button.btn--circle.new--open.tooltip
+            span.tooltip-text= newTooltip
+            span +
+        button.btn--circle.new-multi--open.tooltip
+            span.tooltip-text= multiTooltip
+            span *

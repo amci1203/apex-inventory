@@ -25,14 +25,11 @@ export default class MainTable {
     }
     makeActiveRow (event) {
         event.currentTarget.classList.add('active');
-        let id    =  this.table.find('.active .id')[0].innerText,
-            name  =  this.table.find('.active .name')[0].innerText,
-            stock = +this.table.find('.active .stock')[0].innerText,
-            row = {
-                id:    id,
-                name:  name,
-                stock: stock
-            };
+        const row = {
+            id   :  this.table.find('.active .id')[0].innerText,
+            name :  this.table.find('.active .name')[0].innerText,
+            stock: +this.table.find('.active .stock')[0].innerText,
+        };
         this.activeRow = row;
         $('html').addClass('options-open');
     }

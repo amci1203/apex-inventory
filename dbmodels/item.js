@@ -14,17 +14,25 @@ let subSchema = new mongoose.Schema(
     }
 )
 
-let schema = new mongoose.Schema({
-    category: String,
-    name: {type: String, unique: true},
-    inStock: Number,
-    lowAt: Number,
-    log: [ subSchema ]
-});
+let schema = new mongoose.Schema(
+    {
+        category: String,
+        name: {type: String, unique: true},
+        inStock: Number,
+        lowAt: Number,
+        log: [ subSchema ]
+    },
+    {
+        timestamps: {
+            createdAt: 'date',
+            updatedAt: 'lastModified'
+        }
+    }
+);
 
 schema.statics.getAll = function (callback) {
     return this.find({})
-        .select('_id category name inStock lowAt')
+        .select('_id category name inStock lowAt lastModified')
         .sort('category name')
         .exec((err, docs) => {
             onError(err);
