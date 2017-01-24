@@ -25,16 +25,15 @@ export default class MainTable {
     }
     makeActiveRow (event) {
         event.currentTarget.classList.add('active');
-        let id    =  this.table.find('.active').find('.id').val(),
-            name  =  this.table.find('.active').find('.name').val(),
-            stock = +this.table.find('.active').find('.stock').val(),
+        let id    =  this.table.find('.active .id')[0].innerText,
+            name  =  this.table.find('.active .name')[0].innerText,
+            stock = +this.table.find('.active .stock')[0].innerText,
             row = {
                 id:    id,
                 name:  name,
                 stock: stock
             };
-        console.log(row)
-        console.log(this.table.find('.active'))
+        this.activeRow = row;
         $('html').addClass('options-open');
     }
     closeOptions (event) {
@@ -42,8 +41,7 @@ export default class MainTable {
         $('html').removeClass('options-open');
     }
     get (event)    {
-        console.log('event fired')
-        let url = '/items/' + event.currentTarget.previousElementSibling.innerText;
+        let url = '/items/' + this.activeRow.id;
         location.assign(url);
     }
     edit (event)   {
