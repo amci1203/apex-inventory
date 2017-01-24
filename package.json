@@ -21,7 +21,8 @@
     "jquery": "^2.2.3",
     "mongoose": "^4.6.8",
     "mongoose-simpledb": "^5.1.0",
-    "pug": "^2.0.0-beta6"
+    "pug": "^2.0.0-beta6",
+    "webpack": "^1.14.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.5.3",

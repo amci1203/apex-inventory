@@ -87,56 +87,63 @@ header .section-title {
     background: url('/icons/previous.png');
     background-size: cover;
 }
-nav {
+#main-nav {
     position: fixed;
     top: 0;
     height: 100%;
-    width: 12rem;
-    background-color: #CCC;
-    border-right: 4px solid #BBB;
+    width: 15rem;
+    background-color: rgb(25, 110, 239);
+    border-right: 3px solid #FFF;
+    color: #FFF;
+    box-shadow: 5px 0 5px 1px #333;
 
 }
-nav .list-container {
-    position: relative;
-    padding-top: 65px;
+#main-nav .list-container {
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
     width: 100%;
-    height: 75%;
+    height: auto;
     overflow-y: scroll;
 }
-nav ul {
+#main-nav ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
 }
-nav ul li a {
+#main-nav ul li a {
     text-decoration: none;
     color: inherit;
+    -webkit-transition: all 0.15s ease-out;
+    transition: all 0.15s ease-out;
     display: block;
     width: 100%;
     padding: 1rem 1.35rem;
     font-size: 1.45rem;
     font-weight: 900;
-    color: #555;
+    color: #FFF;
 }
-nav ul li a:hover {
+#main-nav ul li a:hover {
     text-decoration: none;
 }
-nav ul li a:visited {
+#main-nav ul li a:visited {
     text-decoration: none;
 }
-nav ul li a:active {
+#main-nav ul li a:active {
     text-decoration: none;
 }
-nav ul li a:hover {
-    background-color: #BBB;
+#main-nav ul li a:hover {
+    background-color: #FFF;
+    color: rgb(25, 110, 239);
 }
-nav .btn-group {
+#main-nav .btn-group {
     width: 4rem;
     position: fixed;
     bottom: 0.2rem;
     left: 0.45rem;
 }
-nav button {
+#main-nav button {
     margin: 0.25rem 0;
     height: 3rem;
     width: 3rem;
@@ -147,24 +154,27 @@ nav button {
     font-size: 2rem;
     text-align: center;
 }
-nav button:hover {
+#main-nav button:hover {
     cursor: pointer;
 }
-nav button span {
+#main-nav button span {
     font-weight: 600;
 }
-nav button:hover {
+#main-nav button:hover {
     background-color: rgb(25, 110, 239);
     color: #FFF;
 }
 table {
-    margin-left: 25px;
-    width: 80%;
+    width: 90%;
+    margin: 0 auto;
     border-collapse: collapse;
     clear: both;
 }
 table .row {
     color: inherit;
+}
+table .row:hover {
+    cursor: pointer;
 }
 table .row--striped {
     background-color: #CCC;
@@ -186,16 +196,14 @@ table .row td {
     padding: 10px 15px;
 }
 table .row .id {
-    display: none;
+    display: none
 }
 table .row .name {
-    text-align: left;
-}
-table .row .name:hover {
-    cursor: pointer;
+    text-align: left
 }
 table .row .stock {
     text-align: right;
+    font-weight: 600;
 }
 table .row .buttons {
     position: relative;
@@ -1072,30 +1080,54 @@ form input[type="submit"]:hover, form button.submit:hover {
     bottom: 0;
     background-color: rgba(50, 50, 50, 0.75);
 }
-.sidebar-open nav  {
+.sidebar-open #main-nav {
     left: 0;
     z-index: 300;
 }
 .sidebar-open main {
-    left: 12rem
+    left: 15rem
 }
-nav, main {
+.sidebar-open #sidebar-toggle {
+    left: calc(15rem + 25px)
+}
+.sidebar-open .btn-group {
+    left: calc(15rem + 35px)
+}
+#main-nav, main, #sidebar-toggle, .btn-group {
     -webkit-transition: all 0.3s ease-out;
     transition: all 0.3s ease-out;
 }
-nav {
+#main-nav {
     position: fixed;
-    left: -12rem;
+    left: calc((15rem + 10px) * -1);
 }
 main {
     position: relative;
     left: 0;
+}
+.options-open main {
+    left: -10rem
 }
 #sidebar-toggle {
     position: fixed;
     top: 25px;
     left: 25px;
     z-index: 500;
+    margin: 0.25rem 0;
+    height: 3rem;
+    width: 3rem;
+    border-radius: 1.5rem;
+    border: 4px solid rgb(25, 110, 239);
+    background-color: #FFF;
+    color: rgb(25, 110, 239);
+    font-size: 2rem;
+    text-align: center;
+}
+#sidebar-toggle:hover {
+    cursor: pointer;
+}
+#sidebar-toggle span {
+    font-weight: 600;
 }
 .wrapper {
     padding-left: 18px;

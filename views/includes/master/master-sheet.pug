@@ -1,21 +1,24 @@
 - let currentCategory = ''
 - let prevCategory = null
+- let row = 1
 
 table#all: tbody
     each item, index in items
         - currentCategory = item.category
         - if (currentCategory !== prevCategory)
+            - row = 1
             tr: td.anchor(colspan='4'): a(name=currentCategory)
             tr: td.heading(colspan='4')= item.category
-        tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": index % 2 === 0 })
+        tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": row % 2 === 0 })
             td.id= item._id
             td.name= item.name
-            td.stock #[strong #{item.inStock}]
+            td.stock= item.inStock
             td.buttons
                 button.edit-name #[span #{item._id}]
                 button.edit-warning ! #[span #{item._id}]
                 button.delete X #[span #{item._id}]
         - prevCategory = item.category
+        - row ++
     else
         tr
             td There aren't any items yet.

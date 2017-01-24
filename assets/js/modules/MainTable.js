@@ -3,22 +3,46 @@ import $ from 'jquery';
 export default class MainTable {
     constructor () {
         this.table        = $('#all');
-        this.row          = $('#all .row');
+        this.rows         = $('#all .row');
         this.getButton    = $('#all .row .name');
         this.deleteButton = $('#all .row button.delete');
         this.editButton   = $('#all .row button.edit-name');
         this.warnButton   = $('#all .row button.edit-warning');
         this.itemTable    = $('#item');
+        
+        this.activeRow = {}
         this.events();
     }
     events () {
-        this.getButton.click(this.get.bind(this))
+        this.rows.dblclick(this.get.bind(this))
+        this.rows.click(this.makeActiveRow.bind(this))
         this.editButton.click(this.edit.bind(this))
         this.warnButton.click(this.edit.bind(this))
         this.deleteButton.click(this.remove.bind(this))
+        
+//        $(document).on('sidebar-closed', this.closeOptions.bind(this))
+        $(document).keyup(this.handleEsc.bind(this))
     }
-
+    makeActiveRow (event) {
+        event.currentTarget.classList.add('active');
+        let id    =  this.table.find('.active').find('.id').val(),
+            name  =  this.table.find('.active').find('.name').val(),
+            stock = +this.table.find('.active').find('.stock').val(),
+            row = {
+                id:    id,
+                name:  name,
+                stock: stock
+            };
+        console.log(row)
+        console.log(this.table.find('.active'))
+        $('html').addClass('options-open');
+    }
+    closeOptions (event) {
+        this.rows.removeClass('active');
+        $('html').removeClass('options-open');
+    }
     get (event)    {
+        console.log('event fired')
         let url = '/items/' + event.currentTarget.previousElementSibling.innerText;
         location.assign(url);
     }
@@ -61,5 +85,10 @@ export default class MainTable {
                 success: () => { location.reload() }
             })
         }
+    }
+    handleEsc (key) {
+        if ($('html').hasClass('options-open') && key.keyCode == 27) {
+            this.closeOptions()
+        } else return false;
     }
 }

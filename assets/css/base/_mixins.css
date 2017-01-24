@@ -30,3 +30,8 @@
     &:visited { text-decoration: none; }
     &:active { text-decoration: none; }
 }
+@define-mixin vCenter {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}

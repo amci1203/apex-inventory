@@ -5,6 +5,8 @@ import MultiForm from './modules/MultiForm';
 import MainTable from './modules/MainTable';
 import ItemTable from './modules/ItemTable';
 
+import './modules/Menu';
+
 
 const newModal      = new Modal('new');
 const newForm       = new Form('new-item', '/items/new', 'post', 'item');
@@ -20,7 +22,3 @@ const logMultiForm  = new MultiForm('logs', '/items/logs/multi', 'itemLogs');
 
 const masterSheet   = new MainTable();
 const itemSheet     = new ItemTable();
-
-$('#sidebar-toggle').click(() => {
-    $('html').toggleClass('sidebar-open scroll-lock');
-})

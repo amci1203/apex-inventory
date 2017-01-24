@@ -1,3 +1,5 @@
+$toggleLOffset: 25px;
+
 .sidebar-open {
     &.scroll-lock {
         overflow: hidden;
@@ -8,18 +10,20 @@
             background-color: rgba(50, 50, 50, 0.75);
         }
     }
-    nav  {
+    #main-nav {
         left: 0;
         z-index: $sidebarZ;
     }
     main { left: calc($sidebarW) }
+    #sidebar-toggle { left: calc($sidebarW + $toggleLOffset) }
+    .btn-group { left: calc($sidebarW + 35px) }
 }
-nav, main {
+#main-nav, main, #sidebar-toggle, .btn-group {
     transition: all 0.3s ease-out;
 }
-nav {
+#main-nav {
     position: fixed;
-    left: calc($sidebarW * -1);
+    left: calc(($sidebarW + 10px) * -1);
 }
 
 main {
@@ -27,9 +31,27 @@ main {
     left: 0;
 }
 
+.options-open {
+    main { left: calc($optionsW * -1) }
+}
+
 #sidebar-toggle {
     position: fixed;
     top: 25px;
-    left: 25px;
+    left: $toggleLOffset;
     z-index: $toggleZ;
+    @mixin clickable;
+    margin: 0.25rem 0;
+    height: $buttonSize;
+    width: $buttonSize;
+    border-radius: calc($buttonSize / 2);
+    border: 4px solid $mainBlue;
+    background-color: #FFF;
+    color: $mainBlue;
+    font-size: 2rem;
+    text-align: center;
+
+    span {
+        font-weight: 600;
+    }
 }

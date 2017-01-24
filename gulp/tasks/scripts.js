@@ -1,24 +1,14 @@
 var gulp = require('gulp'),
-    webpack = require('webpack-stream');
+    webpack = require('webpack');
 
-gulp.task('scripts', (callback) => {
-    return gulp.src('./assets/js/app.js')
-        .pipe(webpack({
-            output: {
-                filename: 'app.js',
-            },
-            module: {
-                loaders: [
-                    {
-                        loader: 'babel',
-                        query: {
-                            presets: ['es2015']
-                        },
-                        test: /\.js$/,
-                        exclude: /node_modules/
-                    }
-                ]
-            }
-        }))
-        .pipe(gulp.dest('./public'))
+gulp.task('scripts', function () {
+    webpack(require('../../webpack.config.js'), function (err, stats) {
+        if (err) {
+            console.log(err.toString());
+        }
+        console.log('Script Packing Done...\n');
+        console.log(stats.toString());
+        return gulp.src('./public/temp/scripts/admin.js')
+            .pipe(gulp.dest('./admin/public/temp/scripts'))
+    })
 })
