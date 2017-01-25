@@ -19,6 +19,7 @@ export default (function Menu () {
     
     return (function () {
         toggle.click(toggleSidebar);
+        $('#main-nav a').click(toggleSidebar);
         $(document).keyup(handleEsc);
     })()
 })()

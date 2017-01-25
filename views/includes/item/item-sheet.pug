@@ -1,14 +1,15 @@
+#active-id.hidden= item._id
 table#item
     thead
         th
         th Added
         th Removed
-        th
+        th Comments
     tbody
         each log, index in item.log
-            - let timestamp = log.date.getTime() + 1000
+            - let timestamp  = log.date.getTime() + 1000
             - let datestring = `${new Date(timestamp).toDateString()}`.substr(0, 16)
-            tr.row(class= index % 2 === 0 ? 'striped' : '')
+            tr.row(class= index % 2 === 0 ? 'row--striped' : '')
                 td.hidden= log._id
                 td= datestring
                 td(class={"bolded": log.added > log.removed})= log.added

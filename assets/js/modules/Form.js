@@ -19,11 +19,17 @@ export default class Form {
               data = {},
               url  = this.url.indexOf(':') == -1 ? this.url : this.url.replace(':itemId', $('#active-id').html())
         this.data.each(function () {
-            let val = $(this).attr('type') == 'text' ? $(this).val() : +$(this).val();
+            console.log($(this).val())
+            let val = $(this).attr('type') == 'number' ? +$(this).val() : $(this).val().trim(); 
             temp[$(this).attr('name')] = val;
         })
         data[this.key] = temp;
         $.post(url, data) 
-        .success((data) => location.reload())
+        .success((res) => {
+            if (!res.error) location.reload()
+            else {
+                this.form.find('.error')[0].innerHTML = res.error;
+            }
+        })
     }
 }

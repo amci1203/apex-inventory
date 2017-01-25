@@ -14,10 +14,12 @@ export default class MainTable {
         this.rows.dblclick(this.get.bind(this))
         this.rows.click(this.makeActiveRow.bind(this))
 
-        $(document).keyup(this.handleEsc.bind(this))
+        $(document).keyup(this.handleKeyPresses.bind(this))
         $('#open').click(this.get.bind(this))
         $('#edit-item').click(this.edit.bind(this))
-        $(document).on('delete-item', this.delete.bind(this))
+        
+        $('#confirm-delete').on('input', this.handleDeleteButtonState.bind(this))
+        $(document).on('delete-item', this.erase.bind(this))
     }
     makeActiveRow (event) {
         event.currentTarget.classList.add('active');
@@ -73,17 +75,30 @@ export default class MainTable {
             }
         })
     }
-    delete (event) {
-        const url = `/items/${this.activeRow.id}`
+    erase (event) {
+        const url = `/items/${this.activeRow.id}`;
         $.ajax({
             url: url,
             method: 'DELETE',
             success: () => { location.reload() }
         })
     }
-    handleEsc (key) {
-        if ($('html').hasClass('options-open') && key.keyCode == 27) {
-            this.closeOptions()
-        } else return false;
+    handleDeleteButtonState () {
+        const confirmed = ($('#confirm-delete').val().trim().toUpperCase() == this.activeRow.name.toUpperCase());
+        if (confirmed) $('#delete-item').removeAttr('disabled')
+        else $('#delete-item').attr('disabled', 'disabled')
+    }
+    handleKeyPresses (keyCode) {
+        if ($('html').hasClass('options-open') && !$('html').hasClass('modal-open')) {
+            const _       = this,
+                  key     = String(keyCode.keyCode),
+                  methods = {
+                      27: () => _.closeOptions() //ESC
+
+                  };
+            if (methods.hasOwnProperty(key) && typeof(methods[key]) == 'function') {
+                methods[key]()
+            } else return false
+        }
     }
 }

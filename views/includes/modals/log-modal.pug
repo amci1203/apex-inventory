@@ -4,15 +4,15 @@
         h1.modal__header New Log
         form#log-item(action='#')
             .form-group
-                label(for='date') Date :
-                input(type='date' name='date')
-            .form-group
                 label(for='added') Added :
                 input(name='added' type='number' min=0 value=0)
             .form-group
                 label(for='removed') Removed :
                 input(name='removed' type='number' min=0 value=0)
             .form-group
-                label(for='comments') Comments:
+                label(for='date') Date :
+                input(type='date' name='date')
+            .form-group.row
+                label.text-center(for='comments') Comments:
                 input(name='comments' type='text')
-            button.submit #[span.hidden #{item._id}]Submit
+            button.btn.submit Submit

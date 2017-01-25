@@ -31,13 +31,14 @@
 
     &__close-button {
         position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 1.5rem;
+        top: 40px;
+        right: 40px;
+        font-size: 2.5rem;
         transform-origin: top right;
         transform: scaleX(1.2);
         cursor: pointer;
         color: $mainBlue;
+        text-shadow: 1px 2px 3px #333;
         &:hover { color: #111 }
     }
 
@@ -45,7 +46,7 @@
         &--opaque {
            background-color: #FFF;
             border: 1px solid #CCC;
-            box-shadow: 3px 4px 1px #333;
+            box-shadow: 0 4px 3px 2px #333;
         }
         padding: 35px;
         font-size: 1.3rem;

@@ -23,7 +23,10 @@ module.exports = (router) => {
         item.category = item.category || 'Uncategorized';
         item.inStock  = item.inStock  || 0;
         item.lowAt    = item.lowAt    || 0;
-        Item.create(item, () => res.end())
+        if (!item.name) {
+            res.json({error: 'A name MUST be entered' })
+        }
+        else Item.create(item, () => res.end())
     })
     
     router.post('/multi', (req, res) => {
@@ -69,7 +72,7 @@ module.exports = (router) => {
 
     router.get('/:itemId', (req, res) => {
         Item.get(req.params.itemId, (item) => {
-            Item.getCurrentCategory(doc.category, (categoryitems) => {
+            Item.getCurrentCategory(item.category, (categoryItems) => {
                 res.render('item', {
                     department: currentDepartment,
                     date: new Date().toDateString(),
@@ -104,11 +107,12 @@ module.exports = (router) => {
     })
 
     router.post('/:itemId/push', (req, res) => {
-        let item = querystring.parse(req.body.log);
-        if (item.added === '') item.added = 0;
-        if (item.removed === '') item.removed = 0;
+        let item = req.body.log;
+        if (item.date    == '') item.date    = new Date();
+        if (item.added   == '') item.added   = 0;
+        if (item.removed == '') item.removed = 0;
         Item.push(true, req.params.itemId, item, (affected) => {
-            if (affected !== null && affected !== undefined) {
+            if ([null, undefined].indexOf(affected) == -1) {
                 res.end();
             }
             else res.status(401)
@@ -117,7 +121,7 @@ module.exports = (router) => {
     
     router.delete('/:itemId', (req, res) => {
         Item.remove(req.params.itemId, (id) => {
-            if (id !== null && id !== undefined) {
+            if ([null, undefined].indexOf(affected) == -1) {
                 res.end();
             }
             else res.status(401)

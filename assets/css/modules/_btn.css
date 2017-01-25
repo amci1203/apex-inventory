@@ -64,4 +64,11 @@ button {
             background-color: #A00;
         }
     }
+    
+    &[disabled] {
+        cursor: not-allowed;
+        background-color: #CCC;
+        color: #333;
+        &:hover { color: #111 }
+    }
 }

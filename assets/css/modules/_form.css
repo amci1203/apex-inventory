@@ -1,5 +1,10 @@
 form {
     margin: 0;
+    .error {
+        @mixin clearfix;
+        text-align: center;
+        color: #C00
+    }
     .form-group {
         &.row {
             padding: 5px 0;

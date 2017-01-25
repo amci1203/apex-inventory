@@ -14,13 +14,13 @@ const newForm       = new Form('new-item', '/items', 'item');
 const newMultiModal = new Modal('new-multi', true);
 const newMultiForm  = new MultiForm('new-multi', '/items/multi', 'items');
 
-const logModal      = new Modal('log');
+const logModal      = new Modal('log', true);
 const logForm       = new Form('log-item', '/items/:itemId/push', 'log');
 
-const deleteModal   = new Modal('delete');
+const deleteModal   = new Modal('delete', true);
 const editModal     = new Modal('edit');
 
-const multiLogModal = new Modal('logs');
+const multiLogModal = new Modal('logs', true);
 const logMultiForm  = new MultiForm('logs', '/items/logs/multi', 'itemLogs');
 
 const masterSheet   = new MainTable();

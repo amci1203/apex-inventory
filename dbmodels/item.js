@@ -70,13 +70,13 @@ schema.statics.getCurrentCategory = function (category, callback) {
 schema.statics.getAdjacent = function (itemName, direction, callback) {
     let query = {}, sort = {};
     let escapedName = itemName.replace('%20', ' ');
-    if (direction === 'next') {
+    if (direction == 'next') {
         query = {name: {$gt: escapedName}};
-        sort = {name: 1}
+        sort  = {name: 1}
     }
-    else if (direction === 'prev') {
+    else if (direction == 'prev') {
         query = {name: {$lt: escapedName}};
-        sort = {name: -1}
+        sort  = {name: -1}
     }
     else {
         rest.status(401).send('Unknown paramater for direction.');
