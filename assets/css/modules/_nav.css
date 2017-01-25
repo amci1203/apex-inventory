@@ -38,10 +38,12 @@
         }
     }
 
-    .btn-group {
-        width: calc($buttonSize + 1rem);
-        position: fixed;
-        bottom: 0.2rem;
-        left: 0.45rem;
-    }
+}
+
+.btn-group {
+    width: calc($buttonSize + 1rem);
+    position: fixed;
+    bottom: 0.2rem;
+    left: 0.45rem;
+    z-index: $btnGroupZ;
 }

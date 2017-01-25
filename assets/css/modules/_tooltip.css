@@ -15,9 +15,9 @@
         /* Position the tooltip */
         @mixin vCenter;
         left: 120%;
-        z-index: 100;
     }
     &:hover &-text {
+        z-index: 1000 !important;
         opacity: 1;
     }
 }

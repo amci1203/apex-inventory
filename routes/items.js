@@ -18,63 +18,63 @@ module.exports = (router) => {
         });
     })
     
-    router.post('/new', (req, res) => {
-        let item = querystring.parse(req.body.item);
-        if (item.inStock === '') item.inStock = 0;
-        if (item.lowAt === '') item.lowAt = 0;
-        Item.create(item, (doc) => { res.end() })
+    router.post('/', (req, res) => {
+        let item      = req.body.item;
+        item.category = item.category || 'Uncategorized';
+        item.inStock  = item.inStock  || 0;
+        item.lowAt    = item.lowAt    || 0;
+        Item.create(item, () => res.end())
     })
     
-    router.post('/new/multi', (req, res) => {
-        let category = req.body.category,
-            items = req.body.items,
-            numItems = items.length,
+    router.post('/multi', (req, res) => {
+        let category       = req.body.category,
+            items          = req.body.items,
+            numItems       = items.length,
             savesCompleted = 0;
-        items.forEach((string, index) => {
-            let item = querystring.parse(string);
-            item.category = category;
-            if (item.added === '') item.added = 0;
-            if (item.removed === '') item.removed = 0;
+        items.forEach((obj) => {
+            let item       = obj;
+            item.category  = category;
+            item.added     = item.added   || 0;
+            item.removed   = item.removed || 0;
             Item.create(item, () => {
                 savesCompleted++
-                if (savesCompleted === numItems) {
-                    res.end();
-                }
+                if (savesCompleted === numItems) res.end()
+                
             })
         })
     })
 
     router.post('/logs/multi', (req, res) => {
-        let itemLogs = req.body.itemLogs,
-            date = req.body.date,
-            numLogs = itemLogs.length,
+        const itemLogs       = req.body.itemLogs,
+              date           = req.body.date,
+              numLogs        = itemLogs.length,
             savesCompleted = 0;
-        itemLogs.forEach((string, index) => {
-            let item = querystring.parse(string);
-            if (item.added === '') item.added = 0;
-            if (item.removed === '') item.removed = 0;
+        itemLogs.forEach((obj, index) => {
+            let item       = obj;
+            item.added     = item.added   || 0;
+            item.removed   = item.removed || 0;
+            
             let log = {
-                    date: date,
-                    added: item.added,
-                    removed: item.removed,
-                };
+                date    : date,
+                added   : item.added,
+                removed : item.removed,
+            };
+            
             Item.push(false, item.name, log, () => {
                 savesCompleted++
-                if (savesCompleted === numLogs) {
-                    res.end();
-                }
+                if (savesCompleted === numLogs) res.end();
             })
         })
     })
 
     router.get('/:itemId', (req, res) => {
-        Item.get(req.params.itemId, (doc) => {
-            Item.getCurrentCategory(doc.category, (docs) => {
+        Item.get(req.params.itemId, (item) => {
+            Item.getCurrentCategory(doc.category, (categoryitems) => {
                 res.render('item', {
                     department: currentDepartment,
                     date: new Date().toDateString(),
-                    categoryItems: docs,
-                    item: doc
+                    categoryItems: categoryItems,
+                    item: item
                 })
             })
         })

@@ -1,9 +1,15 @@
 #edit.modal
     span.modal__close-button.edit--close X
     section.modal__body.modal__body--opaque
-        h1.modal__header Edit Item
+        h1.modal__header Edit #[span.active-name]
         form#edit-form
-            input#u-name
-            input#u-category
-            input#u-low
-        button#edit SUBMIT
+            .form-group
+                label Name:
+                input#u-name
+            .form-group
+                label Category:
+                input#u-category
+            .form-group
+                label Warn at:
+                input#u-low
+        button.btn.btn--wide#edit-item SUBMIT

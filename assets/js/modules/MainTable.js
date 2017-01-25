@@ -16,18 +16,33 @@ export default class MainTable {
 
         $(document).keyup(this.handleEsc.bind(this))
         $('#open').click(this.get.bind(this))
-        $('#edit').click(() => {})
+        $('#edit-item').click(this.edit.bind(this))
         $(document).on('delete-item', this.delete.bind(this))
     }
     makeActiveRow (event) {
         event.currentTarget.classList.add('active');
-        const row = {
-            id   :  this.table.find('.active .id')[0].innerText,
-            name :  this.table.find('.active .name')[0].innerText,
-            stock: +this.table.find('.active .stock')[0].innerText,
-        };
+        const id       =  this.table.find('.active .id')[0].innerText,
+              low      = +this.table.find('.active .low')[0].innerText,
+              name     =  this.table.find('.active .name')[0].innerText,
+              stock    = +this.table.find('.active .stock')[0].innerText,
+              category =  this.table.find('.active .category')[0].innerText,
+              row      = {
+                  id      : id,
+                  category: category,
+                  name    : name,
+                  stock   : stock,
+                  low     : low 
+              };
         this.activeRow = row;
         $('html').addClass('options-open');
+        //
+        $('#active-id').html(id);
+        $('.active-name').html(name);
+        $('.active-stock').html(stock);
+        //
+        $('#u-name').val(name);
+        $('#u-category').val(category);
+        $('#u-low').val(low);
     }
     closeOptions (event) {
         this.rows.removeClass('active');
@@ -38,12 +53,24 @@ export default class MainTable {
         location.assign(url);
     }
     edit (event) {
-        const url = `/items/${this.activeRow.id}`;
+        console.log(event.currentTarget)
+        const url       = `/items/${this.activeRow.id}`,
+              uName     =  $('#u-name').val()     || this.activeRow.name,
+              uCategory =  $('#u-category').val() || this.activeRow.category,
+              uLow      = +$('#u-low').val() || this.activeRow.low,
+              data      = {
+                  name: uName,
+                  category: uCategory,
+                  lowAt: uLow
+              }
         $.ajax({
             url: url,
             method: 'PUT',
             data: { update: data },
-            success: () => { location.reload() }
+            success: (data) => {
+                console.log(data)
+                location.reload()
+            }
         })
     }
     delete (event) {

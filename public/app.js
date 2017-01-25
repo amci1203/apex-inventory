@@ -74,16 +74,17 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var newModal = new _Modal2.default('new');
-	var newForm = new _Form2.default('new-item', '/items/new', 'post', 'item');
+	var newModal = new _Modal2.default('new', true);
+	var newForm = new _Form2.default('new-item', '/items', 'item');
 
-	var multiNewModal = new _Modal2.default('new-multi');
-	var newMultiForm = new _MultiForm2.default('new-multi', '/items/new/multi', 'items');
+	var newMultiModal = new _Modal2.default('new-multi', true);
+	var newMultiForm = new _MultiForm2.default('new-multi', '/items/multi', 'items');
 
 	var logModal = new _Modal2.default('log');
-	var logForm = new _Form2.default('log-item', '/items/:itemId/push', 'post', 'log');
+	var logForm = new _Form2.default('log-item', '/items/:itemId/push', 'log');
 
 	var deleteModal = new _Modal2.default('delete');
+	var editModal = new _Modal2.default('edit');
 
 	var multiLogModal = new _Modal2.default('logs');
 	var logMultiForm = new _MultiForm2.default('logs', '/items/logs/multi', 'itemLogs');
@@ -91,7 +92,7 @@
 	var masterSheet = new _MainTable2.default();
 	var itemSheet = new _ItemTable2.default();
 
-	(0, _jquery2.default)('#delete').click(function () {
+	(0, _jquery2.default)('#delete-item').click(function () {
 	  return (0, _jquery2.default)(document).trigger('delete-item');
 	});
 
@@ -100,7 +101,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.3
+	 * jQuery JavaScript Library v2.2.4
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -110,7 +111,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-04-05T19:26Z
+	 * Date: 2016-05-20T17:23Z
 	 */
 
 	(function( global, factory ) {
@@ -166,7 +167,7 @@
 
 
 	var
-		version = "2.2.3",
+		version = "2.2.4",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5107,13 +5108,14 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
+		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.preventDefault();
 			}
 		},
@@ -5122,7 +5124,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.stopPropagation();
 			}
 		},
@@ -5131,7 +5133,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6061,19 +6063,6 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
-
-		// Support: IE11 only
-		// In IE 11 fullscreen elements inside of an iframe have
-		// 100x too small dimensions (gh-1764).
-		if ( document.msFullscreenElement && window.top !== window ) {
-
-			// Support: IE11 only
-			// Running getBoundingClientRect on a disconnected node
-			// in IE throws an error.
-			if ( elem.getClientRects().length ) {
-				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
-			}
-		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7965,6 +7954,7 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
+		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7972,27 +7962,10 @@
 				{
 					type: type,
 					isSimulated: true
-
-					// Previously, `originalEvent: {}` was set here, so stopPropagation call
-					// would not be triggered on donor event, since in our own
-					// jQuery.event.stopPropagation function we had a check for existence of
-					// originalEvent.stopPropagation method, so, consequently it would be a noop.
-					//
-					// But now, this "simulate" function is used only for events
-					// for which stopPropagation() is noop, so there is no need for that anymore.
-					//
-					// For the 1.x branch though, guard for "click" and "submit"
-					// events is still used, but was moved to jQuery.event.stopPropagation function
-					// because `originalEvent` should point to the original event for the constancy
-					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
-
-			if ( e.isDefaultPrevented() ) {
-				event.preventDefault();
-			}
 		}
 
 	} );
@@ -10029,12 +10002,11 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Form = function () {
-	    function Form(form, url, method, key) {
+	    function Form(form, url, key) {
 	        _classCallCheck(this, Form);
 
 	        this.form = (0, _jquery2.default)('#' + form);
-	        this.submitButton = (0, _jquery2.default)('#' + form + ' button.submit');
-	        this.method = method;
+	        this.submit = (0, _jquery2.default)('#' + form + ' button.submit');
 	        this.data = (0, _jquery2.default)('#' + form + ' input:not([type="submit"])');
 	        this.url = url;
 	        this.key = key;
@@ -10044,55 +10016,22 @@
 	    _createClass(Form, [{
 	        key: 'events',
 	        value: function events() {
-	            this.submitButton.click(this.getFormMethod.bind(this));
+	            this.submit.click(this.handle.bind(this));
 	        }
 	    }, {
-	        key: 'postSubmitHandler',
-	        value: function postSubmitHandler(event) {
-	            var data = {},
-	                url = '';
-	            data[this.key] = this.data.serialize();
-	            if (this.url.indexOf(':') !== -1) {
-	                url = this.url.replace(':itemId', event.currentTarget.firstElementChild.innerText);
-	            } else {
-	                url = this.url;
-	            }
-	            _jquery2.default.post(url, data, function () {
-	                console.log('POST request done');
-	            }, 'json');
-	            location.reload();
-	            return false;
-	        }
-	    }, {
-	        key: 'getSubmitHandler',
-	        value: function getSubmitHandler(event) {
-	            _jquery2.default.get(this.url, function (data) {
-	                alert(data);
-	            }, 'json');
-	        }
-	    }, {
-	        key: 'getFormMethod',
-	        value: function getFormMethod() {
-	            var _this = this;
-
-	            var method = this.method;
-	            var methods = {
-	                'post': function post() {
-	                    return _this.postSubmitHandler(event);
-	                },
-	                'get': function get() {
-	                    return _this.getSubmitHandler(event);
-	                },
-	                'delete': function _delete() {
-	                    return _this.deleteSubmitHandler(event);
-	                }
-	            };
-
-	            if (typeof methods[method] !== 'function') {
-	                throw new Error('Invalid method.');
-	            }
-
-	            return methods[method]();
+	        key: 'handle',
+	        value: function handle(event) {
+	            var temp = {},
+	                data = {},
+	                url = this.url.indexOf(':') == -1 ? this.url : this.url.replace(':itemId', (0, _jquery2.default)('#active-id').html());
+	            this.data.each(function () {
+	                var val = (0, _jquery2.default)(this).attr('type') == 'text' ? (0, _jquery2.default)(this).val() : +(0, _jquery2.default)(this).val();
+	                temp[(0, _jquery2.default)(this).attr('name')] = val;
+	            });
+	            data[this.key] = temp;
+	            _jquery2.default.post(url, data).success(function (data) {
+	                return location.reload();
+	            });
 	        }
 	    }]);
 
@@ -10121,46 +10060,57 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Form = function () {
-	    function Form(form, url, key) {
-	        _classCallCheck(this, Form);
+	var MultiForm = function () {
+	    function MultiForm(form, url, key) {
+	        _classCallCheck(this, MultiForm);
 
-	        this.forms = (0, _jquery2.default)('#' + form + '.multi-form form, #' + form + '.multi-form input.single');
-	        this.submitButton = (0, _jquery2.default)('#' + form + '.multi-form button.submit-all');
+	        this.forms = (0, _jquery2.default)('#' + form + ' .multi-form form');
+	        this.submit = (0, _jquery2.default)('#' + form + ' .multi-form button.submit-all');
+	        this.singles = (0, _jquery2.default)('#' + form + ' input.single');
 	        this.key = key;
 	        this.url = url;
 	        this.events();
 	    }
 
-	    _createClass(Form, [{
+	    _createClass(MultiForm, [{
 	        key: 'events',
 	        value: function events() {
-	            this.submitButton.click(this.submitAll.bind(this));
+	            this.submit.click(this.submitAll.bind(this));
 	        }
 	    }, {
 	        key: 'submitAll',
 	        value: function submitAll(event) {
 	            var data = {},
-	                allFormsData = [];
+	                all = [];
+
+	            this.singles.each(function () {
+	                data[(0, _jquery2.default)(this).attr(name)] = (0, _jquery2.default)(this).val();
+	            });
+
 	            this.forms.each(function () {
-	                if ((0, _jquery2.default)(this).hasClass('single')) {
-	                    data[(0, _jquery2.default)(this).attr('name')] = (0, _jquery2.default)(this).val();
-	                } else {
-	                    if ((0, _jquery2.default)(this).find('input')[0].value === '') {} else allFormsData.push((0, _jquery2.default)(this).find('input').serialize());
+	                var temp = {},
+	                    inputs = (0, _jquery2.default)(this).find('input');
+	                if (inputs[0].value != '') {
+	                    inputs.each(function () {
+	                        var val = (0, _jquery2.default)(this).attr('type') == 'text' ? (0, _jquery2.default)(this).val() : +(0, _jquery2.default)(this).val();
+	                        temp[(0, _jquery2.default)(this).attr('name')] = val;
+	                    });
+	                    all.push(temp);
 	                }
 	            });
-	            data[this.key] = allFormsData;
+
+	            data[this.key] = all;
+
 	            _jquery2.default.post(this.url, data, function () {
-	                location.reload();
-	                return false;
+	                return location.reload();
 	            });
 	        }
 	    }]);
 
-	    return Form;
+	    return MultiForm;
 	}();
 
-	exports.default = Form;
+	exports.default = MultiForm;
 
 /***/ },
 /* 5 */
@@ -10203,20 +10153,35 @@
 
 	            (0, _jquery2.default)(document).keyup(this.handleEsc.bind(this));
 	            (0, _jquery2.default)('#open').click(this.get.bind(this));
-	            (0, _jquery2.default)('#edit').click(function () {});
+	            (0, _jquery2.default)('#edit-item').click(this.edit.bind(this));
 	            (0, _jquery2.default)(document).on('delete-item', this.delete.bind(this));
 	        }
 	    }, {
 	        key: 'makeActiveRow',
 	        value: function makeActiveRow(event) {
 	            event.currentTarget.classList.add('active');
-	            var row = {
-	                id: this.table.find('.active .id')[0].innerText,
-	                name: this.table.find('.active .name')[0].innerText,
-	                stock: +this.table.find('.active .stock')[0].innerText
+	            var id = this.table.find('.active .id')[0].innerText,
+	                low = +this.table.find('.active .low')[0].innerText,
+	                name = this.table.find('.active .name')[0].innerText,
+	                stock = +this.table.find('.active .stock')[0].innerText,
+	                category = this.table.find('.active .category')[0].innerText,
+	                row = {
+	                id: id,
+	                category: category,
+	                name: name,
+	                stock: stock,
+	                low: low
 	            };
 	            this.activeRow = row;
 	            (0, _jquery2.default)('html').addClass('options-open');
+	            //
+	            (0, _jquery2.default)('#active-id').html(id);
+	            (0, _jquery2.default)('.active-name').html(name);
+	            (0, _jquery2.default)('.active-stock').html(stock);
+	            //
+	            (0, _jquery2.default)('#u-name').val(name);
+	            (0, _jquery2.default)('#u-category').val(category);
+	            (0, _jquery2.default)('#u-low').val(low);
 	        }
 	    }, {
 	        key: 'closeOptions',
@@ -10233,12 +10198,22 @@
 	    }, {
 	        key: 'edit',
 	        value: function edit(event) {
-	            var url = '/items/' + this.activeRow.id;
+	            console.log(event.currentTarget);
+	            var url = '/items/' + this.activeRow.id,
+	                uName = (0, _jquery2.default)('#u-name').val() || this.activeRow.name,
+	                uCategory = (0, _jquery2.default)('#u-category').val() || this.activeRow.category,
+	                uLow = +(0, _jquery2.default)('#u-low').val() || this.activeRow.low,
+	                data = {
+	                name: uName,
+	                category: uCategory,
+	                lowAt: uLow
+	            };
 	            _jquery2.default.ajax({
 	                url: url,
 	                method: 'PUT',
 	                data: { update: data },
-	                success: function success() {
+	                success: function success(data) {
+	                    console.log(data);
 	                    location.reload();
 	                }
 	            });

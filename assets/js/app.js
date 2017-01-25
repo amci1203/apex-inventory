@@ -8,16 +8,17 @@ import ItemTable from './modules/ItemTable';
 import './modules/Menu';
 
 
-const newModal      = new Modal('new');
-const newForm       = new Form('new-item', '/items/new', 'post', 'item');
+const newModal      = new Modal('new', true);
+const newForm       = new Form('new-item', '/items', 'item');
 
-const multiNewModal = new Modal('new-multi');
-const newMultiForm  = new MultiForm('new-multi', '/items/new/multi', 'items');
+const newMultiModal = new Modal('new-multi', true);
+const newMultiForm  = new MultiForm('new-multi', '/items/multi', 'items');
 
 const logModal      = new Modal('log');
-const logForm       = new Form('log-item', '/items/:itemId/push', 'post', 'log');
+const logForm       = new Form('log-item', '/items/:itemId/push', 'log');
 
-const deleteModal      = new Modal('delete');
+const deleteModal   = new Modal('delete');
+const editModal     = new Modal('edit');
 
 const multiLogModal = new Modal('logs');
 const logMultiForm  = new MultiForm('logs', '/items/logs/multi', 'itemLogs');
@@ -25,4 +26,4 @@ const logMultiForm  = new MultiForm('logs', '/items/logs/multi', 'itemLogs');
 const masterSheet   = new MainTable();
 const itemSheet     = new ItemTable();
 
-$('#delete').click(() => $(document).trigger('delete-item'));
+$('#delete-item').click(() => $(document).trigger('delete-item'));

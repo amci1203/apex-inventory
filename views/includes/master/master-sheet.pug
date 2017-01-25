@@ -2,6 +2,7 @@
 - let prevCategory = null
 - let row = 1
 
+#active-id.hidden
 table#all: tbody
     each item, index in items
         - currentCategory = item.category
@@ -16,6 +17,8 @@ table#all: tbody
         tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": row % 2 === 0 })
             - let lastModified = item.lastModified ? String(item.lastModified).substr(0, 16) : ''
             td.id= item._id
+            td.category= item.category
+            td.low= item.lowAt
             td.name= item.name
             td.modified= lastModified
             td.stock= item.inStock

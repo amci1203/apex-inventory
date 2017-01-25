@@ -1,21 +1,33 @@
 button {
     @mixin clickable
+    &:disabled {
+        background-color: #555;
+        color: #111;
+    }
 }
+
 .btn {
+    display: block;
     background-color: $mainBlue;
     color: #FFF;
+    &:hover { background-color: color($mainBlue b(35%)) }
     border: none;
+    margin-top: 1rem;
+    margin-top: 1.2rem;
     padding: 1rem 1.35rem;
     font-size: 1.15rem;
+    
     &--circle {
         margin: 0.25rem 0;
         height: $buttonSize;
         width: $buttonSize;
         border-radius: calc($buttonSize / 2);
         border: 4px solid $mainBlue;
+        box-shadow: 1px 3px 3px 1px #333;
         background-color: #FFF;
         color: $mainBlue;
         text-align: center;
+        z-index: 500;
 
         span:not(.tooltip-text) {
             font-size: 2rem;
@@ -27,10 +39,29 @@ button {
             color: #FFF;
         }
     }
-    &--block {
+    
+    &--big-block {
         margin: 0;
         background-color: #FFF;
         width: $optionsW;
         height: $optionsW;
+    }
+    
+    &--lg {
+        padding: 20px 35px;
+    }
+    
+    &--wide {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%;
+    }
+    
+    &--danger {
+        background-color: color(#A00 b(0.6));
+        &:hover {
+            background-color: #A00;
+        }
     }
 }

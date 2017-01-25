@@ -2,11 +2,17 @@ button:hover {
     cursor: pointer;
 }
 .btn {
+    display: block;
     background-color: rgb(25, 110, 239);
     color: #FFF;
     border: none;
+    margin-top: 1rem;
+    margin-top: 1.2rem;
     padding: 1rem 1.35rem;
     font-size: 1.15rem;
+}
+.btn:hover {
+    background-color: rgb(26, 82, 166)
 }
 .btn--circle {
     margin: 0.25rem 0;
@@ -14,9 +20,11 @@ button:hover {
     width: 3rem;
     border-radius: 1.5rem;
     border: 4px solid rgb(25, 110, 239);
+    box-shadow: 1px 3px 3px 1px #333;
     background-color: #FFF;
     color: rgb(25, 110, 239);
     text-align: center;
+    z-index: 500;
 }
 .btn--circle span:not(.tooltip-text) {
     font-size: 2rem;
@@ -26,11 +34,26 @@ button:hover {
     background-color: rgb(25, 110, 239);
     color: #FFF;
 }
-.btn--block {
+.btn--big-block {
     margin: 0;
     background-color: #FFF;
     width: 12rem;
     height: 12rem;
+}
+.btn--lg {
+    padding: 20px 35px;
+}
+.btn--wide {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+}
+.btn--danger {
+    background-color: rgb(252, 0, 0);
+}
+.btn--danger:hover {
+    background-color: #A00;
 }
 header {
     position: relative;
@@ -130,6 +153,7 @@ header .section-title {
     border-right: 3px solid #FFF;
     color: #FFF;
     box-shadow: 5px 0 5px 1px #333;
+
 }
 #main-nav .list-container {
     position: absolute;
@@ -170,11 +194,12 @@ header .section-title {
     background-color: #FFF;
     color: rgb(25, 110, 239);
 }
-#main-nav .btn-group {
+.btn-group {
     width: 4rem;
     position: fixed;
     bottom: 0.2rem;
     left: 0.45rem;
+    z-index: 500;
 }
 table {
     width: 90%;
@@ -211,7 +236,7 @@ table .row:hover {
 table .row td {
     padding: 10px 15px;
 }
-table .row .id {
+table .row .id, table .row .category, table .row .low {
     display: none
 }
 table .row .name {
@@ -255,6 +280,15 @@ form .form-group {
     padding: 7px 0;
     border-bottom: 1px solid #DDD;
 }
+form .form-group.row {
+    padding: 5px 0;
+}
+form .form-group.row input {
+    border: 0;
+    border-bottom: 2px solid #CCC;
+    height: 25px;
+    width: 100%
+}
 form .form-group::after {
     content: '';
     clear: both;
@@ -266,14 +300,9 @@ form .form-group > label {
 form .form-group input {
     font-size: inherit;
 }
-form .form-group.row {
-    padding: 5px 0;
-}
-form .form-group.row input {
-    border: 0;
-    border-bottom: 2px solid #CCC;
-    height: 25px;
-    width: 100%
+form .form-group input.bordered {
+    border: 1px solid #CCC;
+    padding: 0.15rem 0.2rem;
 }
 form .form-group--inline {
     margin: 0;
@@ -432,14 +461,14 @@ form input[type="submit"]:hover, form button.submit:hover {
     margin-right: 15px;
     margin-left:  15px;
 }
+.options-open {
+    /*.btn-group { width: calc($optionsW * 2) !important }*/
+}
 .options-open main {
     left: -12rem
 }
 .options-open #options {
     right: 0
-}
-.options-open .btn-group {
-    width: 24rem !important
 }
 .row::after {
     content: '';
@@ -1241,9 +1270,9 @@ main {
     -webkit-transform: translateY(-50%);
             transform: translateY(-50%);
     left: 120%;
-    z-index: 100;
 }
 .tooltip:hover .tooltip-text {
+    z-index: 1000 !important;
     opacity: 1;
 }
 .wrapper {
@@ -1310,6 +1339,7 @@ body {
 }
 main {
     position: relative;
+    z-index: 100;
     background-color: #FFF;
     padding-bottom: 3rem;
     box-shadow: 8px 13px 10px 3px #444;

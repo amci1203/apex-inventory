@@ -27,7 +27,7 @@ table {
 
         td { padding: 10px 15px; }
 
-        .id { display: none }
+        .id, .category, .low { display: none }
         .name { text-align: left }
         .stock {
             text-align: right;

@@ -1,16 +1,6 @@
 form {
     margin: 0;
     .form-group {
-        @mixin clearfix;
-        font-size: 1.35rem;
-        margin: 0;
-        padding: 7px 0;
-        border-bottom: 1px solid #DDD;
-        & > label { float: left }
-        input {
-            font-size: inherit;
-        }
-
         &.row {
             padding: 5px 0;
             input {
@@ -20,6 +10,20 @@ form {
                 width: 100%
             }
         }
+        @mixin clearfix;
+        font-size: 1.35rem;
+        margin: 0;
+        padding: 7px 0;
+        border-bottom: 1px solid #DDD;
+        & > label { float: left }
+        input {
+            &.bordered {
+                border: 1px solid #CCC;
+                padding: 0.15rem 0.2rem;
+            }
+            font-size: inherit;
+        }
+
 
         &--inline {
             margin: 0;

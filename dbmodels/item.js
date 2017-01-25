@@ -118,7 +118,7 @@ schema.statics.push = function (isById, item, logObject, callback) {
 }
 
 schema.statics.editItem = function (itemId, data, callback) {
-    return this.update({_id: itemId}, data, {upsert: false},
+    return this.findOneAndUpdate({_id: itemId}, data, {upsert: false},
         (err, numAffected) => {
             onError(err)
             if (callback !== undefined) callback(numAffected)
@@ -129,7 +129,7 @@ schema.statics.editItem = function (itemId, data, callback) {
 schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
     return this.update(
         {
-            "_id": itemId,
+            "_id"   : itemId,
             "log._id": logId
         },
         {$set : { "log.$": newLog }},

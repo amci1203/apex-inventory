@@ -34,5 +34,5 @@
 .options-open {
     main { left: calc($optionsW * -1) }
     #options { right: 0 }
-    .btn-group { width: calc($optionsW * 2) !important }
+    /*.btn-group { width: calc($optionsW * 2) !important }*/
 }

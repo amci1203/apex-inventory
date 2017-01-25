@@ -29,6 +29,7 @@ body {
 
 main {
     position: relative;
+    z-index: $baseZ;
     background-color: #FFF;
     padding-bottom: 3rem;
     box-shadow: 8px 13px 10px 3px #444;
