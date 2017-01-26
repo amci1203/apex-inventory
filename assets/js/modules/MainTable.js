@@ -22,6 +22,7 @@ export default class MainTable {
         $(document).on('delete-item', this.erase.bind(this))
     }
     makeActiveRow (event) {
+        this.rows.removeClass('active');
         event.currentTarget.classList.add('active');
         const id       =  this.table.find('.active .id')[0].innerText,
               low      = +this.table.find('.active .low')[0].innerText,
@@ -48,6 +49,7 @@ export default class MainTable {
     }
     closeOptions (event) {
         this.rows.removeClass('active');
+        this.activeRow = {};
         $('html').removeClass('options-open');
     }
     get (event) {
@@ -55,23 +57,24 @@ export default class MainTable {
         location.assign(url);
     }
     edit (event) {
-        console.log(event.currentTarget)
         const url       = `/items/${this.activeRow.id}`,
               uName     =  $('#u-name').val()     || this.activeRow.name,
               uCategory =  $('#u-category').val() || this.activeRow.category,
-              uLow      = +$('#u-low').val() || this.activeRow.low,
+              uLow      = +$('#u-low').val()      || this.activeRow.low,
               data      = {
-                  name: uName,
-                  category: uCategory,
-                  lowAt: uLow
+                  name     : uName,
+                  category : uCategory,
+                  lowAt    : uLow
               }
         $.ajax({
             url: url,
             method: 'PUT',
             data: { update: data },
-            success: (data) => {
-                console.log(data)
-                location.reload()
+            success: (res) => {
+                if (!res.error) location.reload()
+                else {
+                    $('#edit-form').find('.error')[0].innerHTML = res.error;
+                }
             }
         })
     }
@@ -88,17 +91,30 @@ export default class MainTable {
         if (confirmed) $('#delete-item').removeAttr('disabled')
         else $('#delete-item').attr('disabled', 'disabled')
     }
-    handleKeyPresses (keyCode) {
-        if ($('html').hasClass('options-open') && !$('html').hasClass('modal-open')) {
-            const _       = this,
-                  key     = String(keyCode.keyCode),
-                  methods = {
-                      27: () => _.closeOptions() //ESC
-
-                  };
-            if (methods.hasOwnProperty(key) && typeof(methods[key]) == 'function') {
-                methods[key]()
-            } else return false
+    handleKeyPresses (event) {
+        const _       = this,
+              key     = String(event.keyCode),
+              state   = $('html').hasClass('options-open') ? 'main' : 'options',
+              methods = {
+                main: {
+                    27: () => _.closeOptions(), //ESC
+                    79: () => _.get(), //'O'
+                    69: () => $('.edit--open').first().trigger('click'), //'E'
+                    68: () => $('.delete--open').first().trigger('click'), //'D'
+                    76: () => $('.log--open').first().trigger('click') // 'L'
+                },
+                options: {
+                    78: () => $('.new--open').first().trigger('click'),
+                    77: () => $('.new-multi--open').first().trigger('click'),
+                    76: () => $('.logs--open').first().trigger('click')
+                }
+            }
+        
+        
+        if (methods.hasOwnProperty(key) && typeof(methods[state][key]) == 'function') {
+            methods[state][key]()
+        } else {
+            return false
         }
     }
 }

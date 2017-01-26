@@ -75,22 +75,19 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var newModal = new _Modal2.default('new', true);
-	var newForm = new _Form2.default('new-item', '/items', 'item');
-
 	var newMultiModal = new _Modal2.default('new-multi', true);
-	var newMultiForm = new _MultiForm2.default('new-multi', '/items/multi', 'items');
-
 	var logModal = new _Modal2.default('log', true);
+	var multiLogModal = new _Modal2.default('logs', true);
+	var editModal = new _Modal2.default('edit', true);
+	var deleteModal = new _Modal2.default('delete', true);
+
+	var newForm = new _Form2.default('new-item', '/items', 'item');
 	var logForm = new _Form2.default('log-item', '/items/:itemId/push', 'log');
 
-	var deleteModal = new _Modal2.default('delete', true);
-	var editModal = new _Modal2.default('edit');
-
-	var multiLogModal = new _Modal2.default('logs', true);
+	var newMultiForm = new _MultiForm2.default('new-multi', '/items/multi', 'items');
 	var logMultiForm = new _MultiForm2.default('logs', '/items/logs/multi', 'itemLogs');
 
-	var masterSheet = new _MainTable2.default();
-	var itemSheet = new _ItemTable2.default();
+	var sheet = location.pathname == '/items' ? new _MainTable2.default() : new _ItemTable2.default();
 
 	(0, _jquery2.default)('#delete-item').click(function () {
 	  return (0, _jquery2.default)(document).trigger('delete-item');
@@ -9953,7 +9950,7 @@
 	        value: function events() {
 	            this.openTrigger.click(this.openModal.bind(this));
 	            this.closeTrigger.click(this.closeModal.bind(this));
-	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
+	            this.modal.keyup(this.handleKeyPress.bind(this));
 	        }
 	    }, {
 	        key: 'openModal',
@@ -9982,8 +9979,11 @@
 	        }
 	    }, {
 	        key: 'handleKeyPress',
-	        value: function handleKeyPress(key) {
-	            if (key.keyCode === 27) this.modal.removeClass('modal--open');
+	        value: function handleKeyPress(event) {
+	            if (event.keyCode === 27) {
+	                this.modal.removeClass('modal--open');
+	                (0, _jquery2.default)('html').removeClass('modal-open');
+	            };
 	        }
 	    }]);
 
@@ -10138,8 +10138,6 @@
 	    value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _jquery = __webpack_require__(1);
@@ -10179,6 +10177,7 @@
 	    }, {
 	        key: 'makeActiveRow',
 	        value: function makeActiveRow(event) {
+	            this.rows.removeClass('active');
 	            event.currentTarget.classList.add('active');
 	            var id = this.table.find('.active .id')[0].innerText,
 	                low = +this.table.find('.active .low')[0].innerText,
@@ -10207,6 +10206,7 @@
 	        key: 'closeOptions',
 	        value: function closeOptions(event) {
 	            this.rows.removeClass('active');
+	            this.activeRow = {};
 	            (0, _jquery2.default)('html').removeClass('options-open');
 	        }
 	    }, {
@@ -10218,7 +10218,6 @@
 	    }, {
 	        key: 'edit',
 	        value: function edit(event) {
-	            console.log(event.currentTarget);
 	            var url = '/items/' + this.activeRow.id,
 	                uName = (0, _jquery2.default)('#u-name').val() || this.activeRow.name,
 	                uCategory = (0, _jquery2.default)('#u-category').val() || this.activeRow.category,
@@ -10232,9 +10231,10 @@
 	                url: url,
 	                method: 'PUT',
 	                data: { update: data },
-	                success: function success(data) {
-	                    console.log(data);
-	                    location.reload();
+	                success: function success(res) {
+	                    if (!res.error) location.reload();else {
+	                        (0, _jquery2.default)('#edit-form').find('.error')[0].innerHTML = res.error;
+	                    }
 	                }
 	            });
 	        }
@@ -10258,27 +10258,45 @@
 	        }
 	    }, {
 	        key: 'handleKeyPresses',
-	        value: function handleKeyPresses(keyCode) {
-	            var _this = this;
+	        value: function handleKeyPresses(event) {
+	            var _2 = this,
+	                key = String(event.keyCode),
+	                state = (0, _jquery2.default)('html').hasClass('options-open') ? 'main' : 'options',
+	                methods = {
+	                main: {
+	                    27: function _() {
+	                        return _2.closeOptions();
+	                    }, //ESC
+	                    79: function _() {
+	                        return _2.get();
+	                    }, //'O'
+	                    69: function _() {
+	                        return (0, _jquery2.default)('.edit--open').first().trigger('click');
+	                    }, //'E'
+	                    68: function _() {
+	                        return (0, _jquery2.default)('.delete--open').first().trigger('click');
+	                    }, //'D'
+	                    76: function _() {
+	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
+	                    } // 'L'
+	                },
+	                options: {
+	                    78: function _() {
+	                        return (0, _jquery2.default)('.new--open').first().trigger('click');
+	                    },
+	                    77: function _() {
+	                        return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
+	                    },
+	                    76: function _() {
+	                        return (0, _jquery2.default)('.logs--open').first().trigger('click');
+	                    }
+	                }
+	            };
 
-	            if ((0, _jquery2.default)('html').hasClass('options-open') && !(0, _jquery2.default)('html').hasClass('modal-open')) {
-	                var _ret = function () {
-	                    var _2 = _this,
-	                        key = String(keyCode.keyCode),
-	                        methods = {
-	                        27: function _() {
-	                            return _2.closeOptions();
-	                        } //ESC
-
-	                    };
-	                    if (methods.hasOwnProperty(key) && typeof methods[key] == 'function') {
-	                        methods[key]();
-	                    } else return {
-	                            v: false
-	                        };
-	                }();
-
-	                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	            if (methods.hasOwnProperty(key) && typeof methods[state][key] == 'function') {
+	                methods[state][key]();
+	            } else {
+	                return false;
 	            }
 	        }
 	    }]);
@@ -10317,20 +10335,48 @@
 	        this.itemName = (0, _jquery2.default)('#item-pane .heading').text();
 	        this.nextButton = (0, _jquery2.default)('#item-nav-buttons button.next');
 	        this.prevButton = (0, _jquery2.default)('#item-nav-buttons button.previous');
+
+	        this.init();
 	        this.events();
 	    }
 
 	    _createClass(ItemTable, [{
+	        key: 'init',
+	        value: function init() {
+	            (0, _jquery2.default)('#log .modal__header .active-name').text((0, _jquery2.default)('#active-name').text());
+	        }
+	    }, {
 	        key: 'events',
 	        value: function events() {
 	            this.nextButton.click(this.getAdjacentItem.bind(this));
 	            this.prevButton.click(this.getAdjacentItem.bind(this));
+	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
 	        }
 	    }, {
 	        key: 'getAdjacentItem',
 	        value: function getAdjacentItem(event) {
 	            var direction = event.currentTarget.innerText === 'Next' ? '/next' : '/prev';
 	            location.assign('/items/' + this.itemName + direction);
+	        }
+	    }, {
+	        key: 'handleKeyPress',
+	        value: function handleKeyPress(event) {
+	            console.log(event.keyCode);
+	            if (!(0, _jquery2.default)('html').hasClass('modal-open')) {
+	                var _ = this,
+	                    key = String(event.keyCode),
+	                    methods = {
+	                    27: function _() {
+	                        return location.assign('/');
+	                    }, //ESC
+	                    76: function _() {
+	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
+	                    } // 'L'
+	                };
+	                if (methods.hasOwnProperty(key) && typeof methods[key] == 'function') {
+	                    methods[key]();
+	                } else return false;
+	            }
 	        }
 	    }]);
 

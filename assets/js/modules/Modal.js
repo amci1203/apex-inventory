@@ -13,7 +13,7 @@ export default class Modal {
     events () {
         this.openTrigger.click(this.openModal.bind(this));
         this.closeTrigger.click(this.closeModal.bind(this));
-        $(document).keyup(this.handleKeyPress.bind(this));
+        this.modal.keyup(this.handleKeyPress.bind(this));
     }
 
     openModal () {
@@ -33,7 +33,10 @@ export default class Modal {
         this.modal.removeClass('modal--open');
         return false;
     }
-    handleKeyPress (key) {
-        if (key.keyCode === 27) this.modal.removeClass('modal--open');
+    handleKeyPress (event) {
+        if (event.keyCode === 27) {
+            this.modal.removeClass('modal--open');
+            $('html').removeClass('modal-open');
+        };
     }
 }

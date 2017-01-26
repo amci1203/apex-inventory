@@ -27,6 +27,11 @@
         color: color($mainBlue b(0.15));
         padding-bottom: 10px;
         border-bottom: 1px solid #BBB;
+        span {
+            display: block;
+            margin-top: 15px;
+            font-weight: 100;
+        }
     }
 
     &__close-button {

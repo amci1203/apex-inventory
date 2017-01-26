@@ -21,6 +21,14 @@ table {
             color: $lowRed;
             &:hover { background-color: color($lowRed l(40%) a(50%)) !important; }
         }
+        &.active {
+            background-color: $mainBlue;
+            color: #FFF;
+            &:hover {
+                background-color: $mainBlue;
+                color: #FFF;
+            }
+        }
 
         color: inherit;
         &:hover { background-color: #DDD }

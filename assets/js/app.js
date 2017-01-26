@@ -8,22 +8,19 @@ import ItemTable from './modules/ItemTable';
 import './modules/Menu';
 
 
-const newModal      = new Modal('new', true);
-const newForm       = new Form('new-item', '/items', 'item');
-
+const newModal      = new Modal('new',       true);
 const newMultiModal = new Modal('new-multi', true);
-const newMultiForm  = new MultiForm('new-multi', '/items/multi', 'items');
+const logModal      = new Modal('log',       true);
+const multiLogModal = new Modal('logs',      true);
+const editModal     = new Modal('edit',      true);
+const deleteModal   = new Modal('delete',    true);
 
-const logModal      = new Modal('log', true);
+const newForm       = new Form('new-item', '/items', 'item');
 const logForm       = new Form('log-item', '/items/:itemId/push', 'log');
 
-const deleteModal   = new Modal('delete', true);
-const editModal     = new Modal('edit');
-
-const multiLogModal = new Modal('logs', true);
+const newMultiForm  = new MultiForm('new-multi', '/items/multi', 'items');
 const logMultiForm  = new MultiForm('logs', '/items/logs/multi', 'itemLogs');
 
-const masterSheet   = new MainTable();
-const itemSheet     = new ItemTable();
+const sheet = location.pathname == '/items' ? new MainTable() : new ItemTable();
 
 $('#delete-item').click(() => $(document).trigger('delete-item'));

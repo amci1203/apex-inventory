@@ -102,7 +102,7 @@ module.exports = (router) => {
             if (affected !== null && affected !== undefined) {
                 res.end();
             }
-            else res.status(401)
+            else res.json({error: 'An item already has that name.'})
         })
     })
 
@@ -121,7 +121,7 @@ module.exports = (router) => {
     
     router.delete('/:itemId', (req, res) => {
         Item.remove(req.params.itemId, (id) => {
-            if ([null, undefined].indexOf(affected) == -1) {
+            if ([null, undefined].indexOf(id) == -1) {
                 res.end();
             }
             else res.status(401)
