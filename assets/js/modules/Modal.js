@@ -37,6 +37,7 @@ export default class Modal {
         if (event.keyCode === 27) {
             this.modal.removeClass('modal--open');
             $('html').removeClass('modal-open');
+            event.stop = true;
         };
     }
 }

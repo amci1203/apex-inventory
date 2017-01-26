@@ -28,17 +28,23 @@ export default class ItemTable {
     }
     
     handleKeyPress (event) {
-        console.log(event.keyCode)
         if (!$('html').hasClass('modal-open')) {
             const _       = this,
                   key     = String(event.keyCode),
+                  state   = !$('html').hasClass('options-open') ? 'main' : 'options',
                   methods = {
-                      27: () => location.assign('/'), //ESC
-                      76: () => $('.log--open').first().trigger('click') // 'L'
+                      main: {
+                          27: () => location.replace('/'), //ESC
+                          76: () => $('.log--open').first().trigger('click') //'L'
+                      },
+                      options: {}
                   };
-            if (methods.hasOwnProperty(key) && typeof(methods[key]) == 'function') {
-                methods[key]()
-            } else return false
+            console.log(key);
+            if (methods[state].hasOwnProperty(key) && typeof(methods[state][key]) == 'function') {
+                methods[state][key]()
+            } else {
+                return false
+            }
         }
     }
 }

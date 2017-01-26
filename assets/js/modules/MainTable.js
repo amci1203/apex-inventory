@@ -98,20 +98,21 @@ export default class MainTable {
               methods = {
                 main: {
                     27: () => _.closeOptions(), //ESC
-                    79: () => _.get(), //'O'
-                    69: () => $('.edit--open').first().trigger('click'), //'E'
+                    67: () => $('#sidebar-toggle').trigger('click'), //'C'
                     68: () => $('.delete--open').first().trigger('click'), //'D'
-                    76: () => $('.log--open').first().trigger('click') // 'L'
+                    69: () => $('.edit--open').first().trigger('click'), //'E'
+                    76: () => $('.log--open').first().trigger('click'), // 'L'
+                    79: () => _.get() //'O'
                 },
                 options: {
-                    78: () => $('.new--open').first().trigger('click'),
-                    77: () => $('.new-multi--open').first().trigger('click'),
-                    76: () => $('.logs--open').first().trigger('click')
+                    67: () => $('#sidebar-toggle').trigger('click'), //'C'
+                    78: () => $('.new--open').first().trigger('click'), //'N'
+                    77: () => $('.new-multi--open').first().trigger('click'), //'M'
+                    76: () => $('.logs--open').first().trigger('click') //'L'
                 }
             }
-        
-        
-        if (methods.hasOwnProperty(key) && typeof(methods[state][key]) == 'function') {
+        console.log(key);
+        if (methods[state].hasOwnProperty(key) && typeof(methods[state][key]) == 'function') {
             methods[state][key]()
         } else {
             return false

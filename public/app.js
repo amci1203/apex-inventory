@@ -9983,6 +9983,7 @@
 	            if (event.keyCode === 27) {
 	                this.modal.removeClass('modal--open');
 	                (0, _jquery2.default)('html').removeClass('modal-open');
+	                event.stop = true;
 	            };
 	        }
 	    }]);
@@ -10267,33 +10268,39 @@
 	                    27: function _() {
 	                        return _2.closeOptions();
 	                    }, //ESC
-	                    79: function _() {
-	                        return _2.get();
-	                    }, //'O'
-	                    69: function _() {
-	                        return (0, _jquery2.default)('.edit--open').first().trigger('click');
-	                    }, //'E'
+	                    67: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //'C'
 	                    68: function _() {
 	                        return (0, _jquery2.default)('.delete--open').first().trigger('click');
 	                    }, //'D'
+	                    69: function _() {
+	                        return (0, _jquery2.default)('.edit--open').first().trigger('click');
+	                    }, //'E'
 	                    76: function _() {
 	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
-	                    } // 'L'
+	                    }, // 'L'
+	                    79: function _() {
+	                        return _2.get();
+	                    } //'O'
 	                },
 	                options: {
+	                    67: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //'C'
 	                    78: function _() {
 	                        return (0, _jquery2.default)('.new--open').first().trigger('click');
-	                    },
+	                    }, //'N'
 	                    77: function _() {
 	                        return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
-	                    },
+	                    }, //'M'
 	                    76: function _() {
 	                        return (0, _jquery2.default)('.logs--open').first().trigger('click');
-	                    }
+	                    } //'L'
 	                }
 	            };
-
-	            if (methods.hasOwnProperty(key) && typeof methods[state][key] == 'function') {
+	            console.log(key);
+	            if (methods[state].hasOwnProperty(key) && typeof methods[state][key] == 'function') {
 	                methods[state][key]();
 	            } else {
 	                return false;
@@ -10361,21 +10368,27 @@
 	    }, {
 	        key: 'handleKeyPress',
 	        value: function handleKeyPress(event) {
-	            console.log(event.keyCode);
 	            if (!(0, _jquery2.default)('html').hasClass('modal-open')) {
 	                var _ = this,
 	                    key = String(event.keyCode),
+	                    state = !(0, _jquery2.default)('html').hasClass('options-open') ? 'main' : 'options',
 	                    methods = {
-	                    27: function _() {
-	                        return location.assign('/');
-	                    }, //ESC
-	                    76: function _() {
-	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
-	                    } // 'L'
+	                    main: {
+	                        27: function _() {
+	                            return location.replace('/');
+	                        }, //ESC
+	                        76: function _() {
+	                            return (0, _jquery2.default)('.log--open').first().trigger('click');
+	                        } //'L'
+	                    },
+	                    options: {}
 	                };
-	                if (methods.hasOwnProperty(key) && typeof methods[key] == 'function') {
-	                    methods[key]();
-	                } else return false;
+	                console.log(key);
+	                if (methods[state].hasOwnProperty(key) && typeof methods[state][key] == 'function') {
+	                    methods[state][key]();
+	                } else {
+	                    return false;
+	                }
 	            }
 	        }
 	    }]);
