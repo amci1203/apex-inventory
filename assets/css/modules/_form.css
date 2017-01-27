@@ -28,6 +28,11 @@ form {
             }
             font-size: inherit;
         }
+        textarea {
+            padding: 15px;
+            width: 100%;
+            font-size: inherit;
+        }
 
 
         &--inline {

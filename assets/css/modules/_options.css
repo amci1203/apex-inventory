@@ -2,7 +2,7 @@
     @mixin vCenter;
     transition: all 0.3s ease-out;
     position: fixed;
-    width: calc($optionsW - 40px);
+    width: calc($optionsW);
     right: calc($optionsW * -1);
     
     button {

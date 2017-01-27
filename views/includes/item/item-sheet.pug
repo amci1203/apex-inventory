@@ -1,5 +1,6 @@
 #active-id.hidden= item._id
 #active-name.hidden= item.name
+#active-log-id.hidden
 table#item
     thead
         th
@@ -11,8 +12,8 @@ table#item
             - let timestamp  = log.date.getTime() + 1000
             - let datestring = `${new Date(timestamp).toDateString()}`.substr(0, 16)
             tr.row(class= index % 2 == 0 ? 'row--striped' : '')
-                td.hidden= log._id
-                td= datestring
-                td(class={"bolded": log.added > log.removed})= log.added
-                td(class={"bolded": log.added < log.removed})= log.removed
-                td= log.comments
+                td.id.hidden= log._id
+                td.date= datestring
+                td.added(class={"bolded": log.added > log.removed})= log.added
+                td.removed(class={"bolded": log.added < log.removed})= log.removed
+                td.comments= log.comments

@@ -2,10 +2,11 @@ import $ from 'jquery';
 
 export default class MainTable {
     constructor () {
-        this.table        = $('#all');
-        this.rows         = $('#all .row');
-        this.getButton    = $('#all .row .name');
-        this.itemTable    = $('#item');
+        this.identifier = 'all';
+        this.table      = $('#all');
+        this.rows       = $('#all .row');
+        this.getButton  = $('#all .row .name');
+        this.itemTable  = $('#item');
         
         this.activeRow = {}
         this.events();
@@ -92,30 +93,36 @@ export default class MainTable {
         else $('#delete-item').attr('disabled', 'disabled')
     }
     handleKeyPresses (event) {
-        const _       = this,
-              key     = String(event.keyCode),
-              state   = $('html').hasClass('options-open') ? 'main' : 'options',
-              methods = {
-                main: {
-                    27: () => _.closeOptions(), //ESC
-                    67: () => $('#sidebar-toggle').trigger('click'), //'C'
-                    68: () => $('.delete--open').first().trigger('click'), //'D'
-                    69: () => $('.edit--open').first().trigger('click'), //'E'
-                    76: () => $('.log--open').first().trigger('click'), // 'L'
-                    79: () => _.get() //'O'
-                },
-                options: {
-                    67: () => $('#sidebar-toggle').trigger('click'), //'C'
-                    78: () => $('.new--open').first().trigger('click'), //'N'
-                    77: () => $('.new-multi--open').first().trigger('click'), //'M'
-                    76: () => $('.logs--open').first().trigger('click') //'L'
-                }
-            }
-        console.log(key);
-        if (methods[state].hasOwnProperty(key) && typeof(methods[state][key]) == 'function') {
-            methods[state][key]()
+        console.log('FIRED')
+        console.log($('html').hasClass('modal-open'))
+        if ($('html').hasClass('modal-open')) {
+            event.stopPropagation();
         } else {
-            return false
+            const _       = this,
+                  key     = String(event.keyCode),
+                  state   = $('html').hasClass('options-open') ? 'main' : 'options',
+                  methods = {
+                    main: {
+                        27: () => _.closeOptions(), //ESC
+                        67: () => $('#sidebar-toggle').trigger('click'), //'C'
+                        68: () => $('.delete--open').first().trigger('click'), //'D'
+                        69: () => $('.edit--open').first().trigger('click'), //'E'
+                        76: () => $('.log--open').first().trigger('click'), // 'L'
+                        79: () => _.get() //'O'
+                    },
+                    options: {
+                        67: () => $('#sidebar-toggle').trigger('click'), //'C'
+                        78: () => $('.new--open').first().trigger('click'), //'N'
+                        77: () => $('.new-multi--open').first().trigger('click'), //'M'
+                        76: () => $('.logs--open').first().trigger('click') //'L'
+                    }
+                }
+            console.log(key);
+            if (typeof(methods[state][key]) == 'function') {
+                methods[state][key]()
+            } else {
+                return false
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ let subSchema = new mongoose.Schema(
     {
         added:   {type: Number, default: 0},
         removed: {type: Number, default: 0},
-        comments: String
+        comments: {type: String, trim: true, maxlength: 140 }
     },
     {
         timestamps: {
@@ -127,9 +127,10 @@ schema.statics.editItem = function (itemId, data, callback) {
 }
 
 schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
+    if (newLog.comments) 
     return this.update(
         {
-            "_id"   : itemId,
+            "_id"    : itemId,
             "log._id": logId
         },
         {$set : { "log.$": newLog }},
@@ -142,7 +143,7 @@ schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
 }
 
 schema.statics.remove = function (itemId, callback) {
-    return this.where({_id: itemId}).remove((err, removedId) => {
+    return this.remove({_id: itemId}, (err, removedId) => {
         onError(err);
         if (callback !== undefined) callback(removedId)
     })

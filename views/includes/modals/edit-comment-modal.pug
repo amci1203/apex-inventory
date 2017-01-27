@@ -1,0 +1,8 @@
+#edit-comment.modal
+    span.modal__close-button.edit-comment--close X
+    section.modal__body.modal__body--opaque
+        h1.modal__header Edit Comment #[br] #[span.active-log-date]
+        form#edit-comment-form(action='#')
+            .form-group
+                textarea#u-comment(rows='10', name='comments' maxlength='140')
+            button.btn.submit Submit

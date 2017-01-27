@@ -50,13 +50,13 @@
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _Modal = __webpack_require__(2);
-
-	var _Modal2 = _interopRequireDefault(_Modal);
-
-	var _Form = __webpack_require__(3);
+	var _Form = __webpack_require__(2);
 
 	var _Form2 = _interopRequireDefault(_Form);
+
+	var _Modal = __webpack_require__(3);
+
+	var _Modal2 = _interopRequireDefault(_Modal);
 
 	var _MultiForm = __webpack_require__(4);
 
@@ -74,24 +74,33 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var newModal = new _Modal2.default('new', true);
-	var newMultiModal = new _Modal2.default('new-multi', true);
-	var logModal = new _Modal2.default('log', true);
-	var multiLogModal = new _Modal2.default('logs', true);
-	var editModal = new _Modal2.default('edit', true);
-	var deleteModal = new _Modal2.default('delete', true);
-
-	var newForm = new _Form2.default('new-item', '/items', 'item');
-	var logForm = new _Form2.default('log-item', '/items/:itemId/push', 'log');
-
-	var newMultiForm = new _MultiForm2.default('new-multi', '/items/multi', 'items');
-	var logMultiForm = new _MultiForm2.default('logs', '/items/logs/multi', 'itemLogs');
-
 	var sheet = location.pathname == '/items' ? new _MainTable2.default() : new _ItemTable2.default();
 
-	(0, _jquery2.default)('#delete-item').click(function () {
-	  return (0, _jquery2.default)(document).trigger('delete-item');
-	});
+	var logModal = new _Modal2.default('log', true),
+	    logForm = new _Form2.default('log-item', '/:itemId', 'log');
+
+	if (sheet.identifier == 'all') {
+	      var newModal = new _Modal2.default('new', true),
+	          newMultiModal = new _Modal2.default('new-multi', true),
+	          logMultiModal = new _Modal2.default('logs', true),
+	          editModal = new _Modal2.default('edit', true),
+	          deleteModal = new _Modal2.default('delete', true);
+
+	      var newForm = new _Form2.default('new-item', '', 'item');
+
+	      var newMultiForm = new _MultiForm2.default('new-multi', '/multi', 'items'),
+	          logMultiForm = new _MultiForm2.default('logs', '/logs/multi', 'itemLogs');
+
+	      (0, _jquery2.default)('#delete-item').click(function () {
+	            return (0, _jquery2.default)(document).trigger('delete-item');
+	      });
+	} else if (sheet.identifier == 'item') {
+	      var editLogModal = new _Modal2.default('edit-log', true),
+	          editCommentModal = new _Modal2.default('edit-comment', true);
+
+	      var editLog = new _Form2.default('edit-log-form', '/:itemId/:logId', 'uLog', 'PUT'),
+	          editComments = new _Form2.default('edit-comment-form', '/:itemId/:logId', 'uLog', 'PUT');
+	}
 
 /***/ },
 /* 1 */
@@ -9933,6 +9942,92 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	var Form = function () {
+	    function Form(form, url, key, method) {
+	        _classCallCheck(this, Form);
+
+	        this.form = (0, _jquery2.default)('#' + form);
+	        this.submit = (0, _jquery2.default)('#' + form + ' button.submit');
+	        this.data = (0, _jquery2.default)('#' + form).find('input:not([type="submit"]), select, textarea');
+	        this.url = '/items' + url;
+	        this.key = key;
+	        this.method = method || 'POST';
+
+	        this.events();
+	    }
+
+	    _createClass(Form, [{
+	        key: 'events',
+	        value: function events() {
+	            this.submit.click(this.handle.bind(this));
+	        }
+	    }, {
+	        key: 'handle',
+	        value: function handle(event) {
+	            var _this = this;
+
+	            var temp = {},
+	                data = {},
+	                url = function () {
+	                var i = 0,
+	                    tmp = _this.url;
+	                do {
+	                    if (tmp.indexOf(':') == -1) return tmp;else {
+	                        if (i == 0) {
+	                            tmp.replace(':itemId', (0, _jquery2.default)('#active-id').html());
+	                        }
+	                        if (i == 1) {
+	                            tmp.replace(':logId', (0, _jquery2.default)('#active-log-id').html());
+	                        }
+	                        i++;
+	                    }
+	                } while (tmp.indexOf(':') != -1);
+	                return tmp;
+	            }();
+	            console.log(url); //HERE
+	            this.data.each(function () {
+	                console.log((0, _jquery2.default)(this).val());
+	                var val = (0, _jquery2.default)(this).attr('type') == 'number' ? +(0, _jquery2.default)(this).val() : (0, _jquery2.default)(this).val().trim();
+	                temp[(0, _jquery2.default)(this).attr('name')] = val;
+	            });
+	            data[this.key] = temp;
+	            _jquery2.default.ajax({
+	                url: url,
+	                method: this.method,
+	                data: data
+	            }).success(function (res) {
+	                if (!res.error) location.reload();else {
+	                    _this.form.find('.error')[0].innerHTML = res.error;
+	                }
+	            });
+	        }
+	    }]);
+
+	    return Form;
+	}();
+
+	exports.default = Form;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _jquery = __webpack_require__(1);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 	var Modal = function () {
 	    function Modal(modalName, hasForm) {
 	        _classCallCheck(this, Modal);
@@ -9994,70 +10089,6 @@
 	exports.default = Modal;
 
 /***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _jquery = __webpack_require__(1);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var Form = function () {
-	    function Form(form, url, key) {
-	        _classCallCheck(this, Form);
-
-	        this.form = (0, _jquery2.default)('#' + form);
-	        this.submit = (0, _jquery2.default)('#' + form + ' button.submit');
-	        this.data = (0, _jquery2.default)('#' + form + ' input:not([type="submit"])');
-	        this.url = url;
-	        this.key = key;
-	        this.events();
-	    }
-
-	    _createClass(Form, [{
-	        key: 'events',
-	        value: function events() {
-	            this.submit.click(this.handle.bind(this));
-	        }
-	    }, {
-	        key: 'handle',
-	        value: function handle(event) {
-	            var _this = this;
-
-	            var temp = {},
-	                data = {},
-	                url = this.url.indexOf(':') == -1 ? this.url : this.url.replace(':itemId', (0, _jquery2.default)('#active-id').html());
-	            this.data.each(function () {
-	                console.log((0, _jquery2.default)(this).val());
-	                var val = (0, _jquery2.default)(this).attr('type') == 'number' ? +(0, _jquery2.default)(this).val() : (0, _jquery2.default)(this).val().trim();
-	                temp[(0, _jquery2.default)(this).attr('name')] = val;
-	            });
-	            data[this.key] = temp;
-	            _jquery2.default.post(url, data).success(function (res) {
-	                if (!res.error) location.reload();else {
-	                    _this.form.find('.error')[0].innerHTML = res.error;
-	                }
-	            });
-	        }
-	    }]);
-
-	    return Form;
-	}();
-
-	exports.default = Form;
-
-/***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -10084,8 +10115,8 @@
 	        this.forms = (0, _jquery2.default)('#' + form + ' .multi-form form');
 	        this.submit = (0, _jquery2.default)('#' + form + ' .multi-form button.submit-all');
 	        this.singles = (0, _jquery2.default)('#' + form + ' input.single');
+	        this.url = '/items' + url;
 	        this.key = key;
-	        this.url = url;
 	        this.events();
 	    }
 
@@ -10139,6 +10170,8 @@
 	    value: true
 	});
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _jquery = __webpack_require__(1);
@@ -10153,6 +10186,7 @@
 	    function MainTable() {
 	        _classCallCheck(this, MainTable);
 
+	        this.identifier = 'all';
 	        this.table = (0, _jquery2.default)('#all');
 	        this.rows = (0, _jquery2.default)('#all .row');
 	        this.getButton = (0, _jquery2.default)('#all .row .name');
@@ -10260,50 +10294,64 @@
 	    }, {
 	        key: 'handleKeyPresses',
 	        value: function handleKeyPresses(event) {
-	            var _2 = this,
-	                key = String(event.keyCode),
-	                state = (0, _jquery2.default)('html').hasClass('options-open') ? 'main' : 'options',
-	                methods = {
-	                main: {
-	                    27: function _() {
-	                        return _2.closeOptions();
-	                    }, //ESC
-	                    67: function _() {
-	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
-	                    }, //'C'
-	                    68: function _() {
-	                        return (0, _jquery2.default)('.delete--open').first().trigger('click');
-	                    }, //'D'
-	                    69: function _() {
-	                        return (0, _jquery2.default)('.edit--open').first().trigger('click');
-	                    }, //'E'
-	                    76: function _() {
-	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
-	                    }, // 'L'
-	                    79: function _() {
-	                        return _2.get();
-	                    } //'O'
-	                },
-	                options: {
-	                    67: function _() {
-	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
-	                    }, //'C'
-	                    78: function _() {
-	                        return (0, _jquery2.default)('.new--open').first().trigger('click');
-	                    }, //'N'
-	                    77: function _() {
-	                        return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
-	                    }, //'M'
-	                    76: function _() {
-	                        return (0, _jquery2.default)('.logs--open').first().trigger('click');
-	                    } //'L'
-	                }
-	            };
-	            console.log(key);
-	            if (methods[state].hasOwnProperty(key) && typeof methods[state][key] == 'function') {
-	                methods[state][key]();
+	            var _this = this;
+
+	            console.log('FIRED');
+	            console.log((0, _jquery2.default)('html').hasClass('modal-open'));
+	            if ((0, _jquery2.default)('html').hasClass('modal-open')) {
+	                event.stopPropagation();
 	            } else {
-	                return false;
+	                var _ret = function () {
+	                    var _2 = _this,
+	                        key = String(event.keyCode),
+	                        state = (0, _jquery2.default)('html').hasClass('options-open') ? 'main' : 'options',
+	                        methods = {
+	                        main: {
+	                            27: function _() {
+	                                return _2.closeOptions();
+	                            }, //ESC
+	                            67: function _() {
+	                                return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                            }, //'C'
+	                            68: function _() {
+	                                return (0, _jquery2.default)('.delete--open').first().trigger('click');
+	                            }, //'D'
+	                            69: function _() {
+	                                return (0, _jquery2.default)('.edit--open').first().trigger('click');
+	                            }, //'E'
+	                            76: function _() {
+	                                return (0, _jquery2.default)('.log--open').first().trigger('click');
+	                            }, // 'L'
+	                            79: function _() {
+	                                return _2.get();
+	                            } //'O'
+	                        },
+	                        options: {
+	                            67: function _() {
+	                                return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                            }, //'C'
+	                            78: function _() {
+	                                return (0, _jquery2.default)('.new--open').first().trigger('click');
+	                            }, //'N'
+	                            77: function _() {
+	                                return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
+	                            }, //'M'
+	                            76: function _() {
+	                                return (0, _jquery2.default)('.logs--open').first().trigger('click');
+	                            } //'L'
+	                        }
+	                    };
+	                    console.log(key);
+	                    if (typeof methods[state][key] == 'function') {
+	                        methods[state][key]();
+	                    } else {
+	                        return {
+	                            v: false
+	                        };
+	                    }
+	                }();
+
+	                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
 	            }
 	        }
 	    }]);
@@ -10323,6 +10371,8 @@
 	    value: true
 	});
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _jquery = __webpack_require__(1);
@@ -10337,12 +10387,13 @@
 	    function ItemTable() {
 	        _classCallCheck(this, ItemTable);
 
+	        this.identifier = 'item';
 	        this.table = (0, _jquery2.default)('#item');
-	        this.row = (0, _jquery2.default)('#item .row');
-	        this.itemName = (0, _jquery2.default)('#item-pane .heading').text();
+	        this.rows = (0, _jquery2.default)('#item .row');
 	        this.nextButton = (0, _jquery2.default)('#item-nav-buttons button.next');
 	        this.prevButton = (0, _jquery2.default)('#item-nav-buttons button.previous');
 
+	        this.activeRow = {};
 	        this.init();
 	        this.events();
 	    }
@@ -10355,9 +10406,44 @@
 	    }, {
 	        key: 'events',
 	        value: function events() {
+	            this.rows.click(this.makeActiveRow.bind(this));
 	            this.nextButton.click(this.getAdjacentItem.bind(this));
 	            this.prevButton.click(this.getAdjacentItem.bind(this));
 	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
+	        }
+	    }, {
+	        key: 'makeActiveRow',
+	        value: function makeActiveRow(event) {
+	            this.rows.removeClass('active');
+	            event.currentTarget.classList.add('active');
+	            var id = this.table.find('.active .id')[0].innerText,
+	                date = this.table.find('.active .date')[0].innerText,
+	                added = +this.table.find('.active .added')[0].innerText,
+	                removed = +this.table.find('.active .removed')[0].innerText,
+	                comments = this.table.find('.active .comments')[0].innerText,
+	                row = {
+	                id: id,
+	                date: date,
+	                added: added,
+	                removed: removed,
+	                comments: comments
+	            };
+	            this.activeRow = row;
+	            (0, _jquery2.default)('html').addClass('options-open');
+	            //
+	            (0, _jquery2.default)('#active-log-id').html(id);
+	            (0, _jquery2.default)('.active-log-date').html(date);
+	            //
+	            (0, _jquery2.default)('#u-added').val(added);
+	            (0, _jquery2.default)('#u-removed').val(removed);
+	            (0, _jquery2.default)('#u-comment').val(comments);
+	        }
+	    }, {
+	        key: 'closeOptions',
+	        value: function closeOptions(event) {
+	            this.rows.removeClass('active');
+	            this.activeRow = {};
+	            (0, _jquery2.default)('html').removeClass('options-open');
 	        }
 	    }, {
 	        key: 'getAdjacentItem',
@@ -10368,27 +10454,45 @@
 	    }, {
 	        key: 'handleKeyPress',
 	        value: function handleKeyPress(event) {
+	            var _this = this;
+
 	            if (!(0, _jquery2.default)('html').hasClass('modal-open')) {
-	                var _ = this,
-	                    key = String(event.keyCode),
-	                    state = !(0, _jquery2.default)('html').hasClass('options-open') ? 'main' : 'options',
-	                    methods = {
-	                    main: {
-	                        27: function _() {
-	                            return location.replace('/');
-	                        }, //ESC
-	                        76: function _() {
-	                            return (0, _jquery2.default)('.log--open').first().trigger('click');
-	                        } //'L'
-	                    },
-	                    options: {}
-	                };
-	                console.log(key);
-	                if (methods[state].hasOwnProperty(key) && typeof methods[state][key] == 'function') {
-	                    methods[state][key]();
-	                } else {
-	                    return false;
-	                }
+	                var _ret = function () {
+	                    var _2 = _this,
+	                        key = String(event.keyCode),
+	                        state = !(0, _jquery2.default)('html').hasClass('options-open') ? 'main' : 'options',
+	                        methods = {
+	                        main: {
+	                            76: function _() {
+	                                return (0, _jquery2.default)('.log--open').first().trigger('click');
+	                            }, //'L'
+	                            81: function _() {
+	                                return location.replace('/');
+	                            } //'Q'
+	                        },
+	                        options: {
+	                            27: function _() {
+	                                return _2.closeOptions();
+	                            },
+	                            67: function _() {
+	                                return (0, _jquery2.default)('.edit-comment--open').first().trigger('click');
+	                            }, //'C'
+	                            69: function _() {
+	                                return (0, _jquery2.default)('.edit-log--open').first().trigger('click');
+	                            } //'E'
+	                        }
+	                    };
+	                    console.log(key);
+	                    if (typeof methods[state][key] == 'function') {
+	                        methods[state][key]();
+	                    } else {
+	                        return {
+	                            v: false
+	                        };
+	                    }
+	                }();
+
+	                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
 	            }
 	        }
 	    }]);

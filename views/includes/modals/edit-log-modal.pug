@@ -1,0 +1,12 @@
+#edit-log.modal
+    span.modal__close-button.edit-log--close X
+    section.modal__body.modal__body--opaque
+        h1.modal__header Edit Log #[br] #[span.active-log-date]
+        form#edit-log-form(action='#')
+            .form-group
+                label(for='added') Added :
+                input#u-added(name='added' type='number' min=0 value=0)
+            .form-group
+                label(for='removed') Removed :
+                input#u-removed(name='removed' type='number' min=0 value=0)
+            button.btn.submit Submit

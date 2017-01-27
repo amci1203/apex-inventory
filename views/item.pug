@@ -3,9 +3,12 @@ head
 body
     include includes/shared/page-shadow
     include includes/item/item-nav
+    include includes/item/item-options
     main
         include includes/shared/header
         include includes/item/item-panes.pug
         include includes/item/item-sheet
     include includes/modals/log-modal
+    include includes/modals/edit-log-modal
+    include includes/modals/edit-comment-modal
     script(src='/app.js')

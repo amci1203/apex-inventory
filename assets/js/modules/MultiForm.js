@@ -5,8 +5,8 @@ export default class MultiForm {
         this.forms   = $(`#${form} .multi-form form`);
         this.submit  = $(`#${form} .multi-form button.submit-all`);
         this.singles = $(`#${form} input.single`)
+        this.url     = `/items${url}`;
         this.key     = key;
-        this.url     = url;
         this.events();
     }
 

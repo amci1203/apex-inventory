@@ -29,7 +29,7 @@ module.exports = (router) => {
         else Item.create(item, () => res.end())
     })
     
-    router.post('/multi', (req, res) => {
+    router.post('/multi-items', (req, res) => {
         let category       = req.body.category,
             items          = req.body.items,
             numItems       = items.length,
@@ -47,7 +47,7 @@ module.exports = (router) => {
         })
     })
 
-    router.post('/logs/multi', (req, res) => {
+    router.post('/multi-logs', (req, res) => {
         const itemLogs       = req.body.itemLogs,
               date           = req.body.date,
               numLogs        = itemLogs.length,
@@ -83,6 +83,20 @@ module.exports = (router) => {
         })
     })
 
+
+    router.post('/:itemId', (req, res) => {
+        let item = req.body.log;
+        if (item.date    == '') item.date    = new Date();
+        if (item.added   == '') item.added   = 0;
+        if (item.removed == '') item.removed = 0;
+        Item.push(true, req.params.itemId, item, (affected) => {
+            if ([null, undefined].indexOf(affected) == -1) {
+                res.end();
+            }
+            else res.status(401)
+        })
+    })
+    
     router.get('/:itemName/:direction', (req, res) => {
         Item.getAdjacent(req.params.itemName, req.params.direction, (doc) => {
             let thisItem = doc;
@@ -105,17 +119,14 @@ module.exports = (router) => {
             else res.json({error: 'An item already has that name.'})
         })
     })
-
-    router.post('/:itemId/push', (req, res) => {
-        let item = req.body.log;
-        if (item.date    == '') item.date    = new Date();
-        if (item.added   == '') item.added   = 0;
-        if (item.removed == '') item.removed = 0;
-        Item.push(true, req.params.itemId, item, (affected) => {
-            if ([null, undefined].indexOf(affected) == -1) {
+    
+    router.put('/:itemId/:logId', (req, res) => {
+        let _ = req.params;
+        Item.editItemLog(_.itemId, _.logId, req.body.uLog, (afected) => {
+            if (affected !== null && affected !== undefined) {
                 res.end();
             }
-            else res.status(401)
+            else res.json({error: 'That requested record does not exist.'})
         })
     })
     
