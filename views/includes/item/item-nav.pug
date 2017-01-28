@@ -3,6 +3,9 @@ nav#main-nav
         ul
             each item in categoryItems
                 li: a(href='/items/' + item._id)= item.name
-    .btn-group
-        button.log--open #[span >]
-        button(onclick='location.assign("/items")') #[span <]
+                
+
+.btn-group
+    button.log--open #[span >]
+    button(onclick='location.assign("/items")') #[span <]
+    button.legend--open ?

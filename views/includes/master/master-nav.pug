@@ -1,12 +1,15 @@
-- let logTooltip   = 'Log Multiple Items'
-- let newTooltip   = 'Add Single Item'
-- let multiTooltip = 'Add multiple items to a category'
+- let logTooltip    = 'Log Multiple Items (L)'
+- let newTooltip    = 'Add Single Item (N)'
+- let multiTooltip  = 'Add multiple items to a category (M)'
+- let filterTooltip = 'Filter low items'
 
 nav#main-nav
     .list-container
         ul
             each category in categories
                 li: a(href='#' + category)= category
+
+
 .btn-group
     button.btn--circle.logs--open.tooltip
         span.tooltip-text= logTooltip
@@ -17,3 +20,9 @@ nav#main-nav
     button.btn--circle.new-multi--open.tooltip
         span.tooltip-text= multiTooltip
         span *
+    button.btn--circle.tooltip.legend--toggle
+        span.tooltip-text Help
+        span ?
+    button#low-only.btn--circle.tooltip
+        span.tooltip-text= filterTooltip
+        span !

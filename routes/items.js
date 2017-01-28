@@ -122,7 +122,7 @@ module.exports = (router) => {
     
     router.put('/:itemId/:logId', (req, res) => {
         let _ = req.params;
-        Item.editItemLog(_.itemId, _.logId, req.body.uLog, (afected) => {
+        Item.editItemLog(_.itemId, _.logId, req.body.uLog, (affected) => {
             if (affected !== null && affected !== undefined) {
                 res.end();
             }

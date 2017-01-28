@@ -30,7 +30,7 @@ button:hover {
     font-size: 2rem;
     font-weight: 600;
 }
-.btn--circle:hover {
+.btn--circle:hover, .btn--circle.active {
     background-color: rgb(25, 110, 239);
     color: #FFF;
 }
@@ -152,6 +152,28 @@ header .section-title {
 #item-nav-buttons .previous {
     background: url('/icons/previous.png');
     background-size: cover;
+}
+.legend__list {
+    display: block;
+    list-style-type: none;
+    margin: 5px 25px;
+    padding: 5px 15px;
+}
+.legend__list li {
+    display: block;
+    margin: 10px 0;
+}
+.legend__list li span {
+    display: block;
+    float: right;
+    text-align: right;
+    font-weight: 600;
+}
+.legend__heading {
+    color: rgb(25, 110, 239);
+    font-weight: 100;
+    text-align: center;
+    margin: 1.35rem 0;
 }
 #main-nav {
     position: fixed;
@@ -1290,6 +1312,7 @@ main {
 .tooltip .tooltip-text {
     -webkit-transition: all 0.2s ease-out;
     transition: all 0.2s ease-out;
+    visibility: hidden;
     opacity: 0;
     min-width: 180px;
     max-width: 270px;
@@ -1310,6 +1333,7 @@ main {
 .tooltip:hover .tooltip-text {
     z-index: 1000 !important;
     opacity: 1;
+    visibility: visible;
 }
 .wrapper {
     padding-left: 18px;

@@ -7,7 +7,9 @@ export default class ItemTable {
         this.rows        = $('#item .row');
         this.nextButton  = $('#item-nav-buttons button.next');
         this.prevButton  = $('#item-nav-buttons button.previous');
+        this.editLog     = $('#edit-log-submit')
         
+        this.itemId    = $('#active-id').html();
         this.activeRow = {};
         this.init();
         this.events();
@@ -21,6 +23,7 @@ export default class ItemTable {
         this.rows.click(this.makeActiveRow.bind(this))
         this.nextButton.click(this.getAdjacentItem.bind(this))
         this.prevButton.click(this.getAdjacentItem.bind(this))
+        this.editLog.click(this.handleRecordChange.bind(this))
         $(document).keyup(this.handleKeyPress.bind(this))
     }
     
@@ -59,6 +62,34 @@ export default class ItemTable {
     getAdjacentItem (event) {
         let direction = event.currentTarget.innerText === 'Next' ? '/next' : '/prev';
         location.assign('/items/' + this.itemName +  direction);
+    }
+    
+    handleRecordChange () {
+        const _           =  this,
+              active      =  this.activeRow,
+              inStock     = +$('#current-stock').text(),
+              added       =  active.added,
+              removed     =  active.removed,
+              uAdded      = +$('#edit-log-form').find('#u-added').val()   || added,
+              uRemoved    = +$('#edit-log-form').find('#u-removed').val() || removed,
+              addedDiff   =  uAdded   - added,
+              removedDiff =  uRemoved - removed,
+              newBalance  =  inStock + addedDiff - removedDiff;
+        $.ajax({
+            url: `/items/${_.itemId}/${active.id}`,
+            method: 'PUT',
+            data: { uLog: {
+                balance : newBalance,
+                added   : uAdded,
+                removed : uRemoved
+            }}
+        })
+        .success(res => {
+            if (!res.error) location.reload()
+            else {
+                return false
+            }
+        })
     }
     
     handleKeyPress (event) {

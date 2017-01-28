@@ -23,13 +23,13 @@ export default class Form {
                   let i   = 0,
                       tmp = this.url;
                   do {
-                   if (tmp.indexOf(':') == -1) return tmp;
+                   if (tmp.indexOf(':') == -1) break;
                    else {
                        if (i == 0) {
-                           tmp.replace(':itemId', $('#active-id').html());
+                           tmp = tmp.replace(':itemId', $('#active-id').html());
                        }
                        if (i == 1) {
-                           tmp.replace(':logId', $('#active-log-id').html());
+                           tmp = tmp.replace(':logId', $('#active-log-id').html());
                        }
                        i++;
                    }

@@ -127,14 +127,27 @@ schema.statics.editItem = function (itemId, data, callback) {
 }
 
 schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
-    if (newLog.comments) 
+    let update = {};
+    if (newLog.hasOwnProperty('comments'))  {
+        update = {
+            $set: {
+                "log.$.comments": newLog.comments
+            }
+        }
+    } else {
+        update = {
+            $set: {
+                "inStock"       : newLog.balance,
+                "log.$.added"   : newLog.added,
+                "log.$.removed" : newLog.removed
+            }
+        }
+    }
     return this.update(
         {
-            "_id"    : itemId,
-            "log._id": logId
-        },
-        {$set : { "log.$": newLog }},
-        {upsert: false},
+            "_id"     : itemId,
+            "log._id" : logId
+        }, update, { upsert : false },
         (err, numAffected) => {
             onError(err)
             if (callback !== undefined) callback(numAffected)
@@ -143,7 +156,7 @@ schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
 }
 
 schema.statics.remove = function (itemId, callback) {
-    return this.remove({_id: itemId}, (err, removedId) => {
+    return this.where({_id: itemId}).remove((err, removedId) => {
         onError(err);
         if (callback !== undefined) callback(removedId)
     })

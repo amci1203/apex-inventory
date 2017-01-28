@@ -28,13 +28,11 @@ button {
         color: $mainBlue;
         text-align: center;
         z-index: 500;
-
         span:not(.tooltip-text) {
             font-size: 2rem;
             font-weight: 600;
         }
-
-        &:hover {
+        &:hover, &.active {
             background-color: $mainBlue;
             color: #FFF;
         }

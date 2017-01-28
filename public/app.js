@@ -77,7 +77,8 @@
 	var sheet = location.pathname == '/items' ? new _MainTable2.default() : new _ItemTable2.default();
 
 	var logModal = new _Modal2.default('log', true),
-	    logForm = new _Form2.default('log-item', '/:itemId', 'log');
+	    logForm = new _Form2.default('log-item', '/:itemId', 'log'),
+	    legend = new _Modal2.default('legend');
 
 	if (sheet.identifier == 'all') {
 	      var newModal = new _Modal2.default('new', true),
@@ -98,8 +99,7 @@
 	      var editLogModal = new _Modal2.default('edit-log', true),
 	          editCommentModal = new _Modal2.default('edit-comment', true);
 
-	      var editLog = new _Form2.default('edit-log-form', '/:itemId/:logId', 'uLog', 'PUT'),
-	          editComments = new _Form2.default('edit-comment-form', '/:itemId/:logId', 'uLog', 'PUT');
+	      var editComments = new _Form2.default('edit-comment-form', '/:itemId/:logId', 'uLog', 'PUT');
 	}
 
 /***/ },
@@ -9972,12 +9972,12 @@
 	                var i = 0,
 	                    tmp = _this.url;
 	                do {
-	                    if (tmp.indexOf(':') == -1) return tmp;else {
+	                    if (tmp.indexOf(':') == -1) break;else {
 	                        if (i == 0) {
-	                            tmp.replace(':itemId', (0, _jquery2.default)('#active-id').html());
+	                            tmp = tmp.replace(':itemId', (0, _jquery2.default)('#active-id').html());
 	                        }
 	                        if (i == 1) {
-	                            tmp.replace(':logId', (0, _jquery2.default)('#active-log-id').html());
+	                            tmp = tmp.replace(':logId', (0, _jquery2.default)('#active-log-id').html());
 	                        }
 	                        i++;
 	                    }
@@ -10037,6 +10037,7 @@
 	        this.modal = (0, _jquery2.default)('#' + this.id);
 	        this.openTrigger = (0, _jquery2.default)('.' + this.id + '--open');
 	        this.closeTrigger = (0, _jquery2.default)('.' + this.id + '--close');
+	        this.toggleTrigger = (0, _jquery2.default)('.' + this.id + '--toggle');
 	        this.events();
 	    }
 
@@ -10045,7 +10046,8 @@
 	        value: function events() {
 	            this.openTrigger.click(this.openModal.bind(this));
 	            this.closeTrigger.click(this.closeModal.bind(this));
-	            this.modal.keyup(this.handleKeyPress.bind(this));
+	            this.toggleTrigger.click(this.toggleModal.bind(this));
+	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
 	        }
 	    }, {
 	        key: 'openModal',
@@ -10071,6 +10073,11 @@
 	            (0, _jquery2.default)('html').removeClass('modal-open');
 	            this.modal.removeClass('modal--open');
 	            return false;
+	        }
+	    }, {
+	        key: 'toggleModal',
+	        value: function toggleModal() {
+	            if ((0, _jquery2.default)('html').hasClass('modal-open')) this.closeModal();else this.openModal();
 	        }
 	    }, {
 	        key: 'handleKeyPress',
@@ -10170,8 +10177,6 @@
 	    value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _jquery = __webpack_require__(1);
@@ -10190,7 +10195,10 @@
 	        this.table = (0, _jquery2.default)('#all');
 	        this.rows = (0, _jquery2.default)('#all .row');
 	        this.getButton = (0, _jquery2.default)('#all .row .name');
-	        this.itemTable = (0, _jquery2.default)('#item');
+
+	        this.filterToggle = (0, _jquery2.default)('#low-only');
+	        this.openItem = (0, _jquery2.default)('#open');
+	        this.editItem = (0, _jquery2.default)('#edit');
 
 	        this.activeRow = {};
 	        this.events();
@@ -10203,8 +10211,9 @@
 	            this.rows.click(this.makeActiveRow.bind(this));
 
 	            (0, _jquery2.default)(document).keyup(this.handleKeyPresses.bind(this));
-	            (0, _jquery2.default)('#open').click(this.get.bind(this));
-	            (0, _jquery2.default)('#edit-item').click(this.edit.bind(this));
+	            this.openItem.click(this.get.bind(this));
+	            this.editItem.click(this.edit.bind(this));
+	            this.filterToggle.click(this.filterLowItems.bind(this));
 
 	            (0, _jquery2.default)('#confirm-delete').on('input', this.handleDeleteButtonState.bind(this));
 	            (0, _jquery2.default)(document).on('delete-item', this.erase.bind(this));
@@ -10238,11 +10247,14 @@
 	            (0, _jquery2.default)('#u-low').val(low);
 	        }
 	    }, {
-	        key: 'closeOptions',
-	        value: function closeOptions(event) {
-	            this.rows.removeClass('active');
-	            this.activeRow = {};
-	            (0, _jquery2.default)('html').removeClass('options-open');
+	        key: 'closeSidebars',
+	        value: function closeSidebars(event) {
+	            if ((0, _jquery2.default)('html').hasClass('options-open')) {
+	                this.rows.removeClass('active');
+	                this.activeRow = {};
+	                (0, _jquery2.default)('html').removeClass('options-open');
+	            }
+	            if ((0, _jquery2.default)('html').hasClass('sidebar-open')) (0, _jquery2.default)('html').removeClass('sidebar-open');
 	        }
 	    }, {
 	        key: 'get',
@@ -10286,6 +10298,12 @@
 	            });
 	        }
 	    }, {
+	        key: 'filterLowItems',
+	        value: function filterLowItems() {
+	            this.filterToggle.toggleClass('active');
+	            this.rows.not('.row--low').toggleClass('hidden');
+	        }
+	    }, {
 	        key: 'handleDeleteButtonState',
 	        value: function handleDeleteButtonState() {
 	            var confirmed = (0, _jquery2.default)('#confirm-delete').val().trim().toUpperCase() == this.activeRow.name.toUpperCase();
@@ -10294,64 +10312,63 @@
 	    }, {
 	        key: 'handleKeyPresses',
 	        value: function handleKeyPresses(event) {
-	            var _this = this;
-
-	            console.log('FIRED');
-	            console.log((0, _jquery2.default)('html').hasClass('modal-open'));
-	            if ((0, _jquery2.default)('html').hasClass('modal-open')) {
-	                event.stopPropagation();
+	            var _2 = this,
+	                key = String(event.keyCode),
+	                state = (0, _jquery2.default)('html').hasClass('options-open') ? 'options' : 'main',
+	                methods = {
+	                options: {
+	                    27: function _() {
+	                        return _2.closeSidebars();
+	                    }, //ESC
+	                    67: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //'C'
+	                    68: function _() {
+	                        return (0, _jquery2.default)('.delete--open').first().trigger('click');
+	                    }, //'D'
+	                    69: function _() {
+	                        return (0, _jquery2.default)('.edit--open').first().trigger('click');
+	                    }, //'E'
+	                    72: function _() {
+	                        return (0, _jquery2.default)('.legend--open').first().trigger('click');
+	                    }, //'H'
+	                    76: function _() {
+	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
+	                    }, // 'L'
+	                    79: function _() {
+	                        return _2.get();
+	                    } //'O'
+	                },
+	                main: {
+	                    27: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //ESC
+	                    67: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //'C'
+	                    72: function _() {
+	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
+	                    }, //'H'
+	                    77: function _() {
+	                        return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
+	                    }, //'M'
+	                    78: function _() {
+	                        return (0, _jquery2.default)('.new--open').first().trigger('click');
+	                    }, //'N'
+	                    76: function _() {
+	                        return (0, _jquery2.default)('.logs--open').first().trigger('click');
+	                    } //'L'
+	                }
+	            };
+	            var alwaysAllowedKeyCodes = ['72'],
+	                specialCase = alwaysAllowedKeyCodes.indexOf(key) != -1;
+	            console.log(key);
+	            if ((0, _jquery2.default)('html').hasClass('modal-open') && !specialCase) {
+	                //            event.stopPropagation()
+	            } else if (typeof methods[state][key] == 'function') {
+	                methods[state][key]();
 	            } else {
-	                var _ret = function () {
-	                    var _2 = _this,
-	                        key = String(event.keyCode),
-	                        state = (0, _jquery2.default)('html').hasClass('options-open') ? 'main' : 'options',
-	                        methods = {
-	                        main: {
-	                            27: function _() {
-	                                return _2.closeOptions();
-	                            }, //ESC
-	                            67: function _() {
-	                                return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
-	                            }, //'C'
-	                            68: function _() {
-	                                return (0, _jquery2.default)('.delete--open').first().trigger('click');
-	                            }, //'D'
-	                            69: function _() {
-	                                return (0, _jquery2.default)('.edit--open').first().trigger('click');
-	                            }, //'E'
-	                            76: function _() {
-	                                return (0, _jquery2.default)('.log--open').first().trigger('click');
-	                            }, // 'L'
-	                            79: function _() {
-	                                return _2.get();
-	                            } //'O'
-	                        },
-	                        options: {
-	                            67: function _() {
-	                                return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
-	                            }, //'C'
-	                            78: function _() {
-	                                return (0, _jquery2.default)('.new--open').first().trigger('click');
-	                            }, //'N'
-	                            77: function _() {
-	                                return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
-	                            }, //'M'
-	                            76: function _() {
-	                                return (0, _jquery2.default)('.logs--open').first().trigger('click');
-	                            } //'L'
-	                        }
-	                    };
-	                    console.log(key);
-	                    if (typeof methods[state][key] == 'function') {
-	                        methods[state][key]();
-	                    } else {
-	                        return {
-	                            v: false
-	                        };
-	                    }
-	                }();
-
-	                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	                return false;
 	            }
 	        }
 	    }]);
@@ -10392,7 +10409,9 @@
 	        this.rows = (0, _jquery2.default)('#item .row');
 	        this.nextButton = (0, _jquery2.default)('#item-nav-buttons button.next');
 	        this.prevButton = (0, _jquery2.default)('#item-nav-buttons button.previous');
+	        this.editLog = (0, _jquery2.default)('#edit-log-submit');
 
+	        this.itemId = (0, _jquery2.default)('#active-id').html();
 	        this.activeRow = {};
 	        this.init();
 	        this.events();
@@ -10409,6 +10428,7 @@
 	            this.rows.click(this.makeActiveRow.bind(this));
 	            this.nextButton.click(this.getAdjacentItem.bind(this));
 	            this.prevButton.click(this.getAdjacentItem.bind(this));
+	            this.editLog.click(this.handleRecordChange.bind(this));
 	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
 	        }
 	    }, {
@@ -10450,6 +10470,33 @@
 	        value: function getAdjacentItem(event) {
 	            var direction = event.currentTarget.innerText === 'Next' ? '/next' : '/prev';
 	            location.assign('/items/' + this.itemName + direction);
+	        }
+	    }, {
+	        key: 'handleRecordChange',
+	        value: function handleRecordChange() {
+	            var _ = this,
+	                active = this.activeRow,
+	                inStock = +(0, _jquery2.default)('#current-stock').text(),
+	                added = active.added,
+	                removed = active.removed,
+	                uAdded = +(0, _jquery2.default)('#edit-log-form').find('#u-added').val() || added,
+	                uRemoved = +(0, _jquery2.default)('#edit-log-form').find('#u-removed').val() || removed,
+	                addedDiff = uAdded - added,
+	                removedDiff = uRemoved - removed,
+	                newBalance = inStock + addedDiff - removedDiff;
+	            _jquery2.default.ajax({
+	                url: '/items/' + _.itemId + '/' + active.id,
+	                method: 'PUT',
+	                data: { uLog: {
+	                        balance: newBalance,
+	                        added: uAdded,
+	                        removed: uRemoved
+	                    } }
+	            }).success(function (res) {
+	                if (!res.error) location.reload();else {
+	                    return false;
+	                }
+	            });
 	        }
 	    }, {
 	        key: 'handleKeyPress',
@@ -10522,23 +10569,18 @@
 	    var toggle = (0, _jquery2.default)('#sidebar-toggle');
 	    function toggleSidebar() {
 	        (0, _jquery2.default)('html').toggleClass('sidebar-open scroll-lock');
-	        if ((0, _jquery2.default)('html').hasClass('sidebar-open')) {
-	            (0, _jquery2.default)(document).trigger('sidebar-closed');
-	        } else {
-	            (0, _jquery2.default)(document).trigger('sidebar-opened');
-	        }
 	    }
-	    function handleEsc(key) {
-	        if ((0, _jquery2.default)('html').hasClass('sidebar-open') && key.keyCode == 27) {
-	            (0, _jquery2.default)('html').removeClass('sidebar-open scroll-lock');
-	            (0, _jquery2.default)(document).trigger('sidebar-closed');
-	        } else return false;
-	    }
+	    //    function handleEsc (key) {
+	    //        if ($('html').hasClass('sidebar-open') && key.keyCode == 27) {
+	    //            $('html').removeClass('sidebar-open scroll-lock');
+	    //            $(document).trigger('sidebar-closed');
+	    //        } else return false
+	    //    }
 
 	    return function () {
 	        toggle.click(toggleSidebar);
 	        (0, _jquery2.default)('#main-nav a').click(toggleSidebar);
-	        (0, _jquery2.default)(document).keyup(handleEsc);
+	        //        $(document).keyup(handleEsc);
 	    }();
 	}();
 

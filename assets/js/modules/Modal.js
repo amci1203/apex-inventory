@@ -7,13 +7,15 @@ export default class Modal {
         this.modal        = $(`#${this.id}`);
         this.openTrigger  = $(`.${this.id}--open`);
         this.closeTrigger = $(`.${this.id}--close`);
+        this.toggleTrigger = $(`.${this.id}--toggle`);
         this.events();
     }
 
     events () {
         this.openTrigger.click(this.openModal.bind(this));
         this.closeTrigger.click(this.closeModal.bind(this));
-        this.modal.keyup(this.handleKeyPress.bind(this));
+        this.toggleTrigger.click(this.toggleModal.bind(this));
+        $(document).keyup(this.handleKeyPress.bind(this));
     }
 
     openModal () {
@@ -32,6 +34,10 @@ export default class Modal {
         $('html').removeClass('modal-open');
         this.modal.removeClass('modal--open');
         return false;
+    }
+    toggleModal () {
+        if ($('html').hasClass('modal-open')) this.closeModal();
+        else this.openModal();
     }
     handleKeyPress (event) {
         if (event.keyCode === 27) {

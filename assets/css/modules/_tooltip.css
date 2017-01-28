@@ -2,6 +2,7 @@
     position: relative;
     & &-text {
         transition: all 0.2s ease-out;
+        visibility: hidden;
         opacity: 0;
         min-width: 180px;
         max-width: 270px;
@@ -19,5 +20,6 @@
     &:hover &-text {
         z-index: 1000 !important;
         opacity: 1;
+        visibility: visible;
     }
 }
