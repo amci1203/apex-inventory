@@ -1,18 +1,43 @@
-const Item = require('../dbmodels/item'),
-      querystring = require('querystring'),
+const Item              = require('../dbmodels/item'),
+      querystring       = require('querystring'),
       currentDepartment = "Housekeeping";
 
 module.exports = (router) => {
 
+    // SPECIAL ROUTE TO ADD LOG BALANCES TO PAST RECORDS
+    router.get('/utils/fix-logs', (req, res) => {
+        Item.find().select('_id log').exec((err, docs) => {
+            const numItems     = docs.length;
+            let savesCompleted = 0
+            docs.forEach((item) => {
+                const id        = item._id;
+                let prevBalance = 0,
+                    logBalances = {};
+                item.log.forEach((log, index) => {
+                    const thisLogBalance = prevBalance + log.added - log.removed;
+                    logBalances[`log.${index}.balance`] = thisLogBalance;
+                    prevBalance += thisLogBalance;
+                })
+                Item.update({_id: id}, {$set: logBalances }, {upsert: true}, err =>  {
+                    if (err) console.error(err)
+                    else {
+                        savesCompleted++
+                        if (savesCompleted == numItems) res.end('Done')
+                    }
+                })
+            })
+        })
+    })
+    
     router.get('/', (req, res) => {
         Item.getAll((docs) => {
             Item.getCategories((categories) => {
+                docs
                 res.render('index', {
-                    department: currentDepartment,
-                    date: new Date().toDateString(),
-                    items: docs,
-                    numItems: docs.length,
-                    categories: categories
+                    date       : new Date().toDateString(),
+                    allItems   : docs,
+                    department : currentDepartment,
+                    categories : categories,
                 })
             })
         });

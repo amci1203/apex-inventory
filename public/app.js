@@ -95,7 +95,8 @@
 	      (0, _jquery2.default)('#delete-item').click(function () {
 	            return (0, _jquery2.default)(document).trigger('delete-item');
 	      });
-	} else if (sheet.identifier == 'item') {
+	}
+	if (sheet.identifier == 'item') {
 	      var editLogModal = new _Modal2.default('edit-log', true),
 	          editCommentModal = new _Modal2.default('edit-comment', true);
 
@@ -10192,9 +10193,8 @@
 	        _classCallCheck(this, MainTable);
 
 	        this.identifier = 'all';
-	        this.table = (0, _jquery2.default)('#all');
-	        this.rows = (0, _jquery2.default)('#all .row');
-	        this.getButton = (0, _jquery2.default)('#all .row .name');
+	        this.tables = (0, _jquery2.default)('#all table');
+	        this.rows = (0, _jquery2.default)('#all table .row');
 
 	        this.filterToggle = (0, _jquery2.default)('#low-only');
 	        this.openItem = (0, _jquery2.default)('#open');
@@ -10223,11 +10223,11 @@
 	        value: function makeActiveRow(event) {
 	            this.rows.removeClass('active');
 	            event.currentTarget.classList.add('active');
-	            var id = this.table.find('.active .id')[0].innerText,
-	                low = +this.table.find('.active .low')[0].innerText,
-	                name = this.table.find('.active .name')[0].innerText,
-	                stock = +this.table.find('.active .stock')[0].innerText,
-	                category = this.table.find('.active .category')[0].innerText,
+	            var id = this.rows.filter('.active').find('.id')[0].innerText,
+	                low = +this.rows.filter('.active').find('.low')[0].innerText,
+	                name = this.rows.filter('.active').find('.name')[0].innerText,
+	                stock = +this.rows.filter('.active').find('.stock')[0].innerText,
+	                category = this.rows.filter('.active').find('.category')[0].innerText,
 	                row = {
 	                id: id,
 	                category: category,
@@ -10300,8 +10300,13 @@
 	    }, {
 	        key: 'filterLowItems',
 	        value: function filterLowItems() {
-	            this.filterToggle.toggleClass('active');
-	            this.rows.not('.row--low').toggleClass('hidden');
+	            if (!(0, _jquery2.default)('html').hasClass('options-open')) {
+	                this.filterToggle.toggleClass('active');
+	                this.rows.not('.row--low').toggleClass('hidden');
+
+	                this.tables.toggleClass('hidden');
+	                this.tables.has('.row--low').toggleClass('hidden');
+	            }
 	        }
 	    }, {
 	        key: 'handleDeleteButtonState',
@@ -10316,6 +10321,29 @@
 	                key = String(event.keyCode),
 	                state = (0, _jquery2.default)('html').hasClass('options-open') ? 'options' : 'main',
 	                methods = {
+	                main: {
+	                    27: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //ESC
+	                    67: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //'C'
+	                    72: function _() {
+	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
+	                    }, //'H'
+	                    75: function _() {
+	                        return (0, _jquery2.default)('#low-only').trigger('click');
+	                    }, //'K'
+	                    77: function _() {
+	                        return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
+	                    }, //'M'
+	                    78: function _() {
+	                        return (0, _jquery2.default)('.new--open').first().trigger('click');
+	                    }, //'N'
+	                    76: function _() {
+	                        return (0, _jquery2.default)('.logs--open').first().trigger('click');
+	                    } //'L'
+	                },
 	                options: {
 	                    27: function _() {
 	                        return _2.closeSidebars();
@@ -10338,26 +10366,6 @@
 	                    79: function _() {
 	                        return _2.get();
 	                    } //'O'
-	                },
-	                main: {
-	                    27: function _() {
-	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
-	                    }, //ESC
-	                    67: function _() {
-	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
-	                    }, //'C'
-	                    72: function _() {
-	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
-	                    }, //'H'
-	                    77: function _() {
-	                        return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
-	                    }, //'M'
-	                    78: function _() {
-	                        return (0, _jquery2.default)('.new--open').first().trigger('click');
-	                    }, //'N'
-	                    76: function _() {
-	                        return (0, _jquery2.default)('.logs--open').first().trigger('click');
-	                    } //'L'
 	                }
 	            };
 	            var alwaysAllowedKeyCodes = ['72'],
@@ -10387,8 +10395,6 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -10483,14 +10489,16 @@
 	                uRemoved = +(0, _jquery2.default)('#edit-log-form').find('#u-removed').val() || removed,
 	                addedDiff = uAdded - added,
 	                removedDiff = uRemoved - removed,
-	                newBalance = inStock + addedDiff - removedDiff;
+	                stockBalance = inStock + addedDiff - removedDiff,
+	                logBalance = addedDiff - removedDiff;
 	            _jquery2.default.ajax({
 	                url: '/items/' + _.itemId + '/' + active.id,
 	                method: 'PUT',
 	                data: { uLog: {
-	                        balance: newBalance,
 	                        added: uAdded,
-	                        removed: uRemoved
+	                        removed: uRemoved,
+	                        logBalance: logBalance,
+	                        stockBalance: stockBalance
 	                    } }
 	            }).success(function (res) {
 	                if (!res.error) location.reload();else {
@@ -10501,45 +10509,48 @@
 	    }, {
 	        key: 'handleKeyPress',
 	        value: function handleKeyPress(event) {
-	            var _this = this;
-
-	            if (!(0, _jquery2.default)('html').hasClass('modal-open')) {
-	                var _ret = function () {
-	                    var _2 = _this,
-	                        key = String(event.keyCode),
-	                        state = !(0, _jquery2.default)('html').hasClass('options-open') ? 'main' : 'options',
-	                        methods = {
-	                        main: {
-	                            76: function _() {
-	                                return (0, _jquery2.default)('.log--open').first().trigger('click');
-	                            }, //'L'
-	                            81: function _() {
-	                                return location.replace('/');
-	                            } //'Q'
-	                        },
-	                        options: {
-	                            27: function _() {
-	                                return _2.closeOptions();
-	                            },
-	                            67: function _() {
-	                                return (0, _jquery2.default)('.edit-comment--open').first().trigger('click');
-	                            }, //'C'
-	                            69: function _() {
-	                                return (0, _jquery2.default)('.edit-log--open').first().trigger('click');
-	                            } //'E'
-	                        }
-	                    };
-	                    console.log(key);
-	                    if (typeof methods[state][key] == 'function') {
-	                        methods[state][key]();
-	                    } else {
-	                        return {
-	                            v: false
-	                        };
-	                    }
-	                }();
-
-	                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	            var _2 = this,
+	                key = String(event.keyCode),
+	                state = (0, _jquery2.default)('html').hasClass('options-open') ? 'options' : 'main',
+	                methods = {
+	                main: {
+	                    27: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //ESC
+	                    72: function _() {
+	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
+	                    }, //'H'
+	                    76: function _() {
+	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
+	                    }, //'L'
+	                    81: function _() {
+	                        return location.replace('/');
+	                    } //'Q'
+	                },
+	                options: {
+	                    27: function _() {
+	                        return _2.closeOptions();
+	                    },
+	                    72: function _() {
+	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
+	                    }, //'H'
+	                    67: function _() {
+	                        return (0, _jquery2.default)('.edit-comment--open').first().trigger('click');
+	                    }, //'C'
+	                    69: function _() {
+	                        return (0, _jquery2.default)('.edit-log--open').first().trigger('click');
+	                    } //'E'
+	                }
+	            };
+	            var alwaysAllowedKeyCodes = ['72'],
+	                specialCase = alwaysAllowedKeyCodes.indexOf(key) != -1;
+	            console.log(key);
+	            if ((0, _jquery2.default)('html').hasClass('modal-open') && !specialCase) {
+	                event.stopPropagation();
+	            } else if (typeof methods[state][key] == 'function') {
+	                methods[state][key]();
+	            } else {
+	                return false;
 	            }
 	        }
 	    }]);

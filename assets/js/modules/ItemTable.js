@@ -65,23 +65,25 @@ export default class ItemTable {
     }
     
     handleRecordChange () {
-        const _           =  this,
-              active      =  this.activeRow,
-              inStock     = +$('#current-stock').text(),
-              added       =  active.added,
-              removed     =  active.removed,
-              uAdded      = +$('#edit-log-form').find('#u-added').val()   || added,
-              uRemoved    = +$('#edit-log-form').find('#u-removed').val() || removed,
-              addedDiff   =  uAdded   - added,
-              removedDiff =  uRemoved - removed,
-              newBalance  =  inStock + addedDiff - removedDiff;
+        const _            =  this,
+              active       =  this.activeRow,
+              inStock      = +$('#current-stock').text(),
+              added        =  active.added,
+              removed      =  active.removed,
+              uAdded       = +$('#edit-log-form').find('#u-added').val()   || added,
+              uRemoved     = +$('#edit-log-form').find('#u-removed').val() || removed,
+              addedDiff    =  uAdded   - added,
+              removedDiff  =  uRemoved - removed,
+              stockBalance =  inStock + addedDiff - removedDiff,
+              logBalance   =  addedDiff - removedDiff;
         $.ajax({
             url: `/items/${_.itemId}/${active.id}`,
             method: 'PUT',
             data: { uLog: {
-                balance : newBalance,
-                added   : uAdded,
-                removed : uRemoved
+                added        : uAdded,
+                removed      : uRemoved,
+                logBalance   : logBalance,
+                stockBalance : stockBalance
             }}
         })
         .success(res => {
@@ -93,27 +95,33 @@ export default class ItemTable {
     }
     
     handleKeyPress (event) {
-        if (!$('html').hasClass('modal-open')) {
-            const _       = this,
-                  key     = String(event.keyCode),
-                  state   = !$('html').hasClass('options-open') ? 'main' : 'options',
-                  methods = {
-                      main: {
-                          76: () => $('.log--open').first().trigger('click'), //'L'
-                          81: () => location.replace('/') //'Q'
-                      },
-                      options: {
-                          27: () => _.closeOptions(),
-                          67: () => $('.edit-comment--open').first().trigger('click'),//'C'
-                          69: () => $('.edit-log--open').first().trigger('click') //'E'
-                      }
-                  };
-            console.log(key);
-            if (typeof(methods[state][key]) == 'function') {
-                methods[state][key]()
-            } else {
-                return false
-            }
+        const _       = this,
+              key     = String(event.keyCode),
+              state   = $('html').hasClass('options-open') ? 'options' : 'main',
+              methods = {
+                main: {
+                    27: () => $('#sidebar-toggle').trigger('click'), //ESC
+                    72: () => $('.legend--toggle').first().trigger('click'), //'H'
+                    76: () => $('.log--open').first().trigger('click'), //'L'
+                    81: () => location.replace('/') //'Q'
+                },
+                options: {
+                    27: () => _.closeOptions(),
+                    72: () => $('.legend--toggle').first().trigger('click'), //'H'
+                    67: () => $('.edit-comment--open').first().trigger('click'),//'C'
+                    69: () => $('.edit-log--open').first().trigger('click') //'E'
+                }
+            };
+        const alwaysAllowedKeyCodes = ['72'],
+              specialCase           = alwaysAllowedKeyCodes.indexOf(key) != -1;
+        console.log(key);
+        if ($('html').hasClass('modal-open') && !specialCase) {
+            event.stopPropagation()
+        }
+        else if (typeof(methods[state][key]) == 'function') {
+            methods[state][key]()
+        } else {
+            return false
         }
     }
 }

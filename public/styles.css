@@ -237,8 +237,16 @@ table {
     margin: 0 auto;
     border-collapse: collapse;
     clear: both;
+
 }
-table .thead .th {
+table thead .heading {
+    padding-top: 25px;
+    background-color: #FFF;
+    border-bottom: 1px solid #333;
+    font-size: 2.8rem;
+    font-weight: 100;
+}
+table thead th {
     padding: 0.35rem 0.1rem;
     border-bottom: 1px solid #333;
 }
@@ -262,11 +270,11 @@ table .row--low:hover {
     background-color: rgba(204, 0, 0, 0.5) !important;
 }
 table .row.active {
-    background-color: rgb(25, 110, 239);
+    background-color: rgb(25, 110, 239) !important;
     color: #FFF;
 }
 table .row.active:hover {
-    background-color: rgb(25, 110, 239);
+    background-color: rgb(25, 110, 239) !important;
     color: #FFF;
 }
 table .row:hover {
@@ -274,9 +282,6 @@ table .row:hover {
 }
 table .row td {
     padding: 10px 15px;
-}
-table .row .id, table .row .category, table .row .low {
-    display: none
 }
 table .row .name {
     text-align: left
@@ -290,12 +295,6 @@ table td, table th {
 }
 table td:first-child, table th:first-child {
     text-align: left
-}
-table td.heading {
-    padding-top: 25px;
-    background-color: #FFF;
-    border-bottom: 1px solid #333;
-    font-size: 2.8rem;
 }
 #item thead th {
     text-align: right;

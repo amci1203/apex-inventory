@@ -2,25 +2,26 @@ const mongoose = require('mongoose');
 
 let subSchema = new mongoose.Schema(
     {
-        added:   {type: Number, default: 0},
-        removed: {type: Number, default: 0},
-        comments: {type: String, trim: true, maxlength: 140 }
+        added    : {type: Number, default: 0},
+        removed  : {type: Number, default: 0},
+        balance  : {type: Number, default: 0},
+        comments : {type: String, trim: true, maxlength: 140 }
     },
     {
         timestamps: {
-            createdAt: 'date',
-            updatedAt: 'lastModified'
+            createdAt : 'date',
+            updatedAt : 'lastModified'
         }
     }
 )
 
 let schema = new mongoose.Schema(
     {
-        category: String,
-        name: {type: String, unique: true},
-        inStock: Number,
-        lowAt: Number,
-        log: [ subSchema ]
+        category : String,
+        name     : {type: String, unique: true},
+        inStock  : Number,
+        lowAt    : Number,
+        log      : [ subSchema ]
     },
     {
         timestamps: {
@@ -31,14 +32,29 @@ let schema = new mongoose.Schema(
 );
 
 schema.statics.getAll = function (callback) {
-    return this.find({})
-        .select('_id category name inStock lowAt lastModified')
-        .sort('category name')
-        .exec((err, docs) => {
-            onError(err);
-            callback(docs)
-        })
-}
+    return this.aggregate(
+        [
+            {$project: {
+                _id          : 1,
+                category     : 1,
+                name         : 1,
+                inStock      : 1,
+                lowAt        : 1,
+                lastModified : 1
+            }},
+            {$group: {
+                _id: '$category',
+                items: {$push: {
+                    _id          : '$_id',
+                    name         : '$name',
+                    inStock      : '$inStock',
+                    lowAt        : '$lowAt',
+                    lastModified : '$lastModified'
+                }}
+            }},
+            {$sort: {_id: 1}}
+        ], (err, result) => callback(result) );
+    }
 
 schema.statics.getCategories = function (callback) {
     return this.distinct('category', (err, categories) => {
@@ -137,10 +153,11 @@ schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
     } else {
         update = {
             $set: {
-                "inStock"       : newLog.balance,
+                "inStock"       : newLog.stockBalance,
                 "log.$.added"   : newLog.added,
                 "log.$.removed" : newLog.removed
-            }
+            },
+            $inc: {"log.$.balance" : newLog.logBalance}
         }
     }
     return this.update(

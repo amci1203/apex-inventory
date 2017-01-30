@@ -2,11 +2,13 @@ import $ from 'jquery';
 
 export default class MainTable {
     constructor () {
-        this.identifier = 'all';
-        this.table      = $('#all');
-        this.rows       = $('#all .row');
-        this.getButton  = $('#all .row .name');
-        this.itemTable  = $('#item');
+        this.identifier     = 'all';
+        this.tables         = $('#all table');
+        this.rows           = $('#all table .row');
+        
+        this.filterToggle   = $('#low-only');
+        this.openItem       = $('#open');
+        this.editItem       = $('#edit');
         
         this.activeRow = {}
         this.events();
@@ -16,8 +18,9 @@ export default class MainTable {
         this.rows.click(this.makeActiveRow.bind(this))
 
         $(document).keyup(this.handleKeyPresses.bind(this))
-        $('#open').click(this.get.bind(this))
-        $('#edit-item').click(this.edit.bind(this))
+        this.openItem.click(this.get.bind(this))
+        this.editItem.click(this.edit.bind(this))
+        this.filterToggle.click(this.filterLowItems.bind(this))
         
         $('#confirm-delete').on('input', this.handleDeleteButtonState.bind(this))
         $(document).on('delete-item', this.erase.bind(this))
@@ -25,17 +28,17 @@ export default class MainTable {
     makeActiveRow (event) {
         this.rows.removeClass('active');
         event.currentTarget.classList.add('active');
-        const id       =  this.table.find('.active .id')[0].innerText,
-              low      = +this.table.find('.active .low')[0].innerText,
-              name     =  this.table.find('.active .name')[0].innerText,
-              stock    = +this.table.find('.active .stock')[0].innerText,
-              category =  this.table.find('.active .category')[0].innerText,
+        const id       =  this.rows.filter('.active').find('.id')[0].innerText,
+              low      = +this.rows.filter('.active').find('.low')[0].innerText,
+              name     =  this.rows.filter('.active').find('.name')[0].innerText,
+              stock    = +this.rows.filter('.active').find('.stock')[0].innerText,
+              category =  this.rows.filter('.active').find('.category')[0].innerText,
               row      = {
-                  id      : id,
-                  category: category,
-                  name    : name,
-                  stock   : stock,
-                  low     : low 
+                  id       : id,
+                  category : category,
+                  name     : name,
+                  stock    : stock,
+                  low      : low 
               };
         this.activeRow = row;
         $('html').addClass('options-open');
@@ -48,10 +51,14 @@ export default class MainTable {
         $('#u-category').val(category);
         $('#u-low').val(low);
     }
-    closeOptions (event) {
+    closeSidebars (event) {
+    if ($('html').hasClass('options-open')) {
         this.rows.removeClass('active');
         this.activeRow = {};
         $('html').removeClass('options-open');
+    }
+    if ($('html').hasClass('sidebar-open'))
+        $('html').removeClass('sidebar-open');
     }
     get (event) {
         const url = `/items/${this.activeRow.id}`;
@@ -87,42 +94,54 @@ export default class MainTable {
             success: () => { location.reload() }
         })
     }
+    filterLowItems () {
+        if (!$('html').hasClass('options-open')) {
+            this.filterToggle.toggleClass('active');
+            this.rows.not('.row--low').toggleClass('hidden');
+            
+            this.tables.toggleClass('hidden');
+            this.tables.has('.row--low').toggleClass('hidden');
+        }
+    }
     handleDeleteButtonState () {
         const confirmed = ($('#confirm-delete').val().trim().toUpperCase() == this.activeRow.name.toUpperCase());
         if (confirmed) $('#delete-item').removeAttr('disabled')
         else $('#delete-item').attr('disabled', 'disabled')
     }
     handleKeyPresses (event) {
-        console.log('FIRED')
-        console.log($('html').hasClass('modal-open'))
-        if ($('html').hasClass('modal-open')) {
-            event.stopPropagation();
-        } else {
-            const _       = this,
-                  key     = String(event.keyCode),
-                  state   = $('html').hasClass('options-open') ? 'main' : 'options',
-                  methods = {
-                    main: {
-                        27: () => _.closeOptions(), //ESC
-                        67: () => $('#sidebar-toggle').trigger('click'), //'C'
-                        68: () => $('.delete--open').first().trigger('click'), //'D'
-                        69: () => $('.edit--open').first().trigger('click'), //'E'
-                        76: () => $('.log--open').first().trigger('click'), // 'L'
-                        79: () => _.get() //'O'
-                    },
-                    options: {
-                        67: () => $('#sidebar-toggle').trigger('click'), //'C'
-                        78: () => $('.new--open').first().trigger('click'), //'N'
-                        77: () => $('.new-multi--open').first().trigger('click'), //'M'
-                        76: () => $('.logs--open').first().trigger('click') //'L'
-                    }
+        const _       = this,
+              key     = String(event.keyCode),
+              state   = $('html').hasClass('options-open') ? 'options' : 'main',
+              methods = {
+                main: {
+                    27: () => $('#sidebar-toggle').trigger('click'), //ESC
+                    67: () => $('#sidebar-toggle').trigger('click'), //'C'
+                    72: () => $('.legend--toggle').first().trigger('click'), //'H'
+                    75: () => $('#low-only').trigger('click'), //'K'
+                    77: () => $('.new-multi--open').first().trigger('click'), //'M'
+                    78: () => $('.new--open').first().trigger('click'), //'N'
+                    76: () => $('.logs--open').first().trigger('click') //'L'
+                },
+                options: {
+                    27: () => _.closeSidebars(), //ESC
+                    67: () => $('#sidebar-toggle').trigger('click'), //'C'
+                    68: () => $('.delete--open').first().trigger('click'), //'D'
+                    69: () => $('.edit--open').first().trigger('click'), //'E'
+                    72: () => $('.legend--open').first().trigger('click'), //'H'
+                    76: () => $('.log--open').first().trigger('click'), // 'L'
+                    79: () => _.get() //'O'
                 }
-            console.log(key);
-            if (typeof(methods[state][key]) == 'function') {
-                methods[state][key]()
-            } else {
-                return false
             }
+        const alwaysAllowedKeyCodes = ['72'],
+              specialCase           = alwaysAllowedKeyCodes.indexOf(key) != -1;
+        console.log(key);
+        if ($('html').hasClass('modal-open') && !specialCase) {
+//            event.stopPropagation()
+        }
+        else if (typeof(methods[state][key]) == 'function') {
+            methods[state][key]()
+        } else {
+            return false
         }
     }
 }

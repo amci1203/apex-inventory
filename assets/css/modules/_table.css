@@ -3,8 +3,15 @@ table {
     margin: 0 auto;
     border-collapse: collapse;
     clear: both;
-    .thead {
-        .th {
+    thead {
+        .heading {
+            padding-top: 25px;
+            background-color: #FFF;
+            border-bottom: 1px solid #333;
+            font-size: 2.8rem;
+            font-weight: 100;
+        }
+        th {
             padding: 0.35rem 0.1rem;
             border-bottom: 1px solid #333; 
         }
@@ -22,10 +29,10 @@ table {
             &:hover { background-color: color($lowRed l(40%) a(50%)) !important; }
         }
         &.active {
-            background-color: $mainBlue;
+            background-color: $mainBlue !important;
             color: #FFF;
             &:hover {
-                background-color: $mainBlue;
+                background-color: $mainBlue !important;
                 color: #FFF;
             }
         }
@@ -35,7 +42,6 @@ table {
 
         td { padding: 10px 15px; }
 
-        .id, .category, .low { display: none }
         .name { text-align: left }
         .stock {
             text-align: right;
@@ -48,12 +54,6 @@ table {
         &:first-child { text-align: left }
     }
 
-    td.heading {
-        padding-top: 25px;
-        background-color: #FFF;
-        border-bottom: 1px solid #333;
-        font-size: 2.8rem;
-    }
 }
 
 #item {

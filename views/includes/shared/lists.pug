@@ -1,7 +1,11 @@
 datalist(id='items')
-    each item in items
-        option= item.name
-
-datalist(id='items')
-    each item in items
-        option= item.name
+    - let itemNames = []
+    each _ in allItems
+        each item in _.items
+            - itemNames.push(item.name)
+    each item in itemNames
+        option= item
+        
+datalist(id='categories')
+    each category in allItems
+        option= category._id

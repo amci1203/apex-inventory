@@ -1,3 +1,7 @@
+- let logTooltip    = 'Log Multiple Items (L)'
+- let helpTooltip   = 'Help (H)'
+- let backTooltip   = 'Quick (Q)'
+
 nav#main-nav
     .list-container
         ul
@@ -6,6 +10,9 @@ nav#main-nav
                 
 
 .btn-group
-    button.log--open #[span >]
-    button(onclick='location.assign("/items")') #[span <]
-    button.legend--open ?
+    button.btn--circle.log--open.tooltip
+        span.tooltip-text= logTooltip
+        span >
+    button.btn--circle.tooltip.legend--toggle
+        span.tooltip-text= helpTooltip
+        span ?

@@ -25,10 +25,9 @@ if (sheet.identifier == 'all') {
     const newMultiForm  = new MultiForm('new-multi', '/multi', 'items'),
           logMultiForm  = new MultiForm('logs', '/logs/multi', 'itemLogs');
 
-
     $('#delete-item').click(() => $(document).trigger('delete-item'));
 }
-else if (sheet.identifier == 'item') {
+if (sheet.identifier == 'item') {
     const editLogModal     = new Modal('edit-log', true),
           editCommentModal = new Modal('edit-comment', true);
     

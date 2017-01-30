@@ -3,27 +3,26 @@
 - let row = 1
 
 #active-id.hidden
-table#all: tbody
-    each item, index in items
-        - currentCategory = item.category
-        - if (currentCategory !== prevCategory)
-            - row = 1
-            tr: td.anchor(colspan='4'): a(name=currentCategory)
-            tr: td.heading(colspan='4')= item.category
-            tr.thead
-                td.th Name
-                td.th Last Modified
-                td.th In Stock
-        tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": row % 2 === 0 })
-            - let lastModified = item.lastModified ? String(item.lastModified).substr(0, 16) : ''
-            td.id= item._id
-            td.category= item.category
-            td.low= item.lowAt
-            td.name= item.name
-            td.modified= lastModified
-            td.stock= item.inStock
-        - prevCategory = item.category
-        - row ++
+#all
+    each category in allItems
+        - let categoryName = category._id
+        a(name=categoryName)
+        table
+            thead: th.heading(colspan='4')= categoryName
+            thead: tr
+                th Name
+                th Last Modified
+                th In Stock
+            each item, index in category.items
+                tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": index % 2 != 0 })
+                    - let lastModified = item.lastModified ? String(item.lastModified).substr(0, 16) : ''
+                    td.id.hidden= item._id
+                    td.low.hidden= item.lowAt
+                    td.category.hidden= categoryName
+                    
+                    td.name= item.name
+                    td.modified= lastModified
+                    td.stock= item.inStock
     else
         .text-center
             p.text-lg There aren't any items yet.

@@ -2,6 +2,7 @@
 - let newTooltip    = 'Add Single Item (N)'
 - let multiTooltip  = 'Add multiple items to a category (M)'
 - let filterTooltip = 'Filter low items'
+- let helpTooltip   = 'Help (H)'
 
 nav#main-nav
     .list-container
@@ -21,7 +22,7 @@ nav#main-nav
         span.tooltip-text= multiTooltip
         span *
     button.btn--circle.tooltip.legend--toggle
-        span.tooltip-text Help
+        span.tooltip-text= helpTooltip
         span ?
     button#low-only.btn--circle.tooltip
         span.tooltip-text= filterTooltip
