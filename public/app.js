@@ -9954,10 +9954,16 @@
 	        this.key = key;
 	        this.method = method || 'POST';
 
+	        this.init();
 	        this.events();
 	    }
 
 	    _createClass(Form, [{
+	        key: 'init',
+	        value: function init() {
+	            this.form.attr('action', 'javacript:');
+	        }
+	    }, {
 	        key: 'events',
 	        value: function events() {
 	            this.submit.click(this.handle.bind(this));
@@ -9985,9 +9991,7 @@
 	                } while (tmp.indexOf(':') != -1);
 	                return tmp;
 	            }();
-	            console.log(url); //HERE
 	            this.data.each(function () {
-	                console.log((0, _jquery2.default)(this).val());
 	                var val = (0, _jquery2.default)(this).attr('type') == 'number' ? +(0, _jquery2.default)(this).val() : (0, _jquery2.default)(this).val().trim();
 	                temp[(0, _jquery2.default)(this).attr('name')] = val;
 	            });
@@ -9997,7 +10001,10 @@
 	                method: this.method,
 	                data: data
 	            }).success(function (res) {
-	                if (!res.error) location.reload();else {
+	                if (!res.error) {
+	                    location.reload();
+	                    return false;
+	                } else {
 	                    _this.form.find('.error')[0].innerHTML = res.error;
 	                }
 	            });
@@ -10125,17 +10132,24 @@
 	        this.singles = (0, _jquery2.default)('#' + form + ' input.single');
 	        this.url = '/items' + url;
 	        this.key = key;
+
+	        this.init();
 	        this.events();
 	    }
 
 	    _createClass(MultiForm, [{
-	        key: 'events',
-	        value: function events() {
-	            this.submit.click(this.submitAll.bind(this));
+	        key: 'init',
+	        value: function init() {
+	            this.forms.attr('action', 'javacript:');
 	        }
 	    }, {
-	        key: 'submitAll',
-	        value: function submitAll(event) {
+	        key: 'events',
+	        value: function events() {
+	            this.submit.click(this.handle.bind(this));
+	        }
+	    }, {
+	        key: 'handle',
+	        value: function handle(event) {
 	            var data = {},
 	                all = [];
 
@@ -10146,9 +10160,9 @@
 	            this.forms.each(function () {
 	                var temp = {},
 	                    inputs = (0, _jquery2.default)(this).find('input');
-	                if (inputs[0].value != '') {
+	                if (inputs.eq(0).val() != '') {
 	                    inputs.each(function () {
-	                        var val = (0, _jquery2.default)(this).attr('type') == 'text' ? (0, _jquery2.default)(this).val() : +(0, _jquery2.default)(this).val();
+	                        var val = (0, _jquery2.default)(this).attr('type') == 'number' ? +(0, _jquery2.default)(this).val() : (0, _jquery2.default)(this).val().trim();
 	                        temp[(0, _jquery2.default)(this).attr('name')] = val;
 	                    });
 	                    all.push(temp);

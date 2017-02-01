@@ -9,7 +9,12 @@ export default class Form {
         this.key     = key;
         this.method  = method || 'POST';
         
+        this.init();
         this.events();
+    }
+    
+    init () {
+        this.form.attr('action', 'javacript:')
     }
 
     events () {
@@ -36,9 +41,7 @@ export default class Form {
                   } while (tmp.indexOf(':') != -1);
                   return tmp;
               })();
-        console.log(url); //HERE
         this.data.each(function () {
-            console.log($(this).val())
             let val = $(this).attr('type') == 'number' ? +$(this).val() : $(this).val().trim(); 
             temp[$(this).attr('name')] = val;
         })
@@ -49,7 +52,10 @@ export default class Form {
             data: data,
         }) 
         .success(res => {
-            if (!res.error) location.reload()
+            if (!res.error) {
+                location.reload();
+                return false
+            }
             else {
                 this.form.find('.error')[0].innerHTML = res.error;
             }
