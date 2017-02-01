@@ -3,31 +3,6 @@ const Item              = require('../dbmodels/item'),
       currentDepartment = "Housekeeping";
 
 module.exports = (router) => {
-
-    // SPECIAL ROUTE TO ADD LOG BALANCES TO PAST RECORDS
-    router.get('/utils/fix-logs', (req, res) => {
-        Item.find().select('_id log').exec((err, docs) => {
-            const numItems     = docs.length;
-            let savesCompleted = 0
-            docs.forEach((item) => {
-                const id        = item._id;
-                let prevBalance = 0,
-                    logBalances = {};
-                item.log.forEach((log, index) => {
-                    const thisLogBalance = prevBalance + log.added - log.removed;
-                    logBalances[`log.${index}.balance`] = thisLogBalance;
-                    prevBalance += thisLogBalance;
-                })
-                Item.update({_id: id}, {$set: logBalances }, {upsert: true}, err =>  {
-                    if (err) console.error(err)
-                    else {
-                        savesCompleted++
-                        if (savesCompleted == numItems) res.end('Done')
-                    }
-                })
-            })
-        })
-    })
     
     router.get('/', (req, res) => {
         Item.getAll((docs) => {
@@ -95,6 +70,41 @@ module.exports = (router) => {
         })
     })
 
+    // SPECIAL ROUTE TO ADD LOG BALANCES TO PAST RECORDS 
+    router.get('/utils/fix-logs', (req, res) => {
+        Item.find().select('_id log').exec((err, docs) => {
+            const numItems     = docs.length;
+            let savesCompleted = 0
+            docs.forEach((item) => {
+                const id        = item._id;
+                let prevBalance = 0,
+                    logBalances = {};
+                item.log.forEach((log, index) => {
+                    const thisLogBalance = prevBalance + log.added - log.removed;
+                    logBalances[`log.${index}.balance`] = thisLogBalance;
+                    prevBalance += thisLogBalance;
+                })
+                Item.update({_id: id}, {$set: logBalances }, {upsert: true}, err =>  {
+                    if (err) console.error(err)
+                    else {
+                        savesCompleted++
+                        if (savesCompleted == numItems) res.end('Done')
+                    }
+                })
+            })
+        })
+    })
+    
+    router.get('/print/:date', (req, res) => {
+        let date = new Date(req.params.date);
+        Item.getRecordsForDate(date, (docs) => {
+            res.json({
+                date    : date,
+                records : docs
+            })
+        })
+    })
+
     router.get('/:itemId', (req, res) => {
         Item.get(req.params.itemId, (item) => {
             Item.getCurrentCategory(item.category, (categoryItems) => {
@@ -151,7 +161,7 @@ module.exports = (router) => {
             if (affected !== null && affected !== undefined) {
                 res.end();
             }
-            else res.json({error: 'That requested record does not exist.'})
+            else res.json({error: 'The record does not exist to be edited.'})
         })
     })
     
@@ -160,7 +170,7 @@ module.exports = (router) => {
             if ([null, undefined].indexOf(id) == -1) {
                 res.end();
             }
-            else res.status(401)
+            else res.status(401).send('The requested resource does not exist to be deleted.')
         })
     })
 

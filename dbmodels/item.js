@@ -179,6 +179,54 @@ schema.statics.remove = function (itemId, callback) {
     })
 }
 
+schema.statics.getRecordsForDate = function (dateString, callback) {
+    let d1 = new Date(dateString),
+        d2 = new Date(dateString);
+    
+    d1.setHours(0);
+    d1.setMinutes(0);
+    d1.setSeconds(0);
+    
+    d2.setHours(23);
+    d2.setMinutes(59);
+    d2.setSeconds(59);
+    
+    d1 = d1.getUTCMilliseconds();
+    d2 = d2.getUTCMilliseconds();
+    
+    return this.aggregate(
+        [
+            {$project: {
+                name     : 1,
+                category : 1,
+                log      : 1
+            }},
+            {$group: {
+                _id: '$category',
+                items: {$push: {
+                    name : '$name',
+//                    log  : '$log'
+                    log  : {
+                        $filter: {
+                            input : '$log',
+                            as    : 'log',
+//                            cond  : {'$lte' : ['$log.date', d1]}
+                            cond  : {$and: [ 
+                                {$gte: ['$log.date', d1]},
+                                {$lte: ['$log.date', d2]}
+                            ]}
+                        }
+                    }
+                }}
+            }},
+            {$sort: {_id: 1}}
+        ], (err, result) => {
+            onError(err);
+            callback(result); 
+        }
+    )
+}
+
 module.exports = mongoose.model('Item', schema)
 
 const onError = (err) => {
