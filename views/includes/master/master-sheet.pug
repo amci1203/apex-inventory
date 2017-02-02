@@ -14,7 +14,7 @@
                 th Last Modified
                 th In Stock
             each item, index in category.items
-                tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": index % 2 != 0 })
+                tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": index % 2 == 0 })
                     - let lastModified = item.lastModified ? String(item.lastModified).substr(0, 16) : ''
                     td.id.hidden= item._id
                     td.low.hidden= item.lowAt
@@ -26,4 +26,4 @@
     else
         .text-center
             p.text-lg There aren't any items yet.
-            button.btn.new--open Add one now
+            button.center-block.btn.new--open Add one now

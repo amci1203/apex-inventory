@@ -1,29 +1,20 @@
 const mongoose = require('mongoose');
 
-let subSchema = new mongoose.Schema(
-    {
+const subSchema = new mongoose.Schema({
+        date     : {type: String, unique: true},
         added    : {type: Number, default: 0},
         removed  : {type: Number, default: 0},
         balance  : {type: Number, default: 0},
         comments : {type: String, trim: true, maxlength: 140 }
-    },
-    {
-        timestamps: {
-            createdAt : 'date',
-            updatedAt : 'lastModified'
-        }
-    }
-)
+})
 
-let schema = new mongoose.Schema(
-    {
-        category : String,
+const schema = new mongoose.Schema({
         name     : {type: String, unique: true},
+        category : String,
         inStock  : Number,
         lowAt    : Number,
         log      : [ subSchema ]
-    },
-    {
+    }, {
         timestamps: {
             createdAt: 'date',
             updatedAt: 'lastModified'
@@ -32,29 +23,28 @@ let schema = new mongoose.Schema(
 );
 
 schema.statics.getAll = function (callback) {
-    return this.aggregate(
-        [
-            {$project: {
-                _id          : 1,
-                category     : 1,
-                name         : 1,
-                inStock      : 1,
-                lowAt        : 1,
-                lastModified : 1
-            }},
-            {$group: {
-                _id: '$category',
-                items: {$push: {
-                    _id          : '$_id',
-                    name         : '$name',
-                    inStock      : '$inStock',
-                    lowAt        : '$lowAt',
-                    lastModified : '$lastModified'
-                }}
-            }},
-            {$sort: {_id: 1}}
-        ], (err, result) => callback(result) );
-    }
+    return this.aggregate([
+        {$project: {
+            _id          : 1,
+            category     : 1,
+            name         : 1,
+            inStock      : 1,
+            lowAt        : 1,
+            lastModified : 1
+        }},
+        {$group: {
+            _id: '$category',
+            items: {$push: {
+                _id          : '$_id',
+                name         : '$name',
+                inStock      : '$inStock',
+                lowAt        : '$lowAt',
+                lastModified : '$lastModified'
+            }}
+        }},
+        {$sort: {_id: 1}}
+    ], (err, result) => callback(result) 
+)}
 
 schema.statics.getCategories = function (callback) {
     return this.distinct('category', (err, categories) => {
@@ -108,7 +98,12 @@ schema.statics.getAdjacent = function (itemName, direction, callback) {
 }
 
 schema.statics.create = function (item, callback) {
-    item.log = [{added: item.inStock, comments: `Added ${item.name} to inventory`}];
+    item.log = [{
+        date     : item.date,
+        added    : item.inStock,
+        balance  : item.inStock,
+        comments : `Added ${item.name} to inventory`
+    }];
     let newItem = new this(item);
     return newItem.save((err, insertedId) => {
         onError(err);
@@ -116,21 +111,25 @@ schema.statics.create = function (item, callback) {
     })
 }
 
-schema.statics.push = function (isById, item, logObject, callback) {
-    let query = isById ? {_id: item}  :  {name: item},
-        balance = logObject.added - logObject.removed;
-    return this.findOneAndUpdate(
-        query,
-        {
-            $inc:  { inStock: balance },
-            $push: { log: logObject   }
-        },
-        { upsert: true },
-        (err, id) => {
-            onError(err);
-            if (callback !== undefined) callback(id)
-        }
-    )
+schema.statics.push = function (isById, item, log, callback) {
+    let query   = isById ? {_id: item}  :  {name: item},
+        balance = log.added - log.removed;
+    this.findOne(query).select('_id inStock').exec((err, doc) => {
+        onError(err);
+        log.balance = doc.inStock + balance;
+        return this.findOneAndUpdate(
+            {_id: doc._id},
+            {
+                $inc:  { inStock : balance },
+                $push: { log     : log }
+            },
+            { upsert: true },
+            (err, id) => {
+                onError(err);
+                if (callback !== undefined) callback(id)
+            }
+        )
+    })
 }
 
 schema.statics.editItem = function (itemId, data, callback) {
@@ -152,12 +151,14 @@ schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
         }
     } else {
         update = {
-            $set: {
-                "inStock"       : newLog.stockBalance,
-                "log.$.added"   : newLog.added,
-                "log.$.removed" : newLog.removed
+            $inc: {
+                "inStock"       : newLog.stockDiff,
             },
-            $inc: {"log.$.balance" : newLog.logBalance}
+            $set: {
+                "log.$.added"   : newLog.added,
+                "log.$.removed" : newLog.removed,
+                "log.$.balance" : newLog.balance,
+            }
         }
     }
     return this.update(
@@ -180,41 +181,22 @@ schema.statics.remove = function (itemId, callback) {
 }
 
 schema.statics.getRecordsForDate = function (dateString, callback) {
-    let d1 = new Date(dateString),
-        d2 = new Date(dateString);
-    
-    d1.setHours(0);
-    d1.setMinutes(0);
-    d1.setSeconds(0);
-    
-    d2.setHours(23);
-    d2.setMinutes(59);
-    d2.setSeconds(59);
-    
-    d1 = d1.getUTCMilliseconds();
-    d2 = d2.getUTCMilliseconds();
-    
     return this.aggregate(
         [
             {$project: {
                 name     : 1,
                 category : 1,
-                log      : 1
+                log      : 1,
             }},
             {$group: {
                 _id: '$category',
                 items: {$push: {
                     name : '$name',
-//                    log  : '$log'
                     log  : {
                         $filter: {
                             input : '$log',
                             as    : 'log',
-//                            cond  : {'$lte' : ['$log.date', d1]}
-                            cond  : {$and: [ 
-                                {$gte: ['$log.date', d1]},
-                                {$lte: ['$log.date', d2]}
-                            ]}
+                            cond  : {$eq: ['$$log.date', dateString]}
                         }
                     }
                 }}

@@ -9,8 +9,8 @@ table#item
         th Comments
     tbody
         each log, index in item.log
-            - let timestamp  = log.date.getTime() + 1000
-            - let datestring = `${new Date(timestamp).toDateString()}`.substr(0, 16)
+            - let date       = new Date(log.date)
+            - let datestring = date.toUTCString().substring(0,16)
             tr.row(class= index % 2 == 0 ? 'row--striped' : '')
                 td.id.hidden= log._id
                 td.date= datestring

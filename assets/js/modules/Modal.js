@@ -40,10 +40,14 @@ export default class Modal {
         else this.openModal();
     }
     handleKeyPress (event) {
-        if (event.keyCode === 27) {
+        const key = event.keyCode;
+        if (key == 27) {
             this.modal.removeClass('modal--open');
             $('html').removeClass('modal-open');
             event.stop = true;
         };
+//        if ($('html').hasClass('modal-open') && key == 13) {
+//            this.modal.hasClass('modal--open').find('.submit').trigger('click');
+//        }
     }
 }

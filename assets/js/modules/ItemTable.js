@@ -34,6 +34,7 @@ export default class ItemTable {
               date      =  this.table.find('.active .date')[0].innerText,
               added     = +this.table.find('.active .added')[0].innerText,
               removed   = +this.table.find('.active .removed')[0].innerText,
+              balance   = +this.table.find('.active .balance')[0].innerText,
               comments  =  this.table.find('.active .comments')[0].innerText,
               row       = {
                   id       : id,
@@ -65,25 +66,33 @@ export default class ItemTable {
     }
     
     handleRecordChange () {
-        const _            =  this,
-              active       =  this.activeRow,
-              inStock      = +$('#current-stock').text(),
-              added        =  active.added,
-              removed      =  active.removed,
-              uAdded       = +$('#edit-log-form').find('#u-added').val()   || added,
-              uRemoved     = +$('#edit-log-form').find('#u-removed').val() || removed,
-              addedDiff    =  uAdded   - added,
-              removedDiff  =  uRemoved - removed,
-              stockBalance =  inStock + addedDiff - removedDiff,
-              logBalance   =  addedDiff - removedDiff;
+        const _           =  this,
+              active      =  this.activeRow,
+              inStock     = +$('#current-stock').text(),
+              added       =  active.added,
+              removed     =  active.removed;
+        
+        let   uAdded      =  $('#edit-log-form').find('#u-added').val(),
+              uRemoved    =  $('#edit-log-form').find('#u-removed').val();
+        
+        if (uAdded == '') uAdded = added;
+        else uAdded = Number(uAdded);
+        if (uRemoved == '') uRemoved = removed;
+        else uRemoved = Number(uRemoved);
+        
+        const addedDiff   = uAdded    - added,
+              removedDiff = uRemoved  - removed,
+              stockDiff   = addedDiff - removedDiff,
+              uBalance    = inStock   + stockDiff;
+        
         $.ajax({
             url: `/items/${_.itemId}/${active.id}`,
             method: 'PUT',
             data: { uLog: {
-                added        : uAdded,
-                removed      : uRemoved,
-                logBalance   : logBalance,
-                stockBalance : stockBalance
+                added     : uAdded,
+                remove    : uRemoved,
+                balance   : uBalance,
+                stockDiff : stockDiff,
             }}
         })
         .success(res => {

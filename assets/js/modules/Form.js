@@ -2,12 +2,13 @@ import $ from 'jquery';
 
 export default class Form {
     constructor (form, url, key, method) {
-        this.form    = $(`#${form}`);
-        this.submit  = $(`#${form} button.submit`);
-        this.data    = $(`#${form}`).find('input:not([type="submit"]), select, textarea');
-        this.url     = `/items${url}`;
-        this.key     = key;
-        this.method  = method || 'POST';
+        this.selector = form.trim()
+        this.form     = $(`#${this.selector}`);
+        this.submit   = $(`#${this.selector}`).find('.submit');
+        this.data     = $(`#${this.selector}`).find('input:not([type="submit"]), select, textarea');
+        this.url      = `/items${url}`;
+        this.key      = key;
+        this.method   = method || 'POST';
         
         this.init();
         this.events();
@@ -42,9 +43,15 @@ export default class Form {
                   return tmp;
               })();
         this.data.each(function () {
-            let val = $(this).attr('type') == 'number' ? +$(this).val() : $(this).val().trim(); 
+            let val = $(this).attr('type') == 'number' ? +$(this).val() : $(this).val().trim();
+            if ($(this).attr('type') == 'date' && $(this).val() == '') {
+                console.log('setting date to today');
+                const d = new Date();
+                val = d.toISOString().substring(0,10);
+            }
             temp[$(this).attr('name')] = val;
         })
+        console.log(temp)
         data[this.key] = temp;
         $.ajax({
             url: url,

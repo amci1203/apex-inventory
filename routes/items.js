@@ -49,7 +49,7 @@ module.exports = (router) => {
 
     router.post('/multi-logs', (req, res) => {
         const itemLogs       = req.body.itemLogs,
-              date           = req.body.date,
+              date           = req.body.date || new Date,
               numLogs        = itemLogs.length,
             savesCompleted = 0;
         itemLogs.forEach((obj, index) => {
@@ -96,10 +96,8 @@ module.exports = (router) => {
     })
     
     router.get('/print/:date', (req, res) => {
-        let date = new Date(req.params.date);
-        Item.getRecordsForDate(date, (docs) => {
+        Item.getRecordsForDate(req.params.date, (docs) => {
             res.json({
-                date    : date,
                 records : docs
             })
         })

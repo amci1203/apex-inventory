@@ -10,7 +10,7 @@ import './modules/Menu';
 const sheet = location.pathname == '/items' ? new MainTable() : new ItemTable();
 
 const logModal      = new Modal('log', true),
-      logForm       = new Form('log-item', '/:itemId', 'log'),
+      logForm       = new Form('log-item', '/:itemId', 'log' ),
       legend        = new Modal('legend');
 
 if (sheet.identifier == 'all') {
@@ -33,4 +33,3 @@ if (sheet.identifier == 'item') {
     
     const editComments     = new Form('edit-comment-form', '/:itemId/:logId', 'uLog', 'PUT');
 }
-

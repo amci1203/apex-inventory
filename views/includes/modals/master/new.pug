@@ -5,6 +5,9 @@
         form#new-item(action='#')
             p.error
             .form-group.form-group--inline
+                label(for='date') Date
+                input(name='date' type='date')
+            .form-group.form-group--inline
                 label(for='category') Category
                 input(name='category' list='categories')
                 datalist(id='categories')

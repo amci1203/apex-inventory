@@ -9947,9 +9947,10 @@
 	    function Form(form, url, key, method) {
 	        _classCallCheck(this, Form);
 
-	        this.form = (0, _jquery2.default)('#' + form);
-	        this.submit = (0, _jquery2.default)('#' + form + ' button.submit');
-	        this.data = (0, _jquery2.default)('#' + form).find('input:not([type="submit"]), select, textarea');
+	        this.selector = form.trim();
+	        this.form = (0, _jquery2.default)('#' + this.selector);
+	        this.submit = (0, _jquery2.default)('#' + this.selector).find('.submit');
+	        this.data = (0, _jquery2.default)('#' + this.selector).find('input:not([type="submit"]), select, textarea');
 	        this.url = '/items' + url;
 	        this.key = key;
 	        this.method = method || 'POST';
@@ -9993,8 +9994,14 @@
 	            }();
 	            this.data.each(function () {
 	                var val = (0, _jquery2.default)(this).attr('type') == 'number' ? +(0, _jquery2.default)(this).val() : (0, _jquery2.default)(this).val().trim();
+	                if ((0, _jquery2.default)(this).attr('type') == 'date' && (0, _jquery2.default)(this).val() == '') {
+	                    console.log('setting date to today');
+	                    var d = new Date();
+	                    val = d.toISOString().substring(0, 10);
+	                }
 	                temp[(0, _jquery2.default)(this).attr('name')] = val;
 	            });
+	            console.log(temp);
 	            data[this.key] = temp;
 	            _jquery2.default.ajax({
 	                url: url,
@@ -10090,11 +10097,15 @@
 	    }, {
 	        key: 'handleKeyPress',
 	        value: function handleKeyPress(event) {
-	            if (event.keyCode === 27) {
+	            var key = event.keyCode;
+	            if (key == 27) {
 	                this.modal.removeClass('modal--open');
 	                (0, _jquery2.default)('html').removeClass('modal-open');
 	                event.stop = true;
 	            };
+	            //        if ($('html').hasClass('modal-open') && key == 13) {
+	            //            this.modal.hasClass('modal--open').find('.submit').trigger('click');
+	            //        }
 	        }
 	    }]);
 
@@ -10128,7 +10139,7 @@
 	        _classCallCheck(this, MultiForm);
 
 	        this.forms = (0, _jquery2.default)('#' + form + ' .multi-form form');
-	        this.submit = (0, _jquery2.default)('#' + form + ' .multi-form button.submit-all');
+	        this.submit = (0, _jquery2.default)('#' + form + ' .multi-form button.submit');
 	        this.singles = (0, _jquery2.default)('#' + form + ' input.single');
 	        this.url = '/items' + url;
 	        this.key = key;
@@ -10460,6 +10471,7 @@
 	                date = this.table.find('.active .date')[0].innerText,
 	                added = +this.table.find('.active .added')[0].innerText,
 	                removed = +this.table.find('.active .removed')[0].innerText,
+	                balance = +this.table.find('.active .balance')[0].innerText,
 	                comments = this.table.find('.active .comments')[0].innerText,
 	                row = {
 	                id: id,
@@ -10498,21 +10510,27 @@
 	                active = this.activeRow,
 	                inStock = +(0, _jquery2.default)('#current-stock').text(),
 	                added = active.added,
-	                removed = active.removed,
-	                uAdded = +(0, _jquery2.default)('#edit-log-form').find('#u-added').val() || added,
-	                uRemoved = +(0, _jquery2.default)('#edit-log-form').find('#u-removed').val() || removed,
-	                addedDiff = uAdded - added,
+	                removed = active.removed;
+
+	            var uAdded = (0, _jquery2.default)('#edit-log-form').find('#u-added').val(),
+	                uRemoved = (0, _jquery2.default)('#edit-log-form').find('#u-removed').val();
+
+	            if (uAdded == '') uAdded = added;else uAdded = Number(uAdded);
+	            if (uRemoved == '') uRemoved = removed;else uRemoved = Number(uRemoved);
+
+	            var addedDiff = uAdded - added,
 	                removedDiff = uRemoved - removed,
-	                stockBalance = inStock + addedDiff - removedDiff,
-	                logBalance = addedDiff - removedDiff;
+	                stockDiff = addedDiff - removedDiff,
+	                uBalance = inStock + stockDiff;
+
 	            _jquery2.default.ajax({
 	                url: '/items/' + _.itemId + '/' + active.id,
 	                method: 'PUT',
 	                data: { uLog: {
 	                        added: uAdded,
-	                        removed: uRemoved,
-	                        logBalance: logBalance,
-	                        stockBalance: stockBalance
+	                        remove: uRemoved,
+	                        balance: uBalance,
+	                        stockDiff: stockDiff
 	                    } }
 	            }).success(function (res) {
 	                if (!res.error) location.reload();else {
