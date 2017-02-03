@@ -5,8 +5,8 @@
 @import './modules/_item-panes';
 @import './modules/_legend';
 @import './modules/_nav';
-@import './modules/_table';
 @import './modules/_form';
+@import './modules/_table';
 @import './modules/_modal';
 @import './modules/_options';
 @import './modules/_row';
@@ -14,6 +14,8 @@
 @import './modules/_text';
 @import './modules/_tooltip';
 @import './modules/_wrapper';
+
+@import './modules/_day-report';
 
 * {
     box-sizing: border-box;

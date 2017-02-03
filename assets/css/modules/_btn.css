@@ -1,11 +1,3 @@
-button {
-    @mixin clickable
-    &:disabled {
-        background-color: #555;
-        color: #111;
-    }
-}
-
 .btn {
     display: block;
     background-color: $mainBlue;
@@ -72,5 +64,13 @@ button {
         background-color: #CCC;
         color: #333;
         &:hover { color: #111 }
+    }
+}
+
+button {
+    @mixin clickable
+    &:disabled {
+        background-color: #555;
+        color: #111;
     }
 }

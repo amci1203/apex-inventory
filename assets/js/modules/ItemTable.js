@@ -24,7 +24,7 @@ export default class ItemTable {
         this.nextButton.click(this.getAdjacentItem.bind(this))
         this.prevButton.click(this.getAdjacentItem.bind(this))
         this.editLog.click(this.handleRecordChange.bind(this))
-        $(document).keyup(this.handleKeyPress.bind(this))
+        $(document).keydown(this.handleKeyPress.bind(this))
     }
     
     makeActiveRow (event) {
@@ -109,10 +109,11 @@ export default class ItemTable {
               state   = $('html').hasClass('options-open') ? 'options' : 'main',
               methods = {
                 main: {
-                    27: () => $('#sidebar-toggle').trigger('click'), //ESC
+                    27: () => location.replace('/'),
+                    73: () => $('#sidebar-toggle').trigger('click'), //'I'
                     72: () => $('.legend--toggle').first().trigger('click'), //'H'
                     76: () => $('.log--open').first().trigger('click'), //'L'
-                    81: () => location.replace('/') //'Q'
+                    78: () => $('.log--open').first().trigger('click') //'N'
                 },
                 options: {
                     27: () => _.closeOptions(),

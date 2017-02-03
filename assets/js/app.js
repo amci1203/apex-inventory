@@ -10,14 +10,13 @@ import './modules/Menu';
 
 const sheet = (id => {
     const pages = {
-        main  : new MainTable(),
-        item  : new ItemTable(),
+        main  : () => new MainTable(),
+        item  : () => new ItemTable(),
         print : () => DayReport(),
     }
     if (typeof pages[id] == 'function') {
         return pages[id]();
     }
-    else return pages[id];
 })($('#page-id').html())
 
 const logModal      = new Modal('log', true),

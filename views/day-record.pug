@@ -33,10 +33,11 @@ body
                                         td= log.removed
                                         td= log.balance
         else
-            p.text-center No Records were found
+            p.text-center.text-xl No Records Were Found
+            button.center-block.btn(onclick='location.replace("/items")') GO BACK
     #date-change-buttons
-        button#back
-        button#forward
+        button.btn--circle#back: span <
+        button.btn--circle#forward: span >
     .btn-group
         button.btn--circle.tooltip
             span.tooltip-text Home

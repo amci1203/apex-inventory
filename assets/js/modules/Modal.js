@@ -2,11 +2,11 @@ import $ from 'jquery';
 
 export default class Modal {
     constructor (modalName , hasForm) {
-        this.id           = modalName.trim();
-        this.hasForm      = hasForm;
-        this.modal        = $(`#${this.id}`);
-        this.openTrigger  = $(`.${this.id}--open`);
-        this.closeTrigger = $(`.${this.id}--close`);
+        this.id            = modalName.trim();
+        this.hasForm       = hasForm;
+        this.modal         = $(`#${this.id}`);
+        this.openTrigger   = $(`.${this.id}--open`);
+        this.closeTrigger  = $(`.${this.id}--close`);
         this.toggleTrigger = $(`.${this.id}--toggle`);
         this.events();
     }
@@ -15,7 +15,7 @@ export default class Modal {
         this.openTrigger.click(this.openModal.bind(this));
         this.closeTrigger.click(this.closeModal.bind(this));
         this.toggleTrigger.click(this.toggleModal.bind(this));
-        $(document).keyup(this.handleKeyPress.bind(this));
+        $(document).keydown(this.handleKeyPress.bind(this));
     }
 
     openModal () {
@@ -44,10 +44,9 @@ export default class Modal {
         if (key == 27) {
             this.modal.removeClass('modal--open');
             $('html').removeClass('modal-open');
-            event.stop = true;
         };
-//        if ($('html').hasClass('modal-open') && key == 13) {
-//            this.modal.hasClass('modal--open').find('.submit').trigger('click');
-//        }
+        if ($('html').hasClass('modal-open') && key == 13 && this.hasForm) {
+            $(`#${this.id}.modal--open`).find('.submit').trigger('click');
+        }
     }
 }

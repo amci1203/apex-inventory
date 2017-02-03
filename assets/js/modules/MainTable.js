@@ -8,7 +8,7 @@ export default class MainTable {
         
         this.filterToggle   = $('#low-only');
         this.openItem       = $('#open');
-        this.editItem       = $('#edit');
+        this.editItem       = $('#edit-item');
         
         this.activeRow = {}
         this.events();
@@ -17,7 +17,7 @@ export default class MainTable {
         this.rows.dblclick(this.get.bind(this))
         this.rows.click(this.makeActiveRow.bind(this))
 
-        $(document).keyup(this.handleKeyPresses.bind(this))
+        $(document).keydown(this.handleKeyPresses.bind(this))
         this.openItem.click(this.get.bind(this))
         this.editItem.click(this.edit.bind(this))
         this.filterToggle.click(this.filterLowItems.bind(this))
@@ -122,6 +122,7 @@ export default class MainTable {
               state   = $('html').hasClass('options-open') ? 'options' : 'main',
               methods = {
                 main: {
+                    27: () => $('#sidebar-toggle').trigger('click'), //ESC
                     67: () => $('#sidebar-toggle').trigger('click'), //'C'
                     72: () => $('.legend--toggle').first().trigger('click'), //'H'
                     75: () => $('#low-only').trigger('click'), //'K'

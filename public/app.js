@@ -80,15 +80,19 @@
 
 	var sheet = function (id) {
 	    var pages = {
-	        main: new _MainTable2.default(),
-	        item: new _ItemTable2.default(),
+	        main: function main() {
+	            return new _MainTable2.default();
+	        },
+	        item: function item() {
+	            return new _ItemTable2.default();
+	        },
 	        print: function print() {
 	            return (0, _DayReport2.default)();
 	        }
 	    };
 	    if (typeof pages[id] == 'function') {
 	        return pages[id]();
-	    } else return pages[id];
+	    }
 	}((0, _jquery2.default)('#page-id').html());
 
 	var logModal = new _Modal2.default('log', true),
@@ -124,7 +128,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.3
+	 * jQuery JavaScript Library v2.2.4
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -134,7 +138,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-04-05T19:26Z
+	 * Date: 2016-05-20T17:23Z
 	 */
 
 	(function( global, factory ) {
@@ -190,7 +194,7 @@
 
 
 	var
-		version = "2.2.3",
+		version = "2.2.4",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5131,13 +5135,14 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
+		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.preventDefault();
 			}
 		},
@@ -5146,7 +5151,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.stopPropagation();
 			}
 		},
@@ -5155,7 +5160,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e ) {
+			if ( e && !this.isSimulated ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6085,19 +6090,6 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
-
-		// Support: IE11 only
-		// In IE 11 fullscreen elements inside of an iframe have
-		// 100x too small dimensions (gh-1764).
-		if ( document.msFullscreenElement && window.top !== window ) {
-
-			// Support: IE11 only
-			// Running getBoundingClientRect on a disconnected node
-			// in IE throws an error.
-			if ( elem.getClientRects().length ) {
-				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
-			}
-		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7989,6 +7981,7 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
+		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7996,27 +7989,10 @@
 				{
 					type: type,
 					isSimulated: true
-
-					// Previously, `originalEvent: {}` was set here, so stopPropagation call
-					// would not be triggered on donor event, since in our own
-					// jQuery.event.stopPropagation function we had a check for existence of
-					// originalEvent.stopPropagation method, so, consequently it would be a noop.
-					//
-					// But now, this "simulate" function is used only for events
-					// for which stopPropagation() is noop, so there is no need for that anymore.
-					//
-					// For the 1.x branch though, guard for "click" and "submit"
-					// events is still used, but was moved to jQuery.event.stopPropagation function
-					// because `originalEvent` should point to the original event for the constancy
-					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
-
-			if ( e.isDefaultPrevented() ) {
-				event.preventDefault();
-			}
 		}
 
 	} );
@@ -10105,7 +10081,7 @@
 	            this.openTrigger.click(this.openModal.bind(this));
 	            this.closeTrigger.click(this.closeModal.bind(this));
 	            this.toggleTrigger.click(this.toggleModal.bind(this));
-	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
+	            (0, _jquery2.default)(document).keydown(this.handleKeyPress.bind(this));
 	        }
 	    }, {
 	        key: 'openModal',
@@ -10144,11 +10120,10 @@
 	            if (key == 27) {
 	                this.modal.removeClass('modal--open');
 	                (0, _jquery2.default)('html').removeClass('modal-open');
-	                event.stop = true;
 	            };
-	            //        if ($('html').hasClass('modal-open') && key == 13) {
-	            //            this.modal.hasClass('modal--open').find('.submit').trigger('click');
-	            //        }
+	            if ((0, _jquery2.default)('html').hasClass('modal-open') && key == 13 && this.hasForm) {
+	                (0, _jquery2.default)('#' + this.id + '.modal--open').find('.submit').trigger('click');
+	            }
 	        }
 	    }]);
 
@@ -10266,7 +10241,7 @@
 
 	        this.filterToggle = (0, _jquery2.default)('#low-only');
 	        this.openItem = (0, _jquery2.default)('#open');
-	        this.editItem = (0, _jquery2.default)('#edit');
+	        this.editItem = (0, _jquery2.default)('#edit-item');
 
 	        this.activeRow = {};
 	        this.events();
@@ -10278,7 +10253,7 @@
 	            this.rows.dblclick(this.get.bind(this));
 	            this.rows.click(this.makeActiveRow.bind(this));
 
-	            (0, _jquery2.default)(document).keyup(this.handleKeyPresses.bind(this));
+	            (0, _jquery2.default)(document).keydown(this.handleKeyPresses.bind(this));
 	            this.openItem.click(this.get.bind(this));
 	            this.editItem.click(this.edit.bind(this));
 	            this.filterToggle.click(this.filterLowItems.bind(this));
@@ -10400,6 +10375,9 @@
 	                state = (0, _jquery2.default)('html').hasClass('options-open') ? 'options' : 'main',
 	                methods = {
 	                main: {
+	                    27: function _() {
+	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
+	                    }, //ESC
 	                    67: function _() {
 	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
 	                    }, //'C'
@@ -10512,7 +10490,7 @@
 	            this.nextButton.click(this.getAdjacentItem.bind(this));
 	            this.prevButton.click(this.getAdjacentItem.bind(this));
 	            this.editLog.click(this.handleRecordChange.bind(this));
-	            (0, _jquery2.default)(document).keyup(this.handleKeyPress.bind(this));
+	            (0, _jquery2.default)(document).keydown(this.handleKeyPress.bind(this));
 	        }
 	    }, {
 	        key: 'makeActiveRow',
@@ -10599,17 +10577,20 @@
 	                methods = {
 	                main: {
 	                    27: function _() {
+	                        return location.replace('/');
+	                    },
+	                    73: function _() {
 	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
-	                    }, //ESC
+	                    }, //'I'
 	                    72: function _() {
 	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
 	                    }, //'H'
 	                    76: function _() {
 	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
 	                    }, //'L'
-	                    81: function _() {
-	                        return location.replace('/');
-	                    } //'Q'
+	                    78: function _() {
+	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
+	                    } //'N'
 	                },
 	                options: {
 	                    27: function _() {
@@ -10685,6 +10666,15 @@
 	        return null;
 	    }();
 
+	    if (current == today) forward.css('display', 'none');
+
+	    function goBack() {
+	        location.replace(go(backDate));
+	    }
+
+	    function goForward() {
+	        if (current != today) location.replace(go(forwardDate));
+	    }
 	    function handleKeyPresses(event) {
 	        var code = String(event.keyCode),
 	            keys = {
@@ -10692,19 +10682,22 @@
 	                return location.replace('/items');
 	            }, //ESC
 	            37: function _() {
-	                return location.replace(go(backDate));
+	                return goBack();
 	            }, // LEFT ARROW
 	            39: function _() {
-	                return location.replace(go(forwardDate));
+	                return goForward();
 	            } // RIGHT ARROW
 	        };
 	        console.log(code);
-	        if (current == today && code == 39) return false;
 	        if (typeof keys[event.keyCode] == 'function') keys[event.keyCode]();else return false;
 	    };
 
 	    return function () {
 	        (0, _jquery2.default)(document).keyup(handleKeyPresses);
+	        back.click(goBack);
+	        forward.click(function () {
+	            return location.replace(goForward);
+	        });
 	        return { identifier: 'print' };
 	    }();
 	}
@@ -10730,17 +10723,10 @@
 	    function toggleSidebar() {
 	        (0, _jquery2.default)('html').toggleClass('sidebar-open scroll-lock');
 	    }
-	    //    function handleEsc (key) {
-	    //        if ($('html').hasClass('sidebar-open') && key.keyCode == 27) {
-	    //            $('html').removeClass('sidebar-open scroll-lock');
-	    //            $(document).trigger('sidebar-closed');
-	    //        } else return false
-	    //    }
 
 	    return function () {
 	        toggle.click(toggleSidebar);
 	        (0, _jquery2.default)('#main-nav a').click(toggleSidebar);
-	        //        $(document).keyup(handleEsc);
 	    }();
 	}();
 

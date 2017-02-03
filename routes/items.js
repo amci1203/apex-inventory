@@ -159,10 +159,8 @@ module.exports = (router) => {
     })
     
     router.put('/:itemId', (req, res) => {
-        Item.editItem(req.params.itemId, req.body.update, (affected) => {
-            if (affected !== null && affected !== undefined) {
-                res.end();
-            }
+        Item.editItem(req.params.itemId, req.body.update, (err, affected) => {
+            if (!err) res.end();
             else res.json({error: 'An item already has that name.'})
         })
     })

@@ -45,7 +45,7 @@ form {
     }
 }
 
-.submit {
+.submit:not(.btn) {
     margin: 15px 0;
     padding: 5px 15px;
     width: 100%;
