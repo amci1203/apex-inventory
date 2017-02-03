@@ -1,0 +1,44 @@
+head
+    link(type='text/css', rel='stylesheet', href='/styles.css')
+body
+    #page-id day-report
+    main
+        header: h1.section-title Inventory for #{date.toUTCString().substring(0,16)}
+        - let numLogs = 0
+        each group in records
+            each item in group
+                if item.log
+                    - numLogs++
+        unless numLogs == 0
+            each group in records
+                table.day-record
+                    thead: th.heading(colspan='5')= group._id
+                    thead
+                        th Item
+                        th Start
+                        th Added
+                        th Removed
+                        th End
+                    tbody
+                    each item in group.items
+                        if item.log.length != 0
+                            - let log = item.log[0]
+                            tr.row(class={ "row--striped": index % 2 == 0 })
+                                td= item.name
+                                td= (log.balance - log.added + log.removed)
+                                td= log.added
+                                td= log.removed
+                                td= log.balance
+        else
+            p.text-center No Records were found
+    #date-change-buttons
+        button#back
+        button#forward
+    .btn-group
+        button.btn--circle.tooltip
+            span.tooltip-text Home
+            img(src='/icons/home.png' onclick='location.replace("/items")')
+        button.btn--circle.tooltip
+            span.tooltip-text Print
+            img(src='/icons/print.png' onclick='window.print()')
+    script(src='/app.js')

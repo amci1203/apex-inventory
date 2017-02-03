@@ -43,13 +43,13 @@ schema.statics.getAll = function (callback) {
             }}
         }},
         {$sort: {_id: 1}}
-    ], (err, result) => callback(result) 
+    ], (err, result) => callback(err, result) 
 )}
 
 schema.statics.getCategories = function (callback) {
     return this.distinct('category', (err, categories) => {
-        onError(err);
-        if (callback !== undefined) callback(categories);
+        isError(err);
+        if (callback !== undefined) callback(err, categories);
     })
 }
 
@@ -58,8 +58,8 @@ schema.statics.get = function (itemId, callback) {
         .select('_id category name inStock log')
         .sort('date')
         .exec((err, doc) => {
-            onError(err);
-            if (callback !== undefined) callback(doc)
+            isError(err);
+            if (callback !== undefined) callback(err, doc)
         })
 }
 
@@ -68,8 +68,8 @@ schema.statics.getCurrentCategory = function (category, callback) {
         .select('_id name')
         .sort('name')
         .exec((err, docs) => {
-            onError(err);
-            if (callback !== undefined) callback(docs)
+            isError(err);
+            if (callback !== undefined) callback(err, docs)
         })
 }
 
@@ -91,9 +91,9 @@ schema.statics.getAdjacent = function (itemName, direction, callback) {
         .select('_id category name inStock log')
         .sort(sort)
         .exec((err, doc) => {
-            onError(err);
+            isError(err);
             console.log(doc);
-            if (callback !== undefined) callback(doc)
+            if (callback !== undefined) callback(err, doc)
         })
 }
 
@@ -106,8 +106,8 @@ schema.statics.create = function (item, callback) {
     }];
     let newItem = new this(item);
     return newItem.save((err, insertedId) => {
-        onError(err);
-        if (callback !== undefined) callback(newItem)
+        isError(err);
+        if (callback !== undefined) callback(err, newItem)
     })
 }
 
@@ -115,7 +115,7 @@ schema.statics.push = function (isById, item, log, callback) {
     let query   = isById ? {_id: item}  :  {name: item},
         balance = log.added - log.removed;
     this.findOne(query).select('_id inStock').exec((err, doc) => {
-        onError(err);
+        isError(err);
         log.balance = doc.inStock + balance;
         return this.findOneAndUpdate(
             {_id: doc._id},
@@ -125,8 +125,8 @@ schema.statics.push = function (isById, item, log, callback) {
             },
             { upsert: true },
             (err, id) => {
-                onError(err);
-                if (callback !== undefined) callback(id)
+                isError(err);
+                if (callback !== undefined) callback(err, id)
             }
         )
     })
@@ -135,8 +135,8 @@ schema.statics.push = function (isById, item, log, callback) {
 schema.statics.editItem = function (itemId, data, callback) {
     return this.findOneAndUpdate({_id: itemId}, data, {upsert: false},
         (err, numAffected) => {
-            onError(err)
-            if (callback !== undefined) callback(numAffected)
+            isError(err)
+            if (callback !== undefined) callback(err, numAffected)
         }
     )
 }
@@ -167,15 +167,15 @@ schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
             "log._id" : logId
         }, update, { upsert : false },
         (err, numAffected) => {
-            onError(err)
-            if (callback !== undefined) callback(numAffected)
+            isError(err)
+            if (callback !== undefined) callback(err, numAffected)
         }
     )
 }
 
 schema.statics.remove = function (itemId, callback) {
     return this.where({_id: itemId}).remove((err, removedId) => {
-        onError(err);
+        isError(err);
         if (callback !== undefined) callback(removedId)
     })
 }
@@ -184,9 +184,9 @@ schema.statics.getRecordsForDate = function (dateString, callback) {
     return this.aggregate(
         [
             {$project: {
-                name     : 1,
-                category : 1,
-                log      : 1,
+                name       : 1,
+                category   : 1,
+                log        : 1,
             }},
             {$group: {
                 _id: '$category',
@@ -203,16 +203,17 @@ schema.statics.getRecordsForDate = function (dateString, callback) {
             }},
             {$sort: {_id: 1}}
         ], (err, result) => {
-            onError(err);
-            callback(result); 
+            isError(err);
+            callback(err, result); 
         }
     )
 }
 
 module.exports = mongoose.model('Item', schema)
 
-const onError = (err) => {
+const isError = (err) => {
     if (err) {
         console.error(err.toString());
-    }
+        return true;
+    } else return false;
 }

@@ -70,11 +70,18 @@
 
 	var _ItemTable2 = _interopRequireDefault(_ItemTable);
 
-	__webpack_require__(7);
+	var _DayReport = __webpack_require__(7);
+
+	var _DayReport2 = _interopRequireDefault(_DayReport);
+
+	__webpack_require__(8);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var sheet = location.pathname == '/items' ? new _MainTable2.default() : new _ItemTable2.default();
+	var sheet = (0, _jquery2.default)('#page-id').html() == 'main' ? new _MainTable2.default() : function () {
+	      var sheet = (0, _jquery2.default)('#page-id').html() == 'item' ? new _ItemTable2.default() : (0, _DayReport2.default)();
+	      return sheet;
+	}();
 
 	var logModal = new _Modal2.default('log', true),
 	    logForm = new _Form2.default('log-item', '/:itemId', 'log'),
@@ -85,6 +92,7 @@
 	          newMultiModal = new _Modal2.default('new-multi', true),
 	          logMultiModal = new _Modal2.default('logs', true),
 	          editModal = new _Modal2.default('edit', true),
+	          printModal = new _Modal2.default('print', true),
 	          deleteModal = new _Modal2.default('delete', true);
 
 	      var newForm = new _Form2.default('new-item', '', 'item');
@@ -10241,7 +10249,11 @@
 	            this.filterToggle.click(this.filterLowItems.bind(this));
 
 	            (0, _jquery2.default)('#confirm-delete').on('input', this.handleDeleteButtonState.bind(this));
+	            (0, _jquery2.default)('#record-date').on('input', this.handlePrintButtonState.bind(this));
 	            (0, _jquery2.default)(document).on('delete-item', this.erase.bind(this));
+	            (0, _jquery2.default)('#print-records').click(function () {
+	                return location.assign('/items/print/' + (0, _jquery2.default)('#record-date').val());
+	            });
 	        }
 	    }, {
 	        key: 'makeActiveRow',
@@ -10334,6 +10346,12 @@
 	            }
 	        }
 	    }, {
+	        key: 'handlePrintButtonState',
+	        value: function handlePrintButtonState() {
+	            var confirmed = (0, _jquery2.default)('#record-date').val() != '';
+	            if (confirmed) (0, _jquery2.default)('#print-records').removeAttr('disabled');else (0, _jquery2.default)('#print-records').attr('disabled', 'disabled');
+	        }
+	    }, {
 	        key: 'handleDeleteButtonState',
 	        value: function handleDeleteButtonState() {
 	            var confirmed = (0, _jquery2.default)('#confirm-delete').val().trim().toUpperCase() == this.activeRow.name.toUpperCase();
@@ -10347,9 +10365,6 @@
 	                state = (0, _jquery2.default)('html').hasClass('options-open') ? 'options' : 'main',
 	                methods = {
 	                main: {
-	                    27: function _() {
-	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
-	                    }, //ESC
 	                    67: function _() {
 	                        return (0, _jquery2.default)('#sidebar-toggle').trigger('click');
 	                    }, //'C'
@@ -10359,16 +10374,18 @@
 	                    75: function _() {
 	                        return (0, _jquery2.default)('#low-only').trigger('click');
 	                    }, //'K'
+	                    76: function _() {
+	                        return (0, _jquery2.default)('.logs--open').first().trigger('click');
+	                    }, //'L'
 	                    77: function _() {
 	                        return (0, _jquery2.default)('.new-multi--open').first().trigger('click');
 	                    }, //'M'
 	                    78: function _() {
 	                        return (0, _jquery2.default)('.new--open').first().trigger('click');
 	                    }, //'N'
-	                    76: function _() {
-	                        return (0, _jquery2.default)('.logs--open').first().trigger('click');
-	                    } //'L'
-	                },
+	                    80: function _() {
+	                        return (0, _jquery2.default)('.print--open').first().trigger('click');
+	                    } },
 	                options: {
 	                    27: function _() {
 	                        return _2.closeSidebars();
@@ -10383,7 +10400,7 @@
 	                        return (0, _jquery2.default)('.edit--open').first().trigger('click');
 	                    }, //'E'
 	                    72: function _() {
-	                        return (0, _jquery2.default)('.legend--open').first().trigger('click');
+	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
 	                    }, //'H'
 	                    76: function _() {
 	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
@@ -10594,6 +10611,64 @@
 
 /***/ },
 /* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = DayReport;
+
+	var _jquery = __webpack_require__(1);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function DayReport() {
+	    var backDate = '',
+	        forwardDate = '';
+
+	    var back = (0, _jquery2.default)('#back'),
+	        forward = (0, _jquery2.default)('#forward'),
+	        url = '/items/print/:date',
+	        setDate = function setDate(date) {
+	        return url.replace(':date', date);
+	    };
+
+	    var setDates = function () {
+	        var d = new Date(location.pathname.slice(-10));
+	        d.setDate(d.getDate() - 1);
+	        backDate = d.toISOString().substring(0, 10);
+	        d.setDate(d.getDate() + 2);
+	        forwardDate = d.toISOString().substring(0, 10);
+	        return null;
+	    }();
+
+	    function handle(event) {
+	        var code = String(event.keyCode),
+	            keys = {
+	            37: function _() {
+	                return console.log(setDate(backDate));
+	            }, // LEFT ARROW
+	            39: function _() {
+	                return console.log(setDate(forwardDate));
+	            } // RIGHT ARROW
+	        };
+	        console.log(code);
+	        if (typeof keys[event.keyCode] == 'function') keys[event.keyCode]();else return false;
+	    };
+
+	    return function () {
+	        (0, _jquery2.default)(document).keyup(handle);
+
+	        return { identifier: 'print' };
+	    }();
+	}
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

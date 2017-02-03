@@ -5,15 +5,13 @@ const Item              = require('../dbmodels/item'),
 module.exports = (router) => {
     
     router.get('/', (req, res) => {
-        Item.getAll((docs) => {
-            Item.getCategories((categories) => {
-                docs
-                res.render('index', {
-                    date       : new Date().toDateString(),
-                    allItems   : docs,
-                    department : currentDepartment,
-                    categories : categories,
-                })
+        Item.getAll((err, docs) => {
+            const categories = docs.map(group => group._id)
+            res.render('index', {
+                date       : new Date().toDateString(),
+                allItems   : docs,
+                department : currentDepartment,
+                categories : categories,
             })
         });
     })
@@ -26,7 +24,10 @@ module.exports = (router) => {
         if (!item.name) {
             res.json({error: 'A name MUST be entered' })
         }
-        else Item.create(item, () => res.end())
+        else Item.create(item, (err) => {
+            if (err) res.json({success: false, message: err.toString});
+            res.end()
+        })
     })
     
     router.post('/multi-items', (req, res) => {
@@ -39,8 +40,9 @@ module.exports = (router) => {
             item.category  = category;
             item.added     = item.added   || 0;
             item.removed   = item.removed || 0;
-            Item.create(item, () => {
-                savesCompleted++
+            Item.create(item, (err) => {
+                if (err) res.json({success: false, message: err.toString});
+                savesCompleted++;
                 if (savesCompleted === numItems) res.end()
                 
             })
@@ -63,7 +65,8 @@ module.exports = (router) => {
                 removed : item.removed,
             };
             
-            Item.push(false, item.name, log, () => {
+            Item.push(false, item.name, log, (err) => {
+                if (err) res.json({success: false, message: err.toString});
                 savesCompleted++
                 if (savesCompleted === numLogs) res.end();
             })
@@ -96,16 +99,19 @@ module.exports = (router) => {
     })
     
     router.get('/print/:date', (req, res) => {
-        Item.getRecordsForDate(req.params.date, (docs) => {
-            res.json({
+        Item.getRecordsForDate(req.params.date, (err, docs) => {
+            res.render('day-record', {
+                date    : new Date( req.params.date),
                 records : docs
             })
         })
     })
 
     router.get('/:itemId', (req, res) => {
-        Item.get(req.params.itemId, (item) => {
-            Item.getCurrentCategory(item.category, (categoryItems) => {
+        Item.get(req.params.itemId, (err, item) => {
+            if (err) res.status(401).end(err.toString());
+            if (item == undefined) res.status(404).end();
+            Item.getCurrentCategory(item.category, (err, categoryItems) => {
                 res.render('item', {
                     department: currentDepartment,
                     date: new Date().toDateString(),

@@ -6,6 +6,7 @@ table#item
         th
         th Added
         th Removed
+        th Balance
         th Comments
     tbody
         each log, index in item.log
@@ -16,4 +17,5 @@ table#item
                 td.date= datestring
                 td.added(class={"bolded": log.added > log.removed})= log.added
                 td.removed(class={"bolded": log.added < log.removed})= log.removed
+                td.balance= log.balance
                 td.comments= log.comments

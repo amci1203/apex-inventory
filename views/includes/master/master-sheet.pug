@@ -15,7 +15,7 @@
                 th In Stock
             each item, index in category.items
                 tr.row(class={ "row--low": item.inStock < item.lowAt, "row--striped": index % 2 == 0 })
-                    - let lastModified = item.lastModified ? String(item.lastModified).substr(0, 16) : ''
+                    - let lastModified = item.lastModified ? item.lastModified.toUTCString().substr(0, 16) : ''
                     td.id.hidden= item._id
                     td.low.hidden= item.lowAt
                     td.category.hidden= categoryName

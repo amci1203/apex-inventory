@@ -23,7 +23,9 @@ export default class MainTable {
         this.filterToggle.click(this.filterLowItems.bind(this))
         
         $('#confirm-delete').on('input', this.handleDeleteButtonState.bind(this))
+        $('#record-date').on('input', this.handlePrintButtonState.bind(this))
         $(document).on('delete-item', this.erase.bind(this))
+        $('#print-records').click(() => location.assign(`/items/print/${$('#record-date').val()}`));
     }
     makeActiveRow (event) {
         this.rows.removeClass('active');
@@ -103,6 +105,12 @@ export default class MainTable {
             this.tables.has('.row--low').toggleClass('hidden');
         }
     }
+    
+    handlePrintButtonState () {
+        const confirmed = $('#record-date').val() != '';
+        if (confirmed) $('#print-records').removeAttr('disabled')
+        else $('#print-records').attr('disabled', 'disabled')
+    }
     handleDeleteButtonState () {
         const confirmed = ($('#confirm-delete').val().trim().toUpperCase() == this.activeRow.name.toUpperCase());
         if (confirmed) $('#delete-item').removeAttr('disabled')
@@ -114,20 +122,20 @@ export default class MainTable {
               state   = $('html').hasClass('options-open') ? 'options' : 'main',
               methods = {
                 main: {
-                    27: () => $('#sidebar-toggle').trigger('click'), //ESC
                     67: () => $('#sidebar-toggle').trigger('click'), //'C'
                     72: () => $('.legend--toggle').first().trigger('click'), //'H'
                     75: () => $('#low-only').trigger('click'), //'K'
+                    76: () => $('.logs--open').first().trigger('click'), //'L'
                     77: () => $('.new-multi--open').first().trigger('click'), //'M'
                     78: () => $('.new--open').first().trigger('click'), //'N'
-                    76: () => $('.logs--open').first().trigger('click') //'L'
+                    80: () => $('.print--open').first().trigger('click'), //'P'
                 },
                 options: {
                     27: () => _.closeSidebars(), //ESC
                     67: () => $('#sidebar-toggle').trigger('click'), //'C'
                     68: () => $('.delete--open').first().trigger('click'), //'D'
                     69: () => $('.edit--open').first().trigger('click'), //'E'
-                    72: () => $('.legend--open').first().trigger('click'), //'H'
+                    72: () => $('.legend--toggle').first().trigger('click'), //'H'
                     76: () => $('.log--open').first().trigger('click'), // 'L'
                     79: () => _.get() //'O'
                 }

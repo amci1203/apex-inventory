@@ -1,6 +1,7 @@
 .tooltip {
     position: relative;
     & &-text {
+        @media print { display: none !important}
         transition: all 0.2s ease-out;
         visibility: hidden;
         opacity: 0;

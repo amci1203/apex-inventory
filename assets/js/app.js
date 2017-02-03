@@ -4,10 +4,14 @@ import Modal     from './modules/Modal';
 import MultiForm from './modules/MultiForm';
 import MainTable from './modules/MainTable';
 import ItemTable from './modules/ItemTable';
+import DayReport from './modules/DayReport';
 
 import './modules/Menu';
 
-const sheet = location.pathname == '/items' ? new MainTable() : new ItemTable();
+const sheet = $('#page-id').html() == 'main' ? new MainTable() : (() => {
+    const sheet = $('#page-id').html() == 'item' ? new ItemTable() : DayReport();
+    return sheet;
+})()
 
 const logModal      = new Modal('log', true),
       logForm       = new Form('log-item', '/:itemId', 'log' ),
@@ -18,6 +22,7 @@ if (sheet.identifier == 'all') {
           newMultiModal = new Modal('new-multi', true),
           logMultiModal = new Modal('logs',      true),
           editModal     = new Modal('edit',      true),
+          printModal    = new Modal('print',     true),
           deleteModal   = new Modal('delete',    true);
 
     const newForm       = new Form('new-item', '', 'item');
