@@ -45,7 +45,6 @@ export default class Form {
         this.data.each(function () {
             let val = $(this).attr('type') == 'number' ? +$(this).val() : $(this).val().trim();
             if ($(this).attr('type') == 'date' && $(this).val() == '') {
-                console.log('setting date to today');
                 const d = new Date();
                 val = d.toISOString().substring(0,10);
             }

@@ -100,6 +100,12 @@ module.exports = (router) => {
     
     router.get('/print/:date', (req, res) => {
         Item.getRecordsForDate(req.params.date, (err, docs) => {
+            docs.forEach(doc => {
+                doc.items.forEach((item, index) => {
+                    const itemHasLog = item.log.length > 0
+                    if (!itemHasLog) doc.items[index] = null;
+                })
+            })
             res.render('day-record', {
                 date    : new Date( req.params.date),
                 records : docs

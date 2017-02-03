@@ -198,8 +198,13 @@ schema.statics.getRecordsForDate = function (dateString, callback) {
                             as    : 'log',
                             cond  : {$eq: ['$$log.date', dateString]}
                         }
-                    }
-                }}
+                    },
+                }},
+//                items: {$filter: {
+//                    input: '$items',
+//                    as: 'items',
+//                    cond : {size: ['$$items.log', 1]}
+//                }}
             }},
             {$sort: {_id: 1}}
         ], (err, result) => {

@@ -1089,7 +1089,7 @@
         "name":"Forks",
         "inStock":0,
         "lowAt":12,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1110,7 +1110,7 @@
         "name":"Knives",
         "inStock":0,
         "lowAt":12,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1131,7 +1131,7 @@
         "name":"Spoons",
         "inStock":0,
         "lowAt":12,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1152,7 +1152,7 @@
         "name":"Block Set",
         "inStock":0,
         "lowAt":2,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1173,7 +1173,7 @@
         "name":"Bowls",
         "inStock":0,
         "lowAt":12,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1194,7 +1194,7 @@
         "name":"White Dinner Plates",
         "inStock":0,
         "lowAt":12,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1215,7 +1215,7 @@
         "name":"White Salad Plates",
         "inStock":0,
         "lowAt":12,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1236,7 +1236,7 @@
         "name":"Tea Plates",
         "inStock":0,
         "lowAt":12,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1257,7 +1257,7 @@
         "name":"Tea Mug",
         "inStock":0,
         "lowAt":12,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -1278,7 +1278,7 @@
         "name":"Drinking Glass",
         "inStock":0,
         "lowAt":6,
-        "category":"Utensils \u0026 Dishes ",
+        "category":"Utensils \u0026 Dishes",
         "log":[
             {
                 "date":"2016-12-07",
@@ -2159,7 +2159,7 @@
         "name":"Mattress Protector",
         "inStock":16,
         "lowAt":12,
-        "category":" Linen ",
+        "category":"Linen",
         "log":[
             {
                 "date":"2016-12-07",

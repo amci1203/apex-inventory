@@ -21,8 +21,8 @@ export default function DayReport () {
     function handle (event) {
       const code = String(event.keyCode),
             keys = {
-                37: () => console.log(setDate(backDate)),// LEFT ARROW
-                39: () => console.log(setDate(forwardDate)) // RIGHT ARROW
+                37: () => location.replace(setDate(backDate)),// LEFT ARROW
+                39: () => location.replace(setDate(forwardDate)) // RIGHT ARROW
             };
       console.log(code);
       if ( typeof keys[event.keyCode] == 'function') keys[event.keyCode]();
@@ -30,8 +30,8 @@ export default function DayReport () {
     }; 
 
     return (function () {
-       $(document).keyup(handle);
-        
+        console.log('Function Returned');    
+        $(document).keyup(handle);
         return { identifier: 'print' }
     })()
 }
