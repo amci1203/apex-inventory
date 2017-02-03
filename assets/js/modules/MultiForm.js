@@ -2,8 +2,8 @@ import $ from 'jquery';
 
 export default class MultiForm {
     constructor (form, url, key) {
-        this.forms   = $(`#${form} .multi-form form`);
-        this.submit  = $(`#${form} .multi-form button.submit`);
+        this.forms   = $(`#${form}.multi-form form`);
+        this.submit  = $(`#${form}.multi-form .submit`);
         this.singles = $(`#${form} input.single`)
         this.url     = `/items${url}`;
         this.key     = key;

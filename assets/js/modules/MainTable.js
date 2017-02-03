@@ -113,8 +113,8 @@ export default class MainTable {
     }
     handleDeleteButtonState () {
         const confirmed = ($('#confirm-delete').val().trim().toUpperCase() == this.activeRow.name.toUpperCase());
-        if (confirmed) $('#delete-item').removeAttr('disabled')
-        else $('#delete-item').attr('disabled', 'disabled')
+        if (confirmed) $('#delete-item').removeAttr('disabled');
+        else $('#delete-item').attr('disabled', 'disabled');
     }
     handleKeyPresses (event) {
         const _       = this,

@@ -52,6 +52,10 @@
             border: 1px solid #CCC;
             box-shadow: 0 4px 3px 2px #333;
         }
+        &--scrollable {
+            max-height: calc(100vh);
+            overflow-y: auto;
+        }
         padding: 35px;
         font-size: 1.3rem;
         position: absolute;

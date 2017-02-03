@@ -43,22 +43,9 @@ form {
             }
         }
     }
-
-    input[type="submit"], button.submit {
-        margin: 15px 0;
-        padding: 5px 15px;
-        width: 100%;
-        background-color: $mainBlue;
-        box-shadow: 0 4px 2px #777;
-        color: #FFF;
-        font-size: 1.65rem;
-        border: none;
-
-        &:hover { background-color: color($mainBlue, b(10%)) }
-    }
 }
 
-.submit-all {
+.submit {
     margin: 15px 0;
     padding: 5px 15px;
     width: 100%;

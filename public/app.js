@@ -78,37 +78,45 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var sheet = (0, _jquery2.default)('#page-id').html() == 'main' ? new _MainTable2.default() : function () {
-	      var sheet = (0, _jquery2.default)('#page-id').html() == 'item' ? new _ItemTable2.default() : (0, _DayReport2.default)();
-	      return sheet;
-	}();
+	var sheet = function (id) {
+	    var pages = {
+	        main: new _MainTable2.default(),
+	        item: new _ItemTable2.default(),
+	        print: function print() {
+	            return (0, _DayReport2.default)();
+	        }
+	    };
+	    if (typeof pages[id] == 'function') {
+	        return pages[id]();
+	    } else return pages[id];
+	}((0, _jquery2.default)('#page-id').html());
 
 	var logModal = new _Modal2.default('log', true),
 	    logForm = new _Form2.default('log-item', '/:itemId', 'log'),
 	    legend = new _Modal2.default('legend');
 
 	if (sheet.identifier == 'all') {
-	      var newModal = new _Modal2.default('new', true),
-	          newMultiModal = new _Modal2.default('new-multi', true),
-	          logMultiModal = new _Modal2.default('logs', true),
-	          editModal = new _Modal2.default('edit', true),
-	          printModal = new _Modal2.default('print', true),
-	          deleteModal = new _Modal2.default('delete', true);
+	    var newModal = new _Modal2.default('new', true),
+	        newMultiModal = new _Modal2.default('new-multi', true),
+	        logMultiModal = new _Modal2.default('logs', true),
+	        editModal = new _Modal2.default('edit', true),
+	        printModal = new _Modal2.default('print', true),
+	        deleteModal = new _Modal2.default('delete', true);
 
-	      var newForm = new _Form2.default('new-item', '', 'item');
+	    var newForm = new _Form2.default('new-item', '', 'item');
 
-	      var newMultiForm = new _MultiForm2.default('new-multi', '/multi', 'items'),
-	          logMultiForm = new _MultiForm2.default('logs', '/logs/multi', 'itemLogs');
+	    var newMultiForm = new _MultiForm2.default('new-multi', '/multi-items', 'items'),
+	        logMultiForm = new _MultiForm2.default('logs', '/multi-logs', 'itemLogs');
 
-	      (0, _jquery2.default)('#delete-item').click(function () {
-	            return (0, _jquery2.default)(document).trigger('delete-item');
-	      });
+	    (0, _jquery2.default)('#delete-item').click(function () {
+	        return (0, _jquery2.default)(document).trigger('delete-item');
+	    });
 	}
 	if (sheet.identifier == 'item') {
-	      var editLogModal = new _Modal2.default('edit-log', true),
-	          editCommentModal = new _Modal2.default('edit-comment', true);
+	    var editLogModal = new _Modal2.default('edit-log', true),
+	        editCommentModal = new _Modal2.default('edit-comment', true);
 
-	      var editComments = new _Form2.default('edit-comment-form', '/:itemId/:logId', 'uLog', 'PUT');
+	    var editComments = new _Form2.default('edit-comment-form', '/:itemId/:logId', 'uLog', 'PUT');
 	}
 
 /***/ },
@@ -10173,8 +10181,8 @@
 	    function MultiForm(form, url, key) {
 	        _classCallCheck(this, MultiForm);
 
-	        this.forms = (0, _jquery2.default)('#' + form + ' .multi-form form');
-	        this.submit = (0, _jquery2.default)('#' + form + ' .multi-form button.submit');
+	        this.forms = (0, _jquery2.default)('#' + form + '.multi-form form');
+	        this.submit = (0, _jquery2.default)('#' + form + '.multi-form .submit');
 	        this.singles = (0, _jquery2.default)('#' + form + ' input.single');
 	        this.url = '/items' + url;
 	        this.key = key;
@@ -10619,7 +10627,7 @@
 	                }
 	            };
 	            var alwaysAllowedKeyCodes = ['72'],
-	                specialCase = alwaysAllowedKeyCodes.indexOf(key) != -1;
+	                specialCase = alwaysAllowedKeyCodes.includes(key);
 	            console.log(key);
 	            if ((0, _jquery2.default)('html').hasClass('modal-open') && !specialCase) {
 	                event.stopPropagation();
@@ -10654,18 +10662,22 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function DayReport() {
+
 	    var backDate = '',
 	        forwardDate = '';
 
-	    var back = (0, _jquery2.default)('#back'),
+	    var d = new Date(),
+	        today = d.toISOString().substring(0, 10),
+	        current = location.pathname.slice(-10),
+	        back = (0, _jquery2.default)('#back'),
 	        forward = (0, _jquery2.default)('#forward'),
 	        url = '/items/print/:date',
-	        setDate = function setDate(date) {
+	        go = function go(date) {
 	        return url.replace(':date', date);
 	    };
 
 	    var setDates = function () {
-	        var d = new Date(location.pathname.slice(-10));
+	        var d = new Date(current);
 	        d.setDate(d.getDate() - 1);
 	        backDate = d.toISOString().substring(0, 10);
 	        d.setDate(d.getDate() + 2);
@@ -10673,23 +10685,26 @@
 	        return null;
 	    }();
 
-	    function handle(event) {
+	    function handleKeyPresses(event) {
 	        var code = String(event.keyCode),
 	            keys = {
+	            27: function _() {
+	                return location.replace('/items');
+	            }, //ESC
 	            37: function _() {
-	                return location.replace(setDate(backDate));
+	                return location.replace(go(backDate));
 	            }, // LEFT ARROW
 	            39: function _() {
-	                return location.replace(setDate(forwardDate));
+	                return location.replace(go(forwardDate));
 	            } // RIGHT ARROW
 	        };
 	        console.log(code);
+	        if (current == today && code == 39) return false;
 	        if (typeof keys[event.keyCode] == 'function') keys[event.keyCode]();else return false;
 	    };
 
 	    return function () {
-	        console.log('Function Returned');
-	        (0, _jquery2.default)(document).keyup(handle);
+	        (0, _jquery2.default)(document).keyup(handleKeyPresses);
 	        return { identifier: 'print' };
 	    }();
 	}

@@ -10,7 +10,7 @@ export default class Modal {
         this.toggleTrigger = $(`.${this.id}--toggle`);
         this.events();
     }
-
+    
     events () {
         this.openTrigger.click(this.openModal.bind(this));
         this.closeTrigger.click(this.closeModal.bind(this));

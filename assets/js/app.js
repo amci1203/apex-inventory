@@ -8,10 +8,17 @@ import DayReport from './modules/DayReport';
 
 import './modules/Menu';
 
-const sheet = $('#page-id').html() == 'main' ? new MainTable() : (() => {
-    const sheet = $('#page-id').html() == 'item' ? new ItemTable() : DayReport();
-    return sheet;
-})()
+const sheet = (id => {
+    const pages = {
+        main  : new MainTable(),
+        item  : new ItemTable(),
+        print : () => DayReport(),
+    }
+    if (typeof pages[id] == 'function') {
+        return pages[id]();
+    }
+    else return pages[id];
+})($('#page-id').html())
 
 const logModal      = new Modal('log', true),
       logForm       = new Form('log-item', '/:itemId', 'log' ),
@@ -27,8 +34,8 @@ if (sheet.identifier == 'all') {
 
     const newForm       = new Form('new-item', '', 'item');
 
-    const newMultiForm  = new MultiForm('new-multi', '/multi', 'items'),
-          logMultiForm  = new MultiForm('logs', '/logs/multi', 'itemLogs');
+    const newMultiForm  = new MultiForm('new-multi', '/multi-items', 'items'),
+          logMultiForm  = new MultiForm('logs', '/multi-logs', 'itemLogs');
 
     $('#delete-item').click(() => $(document).trigger('delete-item'));
 }

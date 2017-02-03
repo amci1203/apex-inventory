@@ -122,7 +122,7 @@ export default class ItemTable {
                 }
             };
         const alwaysAllowedKeyCodes = ['72'],
-              specialCase           = alwaysAllowedKeyCodes.indexOf(key) != -1;
+              specialCase           = alwaysAllowedKeyCodes.includes(key);
         console.log(key);
         if ($('html').hasClass('modal-open') && !specialCase) {
             event.stopPropagation()

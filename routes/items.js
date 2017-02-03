@@ -31,10 +31,10 @@ module.exports = (router) => {
     })
     
     router.post('/multi-items', (req, res) => {
-        let category       = req.body.category,
-            items          = req.body.items,
-            numItems       = items.length,
-            savesCompleted = 0;
+        const category       = req.body.category,
+              items          = req.body.items,
+              numItems       = items.length;
+        let savesCompleted = 0;
         items.forEach((obj) => {
             let item       = obj;
             item.category  = category;
@@ -52,8 +52,8 @@ module.exports = (router) => {
     router.post('/multi-logs', (req, res) => {
         const itemLogs       = req.body.itemLogs,
               date           = req.body.date || new Date,
-              numLogs        = itemLogs.length,
-            savesCompleted = 0;
+              numLogs        = itemLogs.length;
+        let savesCompleted = 0;
         itemLogs.forEach((obj, index) => {
             let item       = obj;
             item.added     = item.added   || 0;
@@ -100,15 +100,17 @@ module.exports = (router) => {
     
     router.get('/print/:date', (req, res) => {
         Item.getRecordsForDate(req.params.date, (err, docs) => {
+            const categories = [];
             docs.forEach(doc => {
+                categories.push(docs._id);
                 doc.items.forEach((item, index) => {
-                    const itemHasLog = item.log.length > 0
-                    if (!itemHasLog) doc.items[index] = null;
+                    doc.items = doc.items.filter(x => x.log.length > 0)
                 })
             })
             res.render('day-record', {
-                date    : new Date( req.params.date),
-                records : docs
+                date       : new Date( req.params.date),
+                categories : categories,
+                records    : docs
             })
         })
     })

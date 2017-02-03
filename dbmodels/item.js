@@ -184,13 +184,13 @@ schema.statics.getRecordsForDate = function (dateString, callback) {
     return this.aggregate(
         [
             {$project: {
-                name       : 1,
-                category   : 1,
-                log        : 1,
+                name     : 1,
+                category : 1,
+                log      : 1,
             }},
             {$group: {
-                _id: '$category',
-                items: {$push: {
+                _id   : '$category',
+                items : {$push: {
                     name : '$name',
                     log  : {
                         $filter: {
@@ -200,11 +200,6 @@ schema.statics.getRecordsForDate = function (dateString, callback) {
                         }
                     },
                 }},
-//                items: {$filter: {
-//                    input: '$items',
-//                    as: 'items',
-//                    cond : {size: ['$$items.log', 1]}
-//                }}
             }},
             {$sort: {_id: 1}}
         ], (err, result) => {
