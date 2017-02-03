@@ -50,9 +50,11 @@ module.exports = (router) => {
     })
 
     router.post('/multi-logs', (req, res) => {
-        const itemLogs       = req.body.itemLogs,
-              date           = req.body.date || new Date,
-              numLogs        = itemLogs.length;
+        const d            = new Date(),
+              today        = d.toISOString().substring(0,10),
+              itemLogs     = req.body.itemLogs,
+              date         = req.body.date || today,
+              numLogs      = itemLogs.length;
         let savesCompleted = 0;
         itemLogs.forEach((obj, index) => {
             let item       = obj;
@@ -132,12 +134,14 @@ module.exports = (router) => {
 
 
     router.post('/:itemId', (req, res) => {
-        let item = req.body.log;
-        if (item.date    == '') item.date    = new Date();
+        let item  = req.body.log,
+            d     = new Date(),
+            today = d.toISOString().substring(0,10);
+        if (item.date    == '') item.date    = today;
         if (item.added   == '') item.added   = 0;
         if (item.removed == '') item.removed = 0;
-        Item.push(true, req.params.itemId, item, (affected) => {
-            if ([null, undefined].indexOf(affected) == -1) {
+        Item.push(true, req.params.itemId, item, (err, affected) => {
+            if (!err) {
                 res.end();
             }
             else res.status(401)
