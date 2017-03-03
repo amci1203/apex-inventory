@@ -34,9 +34,7 @@ if (sheet.identifier == 'all') {
     const newForm       = new Form('new-item', '', 'item');
 
     const newMultiForm  = new MultiForm('new-multi', '/multi-items', 'items'),
-          logMultiForm  = new MultiForm('logs', '/multi-logs', 'itemLogs');
-
-    $('#delete-item').click(() => $(document).trigger('delete-item'));
+          logMultiForm  = new MultiForm('logs-form', '/multi-logs', 'itemLogs');
 }
 if (sheet.identifier == 'item') {
     const editLogModal     = new Modal('edit-log', true),

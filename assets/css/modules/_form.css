@@ -54,7 +54,12 @@ form {
     color: #FFF;
     font-size: 1.65rem;
     border: none;
-
+    &:disabled {
+        cursor: not-allowed;
+        background-color: #CCC;
+        color: #333;
+        &:hover { color: #111 }
+    }
     &:hover { background-color: color($mainBlue, b(10%)) }
 }
 

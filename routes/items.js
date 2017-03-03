@@ -35,8 +35,7 @@ module.exports = (router) => {
               items          = req.body.items,
               numItems       = items.length;
         let savesCompleted = 0;
-        items.forEach((obj) => {
-            let item       = obj;
+        items.forEach((item) => {
             item.category  = category;
             item.added     = item.added   || 0;
             item.removed   = item.removed || 0;
@@ -53,11 +52,10 @@ module.exports = (router) => {
         const d            = new Date(),
               today        = d.toISOString().substring(0,10),
               itemLogs     = req.body.itemLogs,
-              date         = req.body.date || today,
-              numLogs      = itemLogs.length;
+              numLogs      = itemLogs.length,
+              date         = req.body.date || today;
         let savesCompleted = 0;
-        itemLogs.forEach((obj, index) => {
-            let item       = obj;
+        itemLogs.forEach((item, index) => {
             item.added     = item.added   || 0;
             item.removed   = item.removed || 0;
             
@@ -68,9 +66,11 @@ module.exports = (router) => {
             };
             
             Item.push(false, item.name, log, (err) => {
-                if (err) res.json({success: false, message: err.toString});
-                savesCompleted++
-                if (savesCompleted === numLogs) res.end();
+                if (err) res.json({error: err.toString()});
+                else {
+                    savesCompleted++
+                    if (savesCompleted === numLogs) res.end();
+                }
             })
         })
     })
@@ -141,26 +141,26 @@ module.exports = (router) => {
         if (item.added   == '') item.added   = 0;
         if (item.removed == '') item.removed = 0;
         Item.push(true, req.params.itemId, item, (err, affected) => {
-            if (!err) {
-                res.end();
+            if (err) {
+                res.json({error: err.toString()});
             }
-            else res.status(401)
+            else res.end();
         })
     })
     
-    router.get('/:itemName/:direction', (req, res) => {
-        Item.getAdjacent(req.params.itemName, req.params.direction, (doc) => {
-            let thisItem = doc;
-            Item.getCurrentCategory(thisItem.category, (docs) => {
-                res.render('item', {
-                    department: currentDepartment,
-                    date: new Date().toDateString(),
-                    categoryItems: docs,
-                    item: doc
-                })
-            })
-        })
-    })
+//    router.get('/:itemName/:direction', (req, res) => {
+//        Item.getAdjacent(req.params.itemName, req.params.direction, (doc) => {
+//            let thisItem = doc;
+//            Item.getCurrentCategory(thisItem.category, (docs) => {
+//                res.render('item', {
+//                    department: currentDepartment,
+//                    date: new Date().toDateString(),
+//                    categoryItems: docs,
+//                    item: doc
+//                })
+//            })
+//        })
+//    })
     
     router.put('/:itemId', (req, res) => {
         Item.editItem(req.params.itemId, req.body.update, (err, affected) => {
@@ -171,8 +171,8 @@ module.exports = (router) => {
     
     router.put('/:itemId/:logId', (req, res) => {
         let _ = req.params;
-        Item.editItemLog(_.itemId, _.logId, req.body.uLog, (affected) => {
-            if (affected !== null && affected !== undefined) {
+        Item.editItemLog(_.itemId, _.logId, req.body.uLog, (err, affected) => {
+            if (affected) {
                 res.end();
             }
             else res.json({error: 'The record does not exist to be edited.'})

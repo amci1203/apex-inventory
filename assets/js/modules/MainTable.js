@@ -9,9 +9,10 @@ export default class MainTable {
         this.filterToggle   = $('#low-only');
         this.openItem       = $('#open');
         this.editItem       = $('#edit-item');
+        this.deleteItem     = $('#delete-item');
         
         this.activeRow = {}
-        this.events();
+        this.events(); 
     }
     events () {
         this.rows.dblclick(this.get.bind(this))
@@ -20,11 +21,11 @@ export default class MainTable {
         $(document).keydown(this.handleKeyPresses.bind(this))
         this.openItem.click(this.get.bind(this))
         this.editItem.click(this.edit.bind(this))
+        this.deleteItem.click(this.erase.bind(this))
         this.filterToggle.click(this.filterLowItems.bind(this))
         
         $('#confirm-delete').on('input', this.handleDeleteButtonState.bind(this))
         $('#record-date').on('input', this.handlePrintButtonState.bind(this))
-        $(document).on('delete-item', this.erase.bind(this))
         $('#print-records').click(() => location.assign(`/items/print/${$('#record-date').val()}`));
     }
     makeActiveRow (event) {
@@ -54,13 +55,13 @@ export default class MainTable {
         $('#u-low').val(low);
     }
     closeSidebars (event) {
-    if ($('html').hasClass('options-open')) {
-        this.rows.removeClass('active');
-        this.activeRow = {};
-        $('html').removeClass('options-open');
-    }
-    if ($('html').hasClass('sidebar-open'))
-        $('html').removeClass('sidebar-open');
+        const doc = $('html');
+        if (doc.hasClass('options-open')) {
+            this.rows.removeClass('active');
+            this.activeRow = {};
+            doc.removeClass('options-open');
+        }
+        if (doc.hasClass('sidebar-open')) doc.removeClass('sidebar-open');
     }
     get (event) {
         const url = `/items/${this.activeRow.id}`;
@@ -111,10 +112,10 @@ export default class MainTable {
         if (confirmed) $('#print-records').removeAttr('disabled')
         else $('#print-records').attr('disabled', 'disabled')
     }
-    handleDeleteButtonState () {
-        const confirmed = ($('#confirm-delete').val().trim().toUpperCase() == this.activeRow.name.toUpperCase());
-        if (confirmed) $('#delete-item').removeAttr('disabled');
-        else $('#delete-item').attr('disabled', 'disabled');
+    handleDeleteButtonState (event) {
+        const confirmed = (event.currentTarget.value.trim().toUpperCase() == this.activeRow.name.toUpperCase());
+        if (confirmed) this.deleteItem.removeAttr('disabled');
+        else this.deleteItem.attr('disabled', 'disabled');
     }
     handleKeyPresses (event) {
         const _       = this,
@@ -136,16 +137,14 @@ export default class MainTable {
                     67: () => $('#sidebar-toggle').trigger('click'), //'C'
                     68: () => $('.delete--open').first().trigger('click'), //'D'
                     69: () => $('.edit--open').first().trigger('click'), //'E'
-                    72: () => $('.legend--toggle').first().trigger('click'), //'H'
+                    72: () => $('.legend--open').first().trigger('click'), //'H'
                     76: () => $('.log--open').first().trigger('click'), // 'L'
                     79: () => _.get() //'O'
                 }
             }
-        const alwaysAllowedKeyCodes = ['72'],
-              specialCase           = alwaysAllowedKeyCodes.indexOf(key) != -1;
-        console.log(key);
-        if ($('html').hasClass('modal-open') && !specialCase) {
-//            event.stopPropagation()
+//        console.log(key);
+        if ($('html').hasClass('modal-open')) {
+            event.stopPropagation()
         }
         else if (typeof(methods[state][key]) == 'function') {
             methods[state][key]()

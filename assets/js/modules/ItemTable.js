@@ -117,15 +117,13 @@ export default class ItemTable {
                 },
                 options: {
                     27: () => _.closeOptions(),
-                    72: () => $('.legend--toggle').first().trigger('click'), //'H'
+                    72: () => $('.legend--open').first().trigger('click'), //'H'
                     67: () => $('.edit-comment--open').first().trigger('click'),//'C'
                     69: () => $('.edit-log--open').first().trigger('click') //'E'
                 }
             };
-        const alwaysAllowedKeyCodes = ['72'],
-              specialCase           = alwaysAllowedKeyCodes.includes(key);
-        console.log(key);
-        if ($('html').hasClass('modal-open') && !specialCase) {
+//        console.log(key);
+        if ($('html').hasClass('modal-open')) {
             event.stopPropagation()
         }
         else if (typeof(methods[state][key]) == 'function') {

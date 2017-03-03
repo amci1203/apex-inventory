@@ -110,11 +110,7 @@
 	    var newForm = new _Form2.default('new-item', '', 'item');
 
 	    var newMultiForm = new _MultiForm2.default('new-multi', '/multi-items', 'items'),
-	        logMultiForm = new _MultiForm2.default('logs', '/multi-logs', 'itemLogs');
-
-	    (0, _jquery2.default)('#delete-item').click(function () {
-	        return (0, _jquery2.default)(document).trigger('delete-item');
-	    });
+	        logMultiForm = new _MultiForm2.default('logs-form', '/multi-logs', 'itemLogs');
 	}
 	if (sheet.identifier == 'item') {
 	    var editLogModal = new _Modal2.default('edit-log', true),
@@ -128,7 +124,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.4
+	 * jQuery JavaScript Library v2.2.3
 	 * http://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -138,7 +134,7 @@
 	 * Released under the MIT license
 	 * http://jquery.org/license
 	 *
-	 * Date: 2016-05-20T17:23Z
+	 * Date: 2016-04-05T19:26Z
 	 */
 
 	(function( global, factory ) {
@@ -194,7 +190,7 @@
 
 
 	var
-		version = "2.2.4",
+		version = "2.2.3",
 
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -5135,14 +5131,13 @@
 		isDefaultPrevented: returnFalse,
 		isPropagationStopped: returnFalse,
 		isImmediatePropagationStopped: returnFalse,
-		isSimulated: false,
 
 		preventDefault: function() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.preventDefault();
 			}
 		},
@@ -5151,7 +5146,7 @@
 
 			this.isPropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopPropagation();
 			}
 		},
@@ -5160,7 +5155,7 @@
 
 			this.isImmediatePropagationStopped = returnTrue;
 
-			if ( e && !this.isSimulated ) {
+			if ( e ) {
 				e.stopImmediatePropagation();
 			}
 
@@ -6090,6 +6085,19 @@
 			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 			styles = getStyles( elem ),
 			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+
+		// Support: IE11 only
+		// In IE 11 fullscreen elements inside of an iframe have
+		// 100x too small dimensions (gh-1764).
+		if ( document.msFullscreenElement && window.top !== window ) {
+
+			// Support: IE11 only
+			// Running getBoundingClientRect on a disconnected node
+			// in IE throws an error.
+			if ( elem.getClientRects().length ) {
+				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
+			}
+		}
 
 		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -7981,7 +7989,6 @@
 		},
 
 		// Piggyback on a donor event to simulate a different one
-		// Used only for `focus(in | out)` events
 		simulate: function( type, elem, event ) {
 			var e = jQuery.extend(
 				new jQuery.Event(),
@@ -7989,10 +7996,27 @@
 				{
 					type: type,
 					isSimulated: true
+
+					// Previously, `originalEvent: {}` was set here, so stopPropagation call
+					// would not be triggered on donor event, since in our own
+					// jQuery.event.stopPropagation function we had a check for existence of
+					// originalEvent.stopPropagation method, so, consequently it would be a noop.
+					//
+					// But now, this "simulate" function is used only for events
+					// for which stopPropagation() is noop, so there is no need for that anymore.
+					//
+					// For the 1.x branch though, guard for "click" and "submit"
+					// events is still used, but was moved to jQuery.event.stopPropagation function
+					// because `originalEvent` should point to the original event for the constancy
+					// with other events and for more focused logic
 				}
 			);
 
 			jQuery.event.trigger( e, null, elem );
+
+			if ( e.isDefaultPrevented() ) {
+				event.preventDefault();
+			}
 		}
 
 	} );
@@ -9983,6 +10007,7 @@
 	        key: 'init',
 	        value: function init() {
 	            this.form.attr('action', 'javacript:');
+	            this.form.prepend('<p class="error"></p>');
 	        }
 	    }, {
 	        key: 'events',
@@ -9994,6 +10019,7 @@
 	        value: function handle(event) {
 	            var _this = this;
 
+	            event.currentTarget.setAttribute('disabled', 'disabled');
 	            var temp = {},
 	                data = {},
 	                url = function () {
@@ -10031,8 +10057,10 @@
 	                    location.reload();
 	                    return false;
 	                } else {
-	                    _this.form.find('.error')[0].innerHTML = res.error;
+	                    _this.form.find('.error').html(res.error);
 	                }
+	            }).always(function () {
+	                return event.currentTarget.removeAttribute('disabled');
 	            });
 	        }
 	    }]);
@@ -10156,9 +10184,11 @@
 	    function MultiForm(form, url, key) {
 	        _classCallCheck(this, MultiForm);
 
-	        this.forms = (0, _jquery2.default)('#' + form + '.multi-form form');
-	        this.submit = (0, _jquery2.default)('#' + form + '.multi-form .submit');
-	        this.singles = (0, _jquery2.default)('#' + form + ' input.single');
+	        this.selector = form.trim();
+	        this.container = (0, _jquery2.default)('#' + this.selector);
+	        this.forms = this.container.find('form');
+	        this.submit = this.container.find('.submit');
+	        this.singles = this.container.find('input.single');
 	        this.url = '/items' + url;
 	        this.key = key;
 
@@ -10169,6 +10199,7 @@
 	    _createClass(MultiForm, [{
 	        key: 'init',
 	        value: function init() {
+	            this.container.prepend('<p class="error"></p>');
 	            this.forms.attr('action', 'javacript:');
 	        }
 	    }, {
@@ -10179,11 +10210,14 @@
 	    }, {
 	        key: 'handle',
 	        value: function handle(event) {
+	            var _this = this;
+
+	            event.currentTarget.setAttribute('disabled', 'disabled');
 	            var data = {},
 	                all = [];
 
 	            this.singles.each(function () {
-	                data[(0, _jquery2.default)(this).attr(name)] = (0, _jquery2.default)(this).val();
+	                data[(0, _jquery2.default)(this).attr('name')] = (0, _jquery2.default)(this).val().trim();
 	            });
 
 	            this.forms.each(function () {
@@ -10199,9 +10233,21 @@
 	            });
 
 	            data[this.key] = all;
+	            console.log(data);
+	            _jquery2.default.ajax({
+	                url: this.url,
+	                method: 'POST',
+	                data: data
+	            }).success(function (res) {
 
-	            _jquery2.default.post(this.url, data, function () {
-	                return location.reload();
+	                if (!res.error) {
+	                    location.reload();
+	                    return false;
+	                } else {
+	                    _this.container.find('.error').html(res.error);
+	                }
+	            }).always(function () {
+	                return event.currentTarget.removeAttribute('disabled');
 	            });
 	        }
 	    }]);
@@ -10242,6 +10288,7 @@
 	        this.filterToggle = (0, _jquery2.default)('#low-only');
 	        this.openItem = (0, _jquery2.default)('#open');
 	        this.editItem = (0, _jquery2.default)('#edit-item');
+	        this.deleteItem = (0, _jquery2.default)('#delete-item');
 
 	        this.activeRow = {};
 	        this.events();
@@ -10256,11 +10303,11 @@
 	            (0, _jquery2.default)(document).keydown(this.handleKeyPresses.bind(this));
 	            this.openItem.click(this.get.bind(this));
 	            this.editItem.click(this.edit.bind(this));
+	            this.deleteItem.click(this.erase.bind(this));
 	            this.filterToggle.click(this.filterLowItems.bind(this));
 
 	            (0, _jquery2.default)('#confirm-delete').on('input', this.handleDeleteButtonState.bind(this));
 	            (0, _jquery2.default)('#record-date').on('input', this.handlePrintButtonState.bind(this));
-	            (0, _jquery2.default)(document).on('delete-item', this.erase.bind(this));
 	            (0, _jquery2.default)('#print-records').click(function () {
 	                return location.assign('/items/print/' + (0, _jquery2.default)('#record-date').val());
 	            });
@@ -10296,12 +10343,13 @@
 	    }, {
 	        key: 'closeSidebars',
 	        value: function closeSidebars(event) {
-	            if ((0, _jquery2.default)('html').hasClass('options-open')) {
+	            var doc = (0, _jquery2.default)('html');
+	            if (doc.hasClass('options-open')) {
 	                this.rows.removeClass('active');
 	                this.activeRow = {};
-	                (0, _jquery2.default)('html').removeClass('options-open');
+	                doc.removeClass('options-open');
 	            }
-	            if ((0, _jquery2.default)('html').hasClass('sidebar-open')) (0, _jquery2.default)('html').removeClass('sidebar-open');
+	            if (doc.hasClass('sidebar-open')) doc.removeClass('sidebar-open');
 	        }
 	    }, {
 	        key: 'get',
@@ -10363,9 +10411,9 @@
 	        }
 	    }, {
 	        key: 'handleDeleteButtonState',
-	        value: function handleDeleteButtonState() {
-	            var confirmed = (0, _jquery2.default)('#confirm-delete').val().trim().toUpperCase() == this.activeRow.name.toUpperCase();
-	            if (confirmed) (0, _jquery2.default)('#delete-item').removeAttr('disabled');else (0, _jquery2.default)('#delete-item').attr('disabled', 'disabled');
+	        value: function handleDeleteButtonState(event) {
+	            var confirmed = event.currentTarget.value.trim().toUpperCase() == this.activeRow.name.toUpperCase();
+	            if (confirmed) this.deleteItem.removeAttr('disabled');else this.deleteItem.attr('disabled', 'disabled');
 	        }
 	    }, {
 	        key: 'handleKeyPresses',
@@ -10413,7 +10461,7 @@
 	                        return (0, _jquery2.default)('.edit--open').first().trigger('click');
 	                    }, //'E'
 	                    72: function _() {
-	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
+	                        return (0, _jquery2.default)('.legend--open').first().trigger('click');
 	                    }, //'H'
 	                    76: function _() {
 	                        return (0, _jquery2.default)('.log--open').first().trigger('click');
@@ -10423,11 +10471,9 @@
 	                    } //'O'
 	                }
 	            };
-	            var alwaysAllowedKeyCodes = ['72'],
-	                specialCase = alwaysAllowedKeyCodes.indexOf(key) != -1;
-	            console.log(key);
-	            if ((0, _jquery2.default)('html').hasClass('modal-open') && !specialCase) {
-	                //            event.stopPropagation()
+	            //        console.log(key);
+	            if ((0, _jquery2.default)('html').hasClass('modal-open')) {
+	                event.stopPropagation();
 	            } else if (typeof methods[state][key] == 'function') {
 	                methods[state][key]();
 	            } else {
@@ -10597,7 +10643,7 @@
 	                        return _2.closeOptions();
 	                    },
 	                    72: function _() {
-	                        return (0, _jquery2.default)('.legend--toggle').first().trigger('click');
+	                        return (0, _jquery2.default)('.legend--open').first().trigger('click');
 	                    }, //'H'
 	                    67: function _() {
 	                        return (0, _jquery2.default)('.edit-comment--open').first().trigger('click');
@@ -10607,10 +10653,8 @@
 	                    } //'E'
 	                }
 	            };
-	            var alwaysAllowedKeyCodes = ['72'],
-	                specialCase = alwaysAllowedKeyCodes.includes(key);
-	            console.log(key);
-	            if ((0, _jquery2.default)('html').hasClass('modal-open') && !specialCase) {
+	            //        console.log(key);
+	            if ((0, _jquery2.default)('html').hasClass('modal-open')) {
 	                event.stopPropagation();
 	            } else if (typeof methods[state][key] == 'function') {
 	                methods[state][key]();

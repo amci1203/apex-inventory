@@ -2,15 +2,16 @@
     span.modal__close-button.logs--close X
     section.modal__body.modal__body--opaque.modal__body--scrollable
         h1.modal__header Daily Inventory
-        label(for='date') Date:
-        input.single(type='date' name='date')
-        p.headings #[span.left Item Name] #[span.right Added / Removed]
-        - let iLogs = 0
-        while (iLogs !== 10)
-            - iLogs++
-            form.log(action='#')
-                .row.form-group
-                    .row__xs-8: input(name='name' list='items')
-                    .row__xs-2: input(name='added' type='number' min=0 value=0)
-                    .row__xs-2: input(name='removed' type='number' min=0 value=0)
-        button.submit LOG
+        #logs-form
+            label(for='date') Date:
+            input.single(type='date' name='date')
+            p.headings #[span.left Item Name] #[span.right Added / Removed]
+            - let iLogs = 0
+            while (iLogs !== 10)
+                - iLogs++
+                form.log(action='#')
+                    .row.form-group
+                        .row__xs-8: input(name='name' list='items')
+                        .row__xs-2: input(name='added' type='number' min=0 value=0)
+                        .row__xs-2: input(name='removed' type='number' min=0 value=0)
+            button.submit LOG

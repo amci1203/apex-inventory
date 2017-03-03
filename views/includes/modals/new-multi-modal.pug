@@ -1,0 +1,16 @@
+#new-multi.multi-form.modal
+    span.modal__close-button.new-multi--close X
+    section.modal__body.modal__body--opaque.multi-form
+        h1.modal__header New Item (Multi)
+        label(for='category') Category:
+        input.single(name='category' list='categories')
+        p.headings #[span.left Item Name] #[span.right In Stock / Low At]
+        - let iNewMulti = 0
+        while (iNewMulti !== 10)
+            - iNewMulti++
+            form.log(action='#')
+                .row.row--gutters--small.form-group
+                    .row__xs-8: input(name='name' list='items')
+                    .row__xs-2: input(name='inStock' type='number' min=0)
+                    .row__xs-2: input(name='lowAt' type='number' min=0)
+        button.submit-all ADD

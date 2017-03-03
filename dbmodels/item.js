@@ -9,8 +9,8 @@ const subSchema = new mongoose.Schema({
 })
 
 const schema = new mongoose.Schema({
-        name     : {type: String, unique: true},
-        category : String,
+        name     : {type: String, trim: true, unique: true},
+        category : {type: String, trim: true, unique: false},
         inStock  : Number,
         lowAt    : Number,
         log      : [ subSchema ]
@@ -56,7 +56,7 @@ schema.statics.getCategories = function (callback) {
 schema.statics.get = function (itemId, callback) {
     return this.findOne({ _id: itemId})
         .select('_id category name inStock log')
-        .sort('date')
+        .sort('log.date')
         .exec((err, doc) => {
             isError(err);
             if (callback !== undefined) callback(err, doc)
@@ -98,8 +98,11 @@ schema.statics.getAdjacent = function (itemName, direction, callback) {
 }
 
 schema.statics.create = function (item, callback) {
-    item.log = [{
-        date     : item.date,
+    const d     = new Date(),
+          today = d.toISOString().substring(0,10);
+    item.name = item.name.trim();
+    item.log  = [{
+        date     : item.date || today,
         added    : item.inStock,
         balance  : item.inStock,
         comments : `Added ${item.name} to inventory`
@@ -112,23 +115,33 @@ schema.statics.create = function (item, callback) {
 }
 
 schema.statics.push = function (isById, item, log, callback) {
-    let query   = isById ? {_id: item}  :  {name: item},
+    let query   = isById ? {_id: item}  :  {name: new RegExp(`${item}`)},
         balance = log.added - log.removed;
-    this.findOne(query).select('_id inStock').exec((err, doc) => {
-        isError(err);
-        log.balance = doc.inStock + balance;
-        return this.findOneAndUpdate(
-            {_id: doc._id},
-            {
-                $inc:  { inStock : balance },
-                $push: { log     : log }
-            },
-            { upsert: true },
-            (err, id) => {
-                isError(err);
-                if (callback !== undefined) callback(err, id)
-            }
-        )
+    this.findOne(query).select('_id inStock log').exec((err, doc) => {
+        if (!doc) callback(`${item} not found.`);
+        else {
+            const itemId = doc._id;
+            isError(err);
+            doc.log.forEach(item => {
+                if (item.date == log.date) return callback('Log with that date is already in the database.');
+            })
+            log.balance = doc.inStock + balance;
+            return this.findOneAndUpdate(
+                {_id: doc._id},
+                {
+                    $inc:  { inStock  : balance },
+                    $push: { log : {
+                        $each: [ log ],
+                        $sort: { date:1 }
+                    }}
+                },
+                { upsert: true },
+                (err, id) => {
+                    if (isError(err)) callback(err);
+                    else callback(err, id);
+                }
+            )
+        }
     })
 }
 
@@ -167,8 +180,9 @@ schema.statics.editItemLog = function (itemId, logId, newLog, callback) {
             "log._id" : logId
         }, update, { upsert : false },
         (err, numAffected) => {
-            isError(err)
-            if (callback !== undefined) callback(err, numAffected)
+            if (isError(err)) callback(err)
+//            else if (!newLog.hasOwnProperty('comments')) this.checkBalances(itemId, newLog, callback);
+            callback(err, numAffected);
         }
     )
 }
@@ -207,6 +221,36 @@ schema.statics.getRecordsForDate = function (dateString, callback) {
             callback(err, result); 
         }
     )
+}
+
+schema.statics.checkBalances = function (id, log, callback) {
+    const query = {_id:id};
+    this.findOne(query).select('log inStock').exec((err, doc) => {
+        const allLogs   = doc.log,
+              logsLen   = allLogs.length;
+        let startFrom   = 0;
+        allLogs.forEach((item, index) => {
+            if (item.date == log.date) startFrom = index;
+        })
+        if (startFrom == logsLen - 1) callback(null)
+        else {
+            let newBalances = {$set: {}},
+                i           = startFrom;
+            for (i; i < logsLen; i++) {
+                if (i == 0) {
+                    newBalances['log.0.balance'] = allLogs[i].added - allLogs[i].removed;
+                    allLogs[i].balance = newBalances['log.0.balance'];
+                } else {
+                    const prev = i - 1;
+                    newBalances.$set[`log.${i}.balance`] = newBalances.$set[`log.${prev}.balance`] + allLogs[i].added - allLogs[i].removed;
+                }
+            }
+            this.update(query, newBalances, {upsert: false}, err => {
+                callback(err)
+            })
+        }
+        callback(null)
+    })
 }
 
 module.exports = mongoose.model('Item', schema)

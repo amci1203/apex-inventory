@@ -56,12 +56,12 @@
 .btn--danger:hover {
     background-color: #A00;
 }
-.btn[disabled] {
+.btn:disabled {
     cursor: not-allowed;
     background-color: #CCC;
     color: #333;
 }
-.btn[disabled]:hover {
+.btn:disabled:hover {
     color: #111
 }
 button:hover {
@@ -299,6 +299,14 @@ form .form-group--inline input {
     color: #FFF;
     font-size: 1.65rem;
     border: none;
+}
+.submit:not(.btn):disabled {
+    cursor: not-allowed;
+    background-color: #CCC;
+    color: #333;
+}
+.submit:not(.btn):disabled:hover {
+    color: #111
 }
 .submit:not(.btn):hover {
     background-color: rgb(25, 110, 239)

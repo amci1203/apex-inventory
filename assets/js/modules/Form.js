@@ -2,7 +2,7 @@ import $ from 'jquery';
 
 export default class Form {
     constructor (form, url, key, method) {
-        this.selector = form.trim()
+        this.selector = form.trim();
         this.form     = $(`#${this.selector}`);
         this.submit   = $(`#${this.selector}`).find('.submit');
         this.data     = $(`#${this.selector}`).find('input:not([type="submit"]), select, textarea');
@@ -16,6 +16,7 @@ export default class Form {
     
     init () {
         this.form.attr('action', 'javacript:')
+        this.form.prepend('<p class="error"></p>');
     }
 
     events () {
@@ -23,6 +24,7 @@ export default class Form {
     }
 
     handle (event) {
+        event.currentTarget.setAttribute('disabled', 'disabled');
         const temp = {},
               data = {},
               url  = (() => {
@@ -53,9 +55,9 @@ export default class Form {
         console.log(temp)
         data[this.key] = temp;
         $.ajax({
-            url: url,
-            method: this.method,
-            data: data,
+            url    : url,
+            method : this.method,
+            data   : data,
         }) 
         .success(res => {
             if (!res.error) {
@@ -63,8 +65,9 @@ export default class Form {
                 return false
             }
             else {
-                this.form.find('.error')[0].innerHTML = res.error;
+                this.form.find('.error').html(res.error);
             }
         })
+        .always(() => event.currentTarget.removeAttribute('disabled'))
     }
 }

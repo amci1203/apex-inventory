@@ -2,29 +2,33 @@ import $ from 'jquery';
 
 export default class MultiForm {
     constructor (form, url, key) {
-        this.forms   = $(`#${form}.multi-form form`);
-        this.submit  = $(`#${form}.multi-form .submit`);
-        this.singles = $(`#${form} input.single`)
-        this.url     = `/items${url}`;
-        this.key     = key;
+        this.selector  = form.trim();
+        this.container = $(`#${this.selector}`);
+        this.forms     = this.container.find('form');
+        this.submit    = this.container.find('.submit');
+        this.singles   = this.container.find('input.single');
+        this.url       = `/items${url}`;
+        this.key       = key;
         
         this.init();
         this.events();
     }
     
     init () {
-        this.forms.attr('action', 'javacript:')
+        this.container.prepend('<p class="error"></p>');
+        this.forms.attr('action', 'javacript:');
     }
 
     events () {
         this.submit.click(this.handle.bind(this))
     }
     handle (event) {
+        event.currentTarget.setAttribute('disabled', 'disabled');
         let data = {},
             all  = [];
         
         this.singles.each(function () {
-            data[$(this).attr(name)] = $(this).val()
+            data[$(this).attr('name')] = $(this).val().trim()
         })
         
         this.forms.each(function () {
@@ -40,7 +44,22 @@ export default class MultiForm {
         })
         
         data[this.key] = all;
-        
-        $.post(this.url, data, () => location.reload())
+        console.log(data)
+        $.ajax({
+            url    : this.url,
+            method : 'POST',
+            data   : data,
+        }) 
+        .success(res => {
+            
+            if (!res.error) {
+                location.reload();
+                return false
+            }
+            else {
+                this.container.find('.error').html(res.error);
+            }
+        })
+        .always(() => event.currentTarget.removeAttribute('disabled'))
     }
 }
